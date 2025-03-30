@@ -1,4 +1,4 @@
-using BankOfMyHouse.Domain.BankAccounts;
+using BankOfMyHouse.Domain.Users;
 using BankOfMyHouse.Infrastructure;
 using BankOfMyHouse.Infrastructure.Configurations;
 using FastEndpoints;

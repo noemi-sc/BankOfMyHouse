@@ -1,5 +1,6 @@
 ﻿using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Iban.Interfaces;
+using BankOfMyHouse.Domain.Users;
 
 namespace BankOfMyHouse.Domain.BankAccounts;
 
@@ -12,6 +13,7 @@ public class BankAccount
 
     // Navigation property
     public ApplicationUser User { get; init; } // Add this property
+    public List<Transaction> Transactions { get; init; } // Add this property
 
     // Parameterless constructor for EF Core
     private BankAccount() { }

@@ -16,10 +16,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="EfCore_Configs\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\BankOfMyHouse.Domain\BankOfMyHouse.Domain.csproj" />
 	</ItemGroup>
 

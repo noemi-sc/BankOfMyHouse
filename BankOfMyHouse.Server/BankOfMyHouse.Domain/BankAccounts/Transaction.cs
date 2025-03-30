@@ -4,7 +4,7 @@ namespace BankOfMyHouse.Domain.BankAccounts
 {
 	public class Transaction
 	{
-		public Guid TransactionId { get; set; }
+		public Guid Id { get; set; }
 		public float Amount { get; set; }
 		public DateTimeOffset TransactionCreation { get; set; }
 		public PaymentCategory PaymentCategory { get; set; }
