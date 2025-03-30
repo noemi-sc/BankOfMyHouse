@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOfMyHouse.Application", "BankOfMyHouse.Server\BankOfMyHouse.Application\BankOfMyHouse.Application.csproj", "{DB90331F-E6BA-FFF9-2B3E-FDAE5A444C3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOfMyHouse.Domain", "BankOfMyHouse.Server\BankOfMyHouse.Domain\BankOfMyHouse.Domain.csproj", "{1BE44C76-BF51-4FA8-F4CB-3E59FA81F589}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOfMyHouse.API", "BankOfMyHouse.Server\BankOfMyHouse.API\BankOfMyHouse.API.csproj", "{22795EC7-6992-40CD-803A-B0917B2F35F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankOfMyHouse.Infrastructure", "BankOfMyHouse.Server\BankOfMyHouse.Infrastructure\BankOfMyHouse.Infrastructure.csproj", "{FAF4F9AE-32BB-DBDC-DFF8-BB2FA1FE4CB8}"
+EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOfMyHouse.Application", "BankOfMyHouse.Server\BankOfMyHouse.Application\BankOfMyHouse.Application.csproj", "{DB90331F-E6BA-FFF9-2B3E-FDAE5A444C3D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOfMyHouse.Domain", "BankOfMyHouse.Server\BankOfMyHouse.Domain\BankOfMyHouse.Domain.csproj", "{1BE44C76-BF51-4FA8-F4CB-3E59FA81F589}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOfMyHouse.API", "BankOfMyHouse.Server\BankOfMyHouse.API\BankOfMyHouse.API.csproj", "{22795EC7-6992-40CD-803A-B0917B2F35F7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOfMyHouse.Infrastructure", "BankOfMyHouse.Server\BankOfMyHouse.Infrastructure\BankOfMyHouse.Infrastructure.csproj", "{FAF4F9AE-32BB-DBDC-DFF8-BB2FA1FE4CB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DB90331F-E6BA-FFF9-2B3E-FDAE5A444C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DB90331F-E6BA-FFF9-2B3E-FDAE5A444C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB90331F-E6BA-FFF9-2B3E-FDAE5A444C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{FAF4F9AE-32BB-DBDC-DFF8-BB2FA1FE4CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAF4F9AE-32BB-DBDC-DFF8-BB2FA1FE4CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAF4F9AE-32BB-DBDC-DFF8-BB2FA1FE4CB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

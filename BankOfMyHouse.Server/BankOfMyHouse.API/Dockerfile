@@ -21,6 +21,9 @@ RUN apt-get update \
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["BankOfMyHouse.Server/BankOfMyHouse.API/BankOfMyHouse.API.csproj", "BankOfMyHouse.Server/BankOfMyHouse.API/"]
+COPY ["BankOfMyHouse.Server/BankOfMyHouse.Application/BankOfMyHouse.Application.csproj", "BankOfMyHouse.Server/BankOfMyHouse.Application/"]
+COPY ["BankOfMyHouse.Server/BankOfMyHouse.Domain/BankOfMyHouse.Domain.csproj", "BankOfMyHouse.Server/BankOfMyHouse.Domain/"]
+COPY ["BankOfMyHouse.Server/BankOfMyHouse.Infrastructure/BankOfMyHouse.Infrastructure.csproj", "BankOfMyHouse.Server/BankOfMyHouse.Infrastructure/"]
 RUN dotnet restore "./BankOfMyHouse.Server/BankOfMyHouse.API/BankOfMyHouse.API.csproj"
 COPY . .
 WORKDIR "/src/BankOfMyHouse.Server/BankOfMyHouse.API"
