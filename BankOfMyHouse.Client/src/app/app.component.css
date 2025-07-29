@@ -1,0 +1,34 @@
+.logo {
+  width: 40%;
+  height: auto;
+  /* display: flex; */
+  margin: 0 auto;
+}
+
+main {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+/*   justify-content: center; */  
+  /* align-items: center; */
+  padding: 1rem;
+  box-sizing: inherit;
+  position: relative;
+}
+.example-container {
+  display: flex;
+
+
+/*   border: 1px solid rgba(0, 0, 0, 0.5);
+ */}
+
+.example-sidenav-content {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.example-sidenav {
+  padding: 20px;
+}
