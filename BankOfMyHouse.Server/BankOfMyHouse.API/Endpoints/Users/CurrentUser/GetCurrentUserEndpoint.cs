@@ -1,0 +1,70 @@
+﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
+using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Domain.Users;
+using FastEndpoints;
+
+public class GetCurrentUserEndpoint : EndpointWithoutRequest<UserDto>
+{
+	private readonly IUserService _userService;
+	private readonly ILogger<GetCurrentUserEndpoint> _logger;
+
+	public GetCurrentUserEndpoint(
+		IUserService userService,
+		ILogger<GetCurrentUserEndpoint> logger)
+	{
+		_userService = userService;
+		_logger = logger;
+	}
+
+	public override void Configure()
+	{
+		Get("/users/auth/me");
+		Roles("User", "Admin", "Moderator", "Manager");
+		Summary(s =>
+		{
+			s.Summary = "Get Current User";
+			s.Description = "Get current authenticated user information";
+			s.Responses[200] = "User information retrieved";
+			s.Responses[404] = "User not found";
+		});
+	}
+
+	public override async Task HandleAsync(CancellationToken ct)
+	{
+		try
+		{
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (!int.TryParse(userIdClaim, out int userId))
+			{
+				await Send.ErrorsAsync(400, ct);
+				return;
+			}
+
+			var user = await _userService.GetUserWithRolesAsync(userId);
+			if (user == null)
+			{
+				await Send.NotFoundAsync(ct);
+				return;
+			}
+
+			var response = new UserDto
+			{
+				Id = user.Id,
+				Username = user.Username,
+				Email = user.Email,
+				CreatedAt = user.CreatedAt,
+				LastLoginAt = user.LastLoginAt,
+				IsActive = user.IsActive,
+				Roles = user.Roles.Select(r => r.Name).ToList()
+			};
+
+			await Send.OkAsync(response, ct);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error getting current user");
+
+			await Send.ErrorsAsync(500, ct);
+		}
+	}
+}
