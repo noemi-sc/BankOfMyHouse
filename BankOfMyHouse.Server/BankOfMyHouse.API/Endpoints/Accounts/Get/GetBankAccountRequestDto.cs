@@ -3,7 +3,7 @@
 namespace BankOfMyHouse.Server.Endpoints.Accounts;
 
 
-public class GetBankAccountRequest
+public class GetBankAccountRequestDto
 {
     [FromBody]
     public required string UserId { get; set; }
