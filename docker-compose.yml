@@ -1,20 +1,23 @@
 services:
   bankofmyhouse.api:
-    image: ${DOCKER_REGISTRY-}bankofmyhouseapi
+    image: bankofmyhouseapi
+    container_name: bankofmyhouse.api
     build:
       context: .
       dockerfile: BankOfMyHouse.Server/BankOfMyHouse.API/Dockerfile
     networks:
-      - custom_network
+      - app_network
     environment:
       ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=bankOfMyHouse;Username=myuser;Password=mypassword"
-   
+    depends_on:
+      - postgres_db
+
   postgres_db:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: always
     networks:
-      - custom_network
+      - app_network
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
@@ -24,9 +27,34 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: BankOfMyHouse.Client/Dockerfile
+  #     target: development
+  #   container_name: bankofmyhouse.client
+  #   environment:
+  #     - NODE_ENV=development    
+  #   ports:
+  #     - "4200:4200"
+  #   volumes:
+  #     - ./BankOfMyHouse.Client:/app
+  #     - /app/node_modules
+  #   depends_on:
+  #     - bankofmyhouse.api
+  #   networks:
+  #     - app_network
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./BankOfMyHouse.Client/src
+  #         target: /app/src
+  #       - action: rebuild
+  #         path: ./BankOfMyHouse.Client/package.json
+
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  custom_network:
+  app_network:
