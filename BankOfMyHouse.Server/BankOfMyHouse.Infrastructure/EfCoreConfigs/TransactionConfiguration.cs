@@ -28,7 +28,7 @@ internal class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 		// Transaction creation timestamp
 		builder.Property(t => t.TransactionCreation)
 			.IsRequired()
-			.HasColumnType("timestamptz") // PostgreSQL timestamp
+			.HasColumnType("timestamp with time zone") // PostgreSQL timestamp
 			.HasDefaultValueSql("NOW()") // PostgreSQL function
 			.HasComment("UTC timestamp when transaction was created");
 

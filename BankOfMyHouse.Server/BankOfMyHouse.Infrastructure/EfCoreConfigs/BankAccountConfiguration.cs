@@ -8,25 +8,22 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 {
 	public void Configure(EntityTypeBuilder<BankAccount> builder)
 	{
-		// Configure the table name
 		builder.ToTable("BankAccounts");
 
-		// Configure the primary key
 		builder.HasKey(b => b.Id);
-
 		builder.Property(b => b.Id)
 		   .ValueGeneratedOnAdd();
 
-		// Configure properties
+		// Fix: Remove string-specific configurations for int UserId
 		builder.Property(b => b.UserId)
-			.IsRequired()
-			.HasMaxLength(450)
-			.HasColumnType("varchar(450)"); // PostgreSQL varchar
+			.IsRequired();
+		// Remove: .HasMaxLength(450)
+		// Remove: .HasColumnType("varchar(450)")
 
 		builder.Property(b => b.CreationDate)
 			.IsRequired()
-			.HasColumnType("timestamptz") // PostgreSQL timestamp
-			.HasDefaultValueSql("NOW()"); // PostgreSQL function
+			.HasColumnType("timestamp with time zone")
+			.HasDefaultValueSql("NOW()");
 
 		// Configure the IBAN property
 		builder.OwnsOne(b => b.IBAN, iban =>
@@ -47,8 +44,8 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 
 		// Configure relationship with Transactions
 		builder.HasMany(b => b.Transactions)
-			.WithOne() // No navigation property back to BankAccount in Transaction
-			.HasForeignKey("BankAccountId") // Shadow property
+			.WithOne()
+			.HasForeignKey("BankAccountId")
 			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

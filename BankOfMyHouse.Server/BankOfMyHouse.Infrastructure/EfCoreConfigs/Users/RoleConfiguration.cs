@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BankOfMyHouse.Domain.Users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BankOfMyHouse.Infrastructure.EfCoreConfigs.Users;
@@ -28,8 +29,13 @@ internal class RoleConfiguration : IEntityTypeConfiguration<Role>
 			.HasColumnType("varchar(255)");
 
 		builder.Property(r => r.CreatedAt)
-			.HasDefaultValueSql("timestamptz")
-			.HasColumnType("datetime2");		
+			.HasDefaultValueSql("NOW()")
+			.HasColumnType("timestamp");
+
+		builder.HasMany(x => x.UserRoles)
+			.WithOne(ur => ur.Role)
+			.HasForeignKey(ur => ur.RoleId)
+			.OnDelete(DeleteBehavior.Cascade);
 
 		//// Seed data
 		//builder.HasData(

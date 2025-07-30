@@ -26,8 +26,7 @@ internal class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 
 		builder.Property(ur => ur.AssignedAt)
 			.IsRequired()
-			.HasDefaultValueSql("GETUTCDATE()")
-			.HasColumnType("datetime2")
+			.HasDefaultValueSql("NOW()")
 			.HasColumnName("AssignedAt");
 
 		builder.Property(ur => ur.AssignedBy)
