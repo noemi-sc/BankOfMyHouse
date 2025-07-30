@@ -4,7 +4,7 @@ public class UserRole
 {
     public int UserId { get; set; }
     public int RoleId { get; set; }
-    public DateTime AssignedAt { get; set; }
+    public DateTimeOffset AssignedAt { get; set; }
     public int? AssignedBy { get; set; } // User ID who assigned the role
     
     // Navigation properties

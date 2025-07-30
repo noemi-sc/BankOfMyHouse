@@ -1,5 +1,7 @@
 ﻿using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Iban.Interfaces;
+using BankOfMyHouse.Domain.Investments;
+using BankOfMyHouse.Domain.Users;
 
 namespace BankOfMyHouse.Domain.BankAccounts;
 
@@ -10,20 +12,20 @@ public class BankAccount
 
 	private BankAccount(int userId, IbanCode iban)
 	{
-		Id = Guid.NewGuid();
 		UserId = userId;
 		IBAN = iban;
 		CreationDate = DateTimeOffset.Now;
 	}
 
-	public Guid Id { get; init; }
+	public int Id { get; set; }
 	public IbanCode IBAN { get; init; }
 	public int UserId { get; init; }
 	public DateTimeOffset CreationDate { get; init; }
 
 	// Navigation property
-	public User User { get; init; } // Add this property
-	public List<Transaction> Transactions { get; init; } // Add this property	
+	public User User { get; set; }
+	public ICollection<Transaction> Transactions { get; set; }
+	public ICollection<Investment> Investments { get; set; }
 
 	public static BankAccount CreateNew(int userId, IIbanGenerator ibanGenerator)
 	{

@@ -1,6 +1,7 @@
 ﻿using BankOfMyHouse.Domain.BankAccounts;
-using BankOfMyHouse.Domain.Users;
 using Microsoft.AspNetCore.Identity;
+
+namespace BankOfMyHouse.Domain.Users;
 
 public class User
 {
@@ -15,20 +16,17 @@ public class User
 	public DateTime CreatedAt { get; set; }
 	public DateTime? LastLoginAt { get; set; }
 	public bool IsActive { get; set; } = true;
-	public bool EmailConfirmed { get; set; } = false; // For email confirmation feature
+	public bool EmailConfirmed { get; set; } = true; // enabledByDefault for the moment --> For email confirmation feature
 
 	// Navigation properties
 	public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-	public ICollection<Role> Roles { get; set; } = new List<Role>();
 	public ICollection<BankAccount> BankAccounts { get; set; } = new List<BankAccount>();
 
-	// Existing constructors...
 	public User()
 	{
 		CreatedAt = DateTime.UtcNow;
 		IsActive = true;
 		UserRoles = new List<UserRole>();
-		Roles = new List<Role>();
 	}
 
 	public User(string username, string email, string password, string? firstName = null, string? lastName = null) : this()

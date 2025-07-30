@@ -1,14 +1,22 @@
-
-using BankOfMyHouse.Domain.Users;
+namespace BankOfMyHouse.Domain.Users;
 
 public class Role
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
+	public Role(int id, string name, string description)
+	{
+		Id = id;
+		Name = name;
+		Description = description;
+		CreatedAt = DateTime.Now;
+	}
 
-    // Navigation properties
-    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-    public ICollection<User> Users { get; set; } = new List<User>();
+	public Role() { }
+
+	public int Id { get; init; }
+	public string Name { get; init; } = string.Empty;
+	public string Description { get; init; } = string.Empty;
+	public DateTime CreatedAt { get; init; }
+
+	// Navigation properties
+	public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }
