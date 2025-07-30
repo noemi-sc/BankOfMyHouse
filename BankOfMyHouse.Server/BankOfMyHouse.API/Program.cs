@@ -3,6 +3,8 @@ using BankOfMyHouse.Application.Services.Accounts;
 using BankOfMyHouse.Application.Services.Accounts.Interfaces;
 using BankOfMyHouse.Application.Services.Users;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
+using BankOfMyHouse.Domain.Iban;
+using BankOfMyHouse.Domain.Iban.Interfaces;
 using BankOfMyHouse.Infrastructure;
 using BankOfMyHouse.Infrastructure.DbSeed;
 using FastEndpoints;
@@ -46,6 +48,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
+builder.Services.AddScoped<IIbanGenerator, ItalianIbanGenerator>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var key = Encoding.ASCII.GetBytes(jwtSettings!.Secret);

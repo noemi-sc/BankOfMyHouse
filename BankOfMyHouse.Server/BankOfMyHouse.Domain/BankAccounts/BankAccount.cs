@@ -1,5 +1,4 @@
 ﻿using BankOfMyHouse.Domain.Iban;
-using BankOfMyHouse.Domain.Iban.Interfaces;
 using BankOfMyHouse.Domain.Investments;
 using BankOfMyHouse.Domain.Users;
 
@@ -27,10 +26,9 @@ public class BankAccount
 	public ICollection<Transaction> Transactions { get; set; }
 	public ICollection<Investment> Investments { get; set; }
 
-	public static BankAccount CreateNew(int userId, IIbanGenerator ibanGenerator)
+	public static BankAccount CreateNew(int userId, IbanCode ibanCode)
 	{
-		var iban = ibanGenerator.GenerateItalianIban();
-		return new BankAccount(userId, iban);
+		return new BankAccount(userId, ibanCode);
 	}
 
 	// Factory method for reconstruction from persistence

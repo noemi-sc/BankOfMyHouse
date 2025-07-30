@@ -3,7 +3,7 @@ using System.Text;
 
 namespace BankOfMyHouse.Domain.Iban;
 
-internal class IbanGenerator : IIbanGenerator
+public class ItalianIbanGenerator : IIbanGenerator
 {
     private static readonly Random _random = new Random();
     private const string ABI = "12345";
