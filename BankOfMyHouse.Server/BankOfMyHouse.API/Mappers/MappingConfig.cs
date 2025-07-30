@@ -21,7 +21,6 @@ namespace BankOfMyHouse.API.Mappers
 				.Map(dest => dest.IsActive, src => true)
 				.Map(dest => dest.EmailConfirmed, src => false)
 				.Map(dest => dest.UserRoles, src => new List<UserRole>())
-				.Map(dest => dest.Roles, src => new List<Role>())
 				.Ignore(dest => dest.PasswordHash)
 				.Ignore(dest => dest.Id) // Auto-generated
 				.Ignore(dest => dest.LastLoginAt); // Will be set on first login
@@ -34,7 +33,7 @@ namespace BankOfMyHouse.API.Mappers
 				.Map(dest => dest.CreatedAt, src => src.CreatedAt)
 				.Map(dest => dest.LastLoginAt, src => src.LastLoginAt)
 				.Map(dest => dest.IsActive, src => src.IsActive)
-				.Map(dest => dest.Roles, src => src.Roles.Select(r => r.Name).ToList());
+				.Map(dest => dest.Roles, src => src.UserRoles.Select(r => r.Role.Name).ToList());
 
 			// Additional mappings for other DTOs
 			config.NewConfig<LoginRequestDto, User>()

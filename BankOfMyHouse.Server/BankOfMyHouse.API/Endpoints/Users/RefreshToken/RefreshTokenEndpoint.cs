@@ -96,7 +96,7 @@ public class RefreshTokenEndpoint : Endpoint<RefreshTokenRequestDto, RefreshToke
 					CreatedAt = user.CreatedAt,
 					LastLoginAt = user.LastLoginAt,
 					IsActive = user.IsActive,
-					Roles = user.Roles.Select(r => r.Name).ToList()
+					Roles = user.UserRoles.Select(r => r.Role.Name).ToList()
 				}
 			};
 

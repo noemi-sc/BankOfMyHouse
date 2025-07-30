@@ -1,6 +1,5 @@
 ﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.Application.Users.Interfaces;
-using BankOfMyHouse.Domain.Users;
 using FastEndpoints;
 
 public class GetCurrentUserEndpoint : EndpointWithoutRequest<UserDto>
@@ -19,7 +18,7 @@ public class GetCurrentUserEndpoint : EndpointWithoutRequest<UserDto>
 	public override void Configure()
 	{
 		Get("/users/auth/me");
-		Roles("User", "Admin", "Moderator", "Manager");
+		Roles("BankUser", "Admin", "Moderator", "Manager");
 		Summary(s =>
 		{
 			s.Summary = "Get Current User";
@@ -55,7 +54,7 @@ public class GetCurrentUserEndpoint : EndpointWithoutRequest<UserDto>
 				CreatedAt = user.CreatedAt,
 				LastLoginAt = user.LastLoginAt,
 				IsActive = user.IsActive,
-				Roles = user.Roles.Select(r => r.Name).ToList()
+				Roles = user.UserRoles.Select(r => r.Role.Name).ToList()
 			};
 
 			await Send.OkAsync(response, ct);

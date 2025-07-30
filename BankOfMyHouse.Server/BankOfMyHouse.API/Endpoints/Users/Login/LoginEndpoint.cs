@@ -71,7 +71,7 @@ public class LoginEndpoint : Endpoint<LoginRequestDto, LoginResponseDto>
 					CreatedAt = user.CreatedAt,
 					LastLoginAt = user.LastLoginAt,
 					IsActive = user.IsActive,
-					Roles = user.Roles.Select(r => r.Name).ToList()
+					Roles = user.UserRoles.Select(r => r.Role.Name).ToList()
 				}
 			};
 

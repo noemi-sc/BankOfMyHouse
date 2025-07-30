@@ -1,5 +1,6 @@
 ﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Domain.Users;
 using FastEndpoints;
 using IMapper = MapsterMapper.IMapper;
 
@@ -42,29 +43,6 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 	{
 		try
 		{
-			// Additional server-side validation
-			var errors = new List<string>();
-
-			if (!await _userService.IsUsernameAvailableAsync(req.Username))
-			{
-				errors.Add("Username is already taken");
-			}
-
-			if (!await _userService.IsEmailAvailableAsync(req.Email))
-			{
-				errors.Add("Email is already registered");
-			}
-
-			if (errors.Any())
-			{
-				foreach (var error in errors)
-				{
-					AddError(error);
-				}
-				await Send.ErrorsAsync(400, ct);
-				return;
-			}
-
 			// Register the user
 			var user = await _userService.RegisterUserAsync(this._mapper.Map<User>(req), req.Password);
 
@@ -92,7 +70,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 					CreatedAt = userWithRoles.CreatedAt,
 					LastLoginAt = userWithRoles.LastLoginAt,
 					IsActive = userWithRoles.IsActive,
-					Roles = userWithRoles.Roles.Select(r => r.Name).ToList()
+					Roles = userWithRoles.UserRoles.Select(r => r.Role.Name).ToList()
 				},
 				AccessToken = accessToken,
 				RefreshToken = refreshToken
