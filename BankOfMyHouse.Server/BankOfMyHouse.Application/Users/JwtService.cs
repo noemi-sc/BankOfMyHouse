@@ -53,9 +53,9 @@ public class JwtService : IJwtService
 		};
 
 		// Add role claims
-		foreach (var role in user.Roles)
+		foreach (var userRole in user.UserRoles)
 		{
-			((ClaimsIdentity)tokenDescriptor.Subject).AddClaim(new Claim(ClaimTypes.Role, role.Name));
+			tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, userRole.Role.Name));
 		}
 
 		var tokenHandler = new JwtSecurityTokenHandler();
