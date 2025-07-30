@@ -1,6 +1,6 @@
 ﻿using FastEndpoints;
 
-namespace BankOfMyHouse.Server.Endpoints.Accounts;
+namespace BankOfMyHouse.API.Endpoints.Accounts.Get;
 
 
 public class GetBankAccountRequestDto

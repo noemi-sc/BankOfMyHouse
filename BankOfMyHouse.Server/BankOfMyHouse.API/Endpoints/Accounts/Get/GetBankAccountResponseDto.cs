@@ -1,4 +1,4 @@
-﻿namespace BankOfMyHouse.Server.Endpoints.Accounts.Get;
+﻿namespace BankOfMyHouse.API.Endpoints.Accounts.Get;
 
 public class GetBankAccountResponseDto
 {

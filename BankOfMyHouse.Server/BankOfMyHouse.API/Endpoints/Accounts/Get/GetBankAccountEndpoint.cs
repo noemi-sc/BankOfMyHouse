@@ -1,6 +1,4 @@
 ﻿using BankOfMyHouse.Domain.BankAccounts;
-using BankOfMyHouse.Server.Endpoints.Accounts;
-using BankOfMyHouse.Server.Endpoints.Accounts.Get;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -14,7 +12,7 @@ public class GetBankAccountEndpoint : Endpoint<GetBankAccountRequestDto,
 {
     public override void Configure()
     {
-        Get("/api/bankAccount");
+        Get("/bankAccounts/{id}");
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
         Description(b => b.Produces(403));
         Tags(nameof(BankAccount));
