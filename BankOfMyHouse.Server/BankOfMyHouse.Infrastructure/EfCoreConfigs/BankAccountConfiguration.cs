@@ -11,19 +11,15 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 		builder.ToTable("BankAccounts");
 
 		builder.HasKey(b => b.Id);
-		builder.Property(b => b.Id)
-		   .ValueGeneratedOnAdd();
 
-		// Fix: Remove string-specific configurations for int UserId
+		builder.Property(b => b.Id)
+			.UseIdentityByDefaultColumn();
+				
 		builder.Property(b => b.UserId)
 			.IsRequired();
-		// Remove: .HasMaxLength(450)
-		// Remove: .HasColumnType("varchar(450)")
 
 		builder.Property(b => b.CreationDate)
-			.IsRequired()
-			.HasColumnType("timestamp with time zone")
-			.HasDefaultValueSql("NOW()");
+			.IsRequired();
 
 		// Configure the IBAN property
 		builder.OwnsOne(b => b.IBAN, iban =>
