@@ -1,6 +1,6 @@
 ﻿using FastEndpoints;
 
-namespace BankOfMyHouse.Server.Endpoints.Accounts.Create;
+namespace BankOfMyHouse.API.Endpoints.Accounts.Create;
 
 
 public class CreateBankAccountRequestDto

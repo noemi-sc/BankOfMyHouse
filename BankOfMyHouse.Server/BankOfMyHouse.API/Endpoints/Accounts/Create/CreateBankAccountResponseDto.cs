@@ -1,5 +1,8 @@
-﻿namespace BankOfMyHouse.Server.Endpoints.Accounts.Create;
+﻿using BankOfMyHouse.Domain.Iban;
 
-public class CreateBankAccountResponseDto
+namespace BankOfMyHouse.API.Endpoints.Accounts.Create;
+
+public sealed record CreateBankAccountResponseDto
 {
+	public IbanCode	IBAN { get; set; }
 }
