@@ -9,11 +9,11 @@ namespace BankOfMyHouse.Application.Users;
 
 public class UserService : IUserService
 {
-	private readonly ApplicationDbContext _context;
+	private readonly BankOfMyHouseDbContext _context;
 	private readonly ILogger<UserService> _logger;
 	private readonly PasswordHasher<User> _passwordHasher;
 
-	public UserService(ApplicationDbContext context, ILogger<UserService> logger)
+	public UserService(BankOfMyHouseDbContext context, ILogger<UserService> logger)
 	{
 		_context = context;
 		_logger = logger;
@@ -25,7 +25,8 @@ public class UserService : IUserService
 		try
 		{
 			var user = await _context.Users
-				.Include(u => u.Roles)
+				.Include(u => u.UserRoles)
+				.ThenInclude(u => u.Role)
 				.FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
 
 			if (user == null)
@@ -61,30 +62,31 @@ public class UserService : IUserService
 	public async Task<User?> GetUserByUsernameAsync(string username)
 	{
 		return await _context.Users
-			.Include(u => u.Roles)
+			.Include(u => u.UserRoles)
 			.FirstOrDefaultAsync(u => u.Username == username);
 	}
 
 	public async Task<User?> GetUserByEmailAsync(string email)
 	{
 		return await _context.Users
-			.Include(u => u.Roles)
+			.Include(u => u.UserRoles)
 			.FirstOrDefaultAsync(u => u.Email == email);
 	}
 
 	public async Task<User?> GetUserWithRolesAsync(int userId)
 	{
 		return await _context.Users
-			.Include(u => u.Roles)
+			.Include(u => u.UserRoles)
+			.ThenInclude(u => u.Role)
 			.FirstOrDefaultAsync(u => u.Id == userId);
 	}
 
-	public async Task<bool> IsUsernameAvailableAsync(string username)
+	private async Task<bool> IsUsernameAvailableAsync(string username)
 	{
 		return !await _context.Users.AnyAsync(u => u.Username == username);
 	}
 
-	public async Task<bool> IsEmailAvailableAsync(string email)
+	private async Task<bool> IsEmailAvailableAsync(string email)
 	{
 		return !await _context.Users.AnyAsync(u => u.Email == email);
 	}
@@ -141,7 +143,7 @@ public class UserService : IUserService
 		try
 		{
 			var defaultRole = await _context.Roles
-				.FirstOrDefaultAsync(r => r.Name == "User");
+				.FirstOrDefaultAsync(r => r.Name == "BankUser");
 
 			if (defaultRole == null)
 			{
@@ -153,7 +155,7 @@ public class UserService : IUserService
 			{
 				UserId = user.Id,
 				RoleId = defaultRole.Id,
-				AssignedAt = DateTime.UtcNow
+				AssignedAt = DateTimeOffset.UtcNow
 			};
 
 			_context.UserRoles.Add(userRole);
