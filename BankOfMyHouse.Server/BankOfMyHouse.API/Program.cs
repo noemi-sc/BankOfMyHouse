@@ -2,6 +2,7 @@ using BankOfMyHouse.Application.Configurations;
 using BankOfMyHouse.Application.Users;
 using BankOfMyHouse.Application.Users.Interfaces;
 using BankOfMyHouse.Infrastructure;
+using BankOfMyHouse.Infrastructure.DbSeed;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Mapster;
@@ -24,12 +25,16 @@ config.Scan(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IMapper, ServiceMapper>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<BankOfMyHouseDbContext>(options =>
 {
 	options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 	.UseAsyncSeeding(async (context, _, ct) =>
 	{
-
+		await DatabaseSeeder.SeedRoles(context, ct);
+		await DatabaseSeeder.SeedCompanies(context, ct);
+	})
+	.UseSeeding((context, ct) =>
+	{
 	});
 });
 
@@ -69,14 +74,10 @@ builder.Services.AddAuthorizationBuilder()
 	.SetDefaultPolicy(new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
 		.Build())
-	.AddPolicy("AdminOnly", policy =>
+	.AddPolicy("Admin", policy =>
 		policy.RequireRole("Admin"))
-	.AddPolicy("CustomerUser", policy =>
-		policy.RequireRole("CustomerUser"))
-	//.AddPolicy("AdminOrSpecificUser", policy =>
-	//	policy.RequireAssertion(context =>
-	//		context.User.IsInRole("Admin") ||
-	//		context.User.Identity?.Name == "specificuser"));
+	.AddPolicy("BankUser", policy =>
+		policy.RequireRole("BankUser"));
 
 builder.Services
 	.AddFastEndpoints()
@@ -93,13 +94,16 @@ builder.Services.AddCors(options =>
 	});
 });
 
+builder.Services.AddHostedService<StockPriceGenerator>();
+
 var app = builder.Build();
 
 await using (var serviceScope = app.Services.CreateAsyncScope())
 {
-	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>())
 	{
-		//await dbContext.Database.EnsureCreatedAsync();
+		await dbContext.Database.EnsureCreatedAsync();
+		dbContext.Database.EnsureCreated();
 	}
 }
 
@@ -124,3 +128,4 @@ app.MapScalarApiReference(options =>
 
 
 await app.RunAsync();
+
