@@ -1,6 +1,6 @@
 ﻿using BankOfMyHouse.Domain.Users;
 
-namespace BankOfMyHouse.Application.Users.Interfaces;
+namespace BankOfMyHouse.Application.Services.Users.Interfaces;
 
 public interface IUserService
 {

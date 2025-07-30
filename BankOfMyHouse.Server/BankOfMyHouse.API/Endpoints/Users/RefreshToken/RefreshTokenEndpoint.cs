@@ -1,6 +1,6 @@
 ﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.API.Endpoints.Users.RefreshToken;
-using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Application.Services.Users.Interfaces;
 using FastEndpoints;
 
 public class RefreshTokenEndpoint : Endpoint<RefreshTokenRequestDto, RefreshTokenResponseDto>

@@ -1,5 +1,5 @@
 ﻿using BankOfMyHouse.Application.Configurations;
-using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BankOfMyHouse.Application.Users;
+namespace BankOfMyHouse.Application.Services.Users;
 
 public class JwtService : IJwtService
 {

@@ -1,11 +1,11 @@
-﻿using BankOfMyHouse.Application.Users.Interfaces;
+﻿using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Users;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace BankOfMyHouse.Application.Users;
+namespace BankOfMyHouse.Application.Services.Users;
 
 public class UserService : IUserService
 {

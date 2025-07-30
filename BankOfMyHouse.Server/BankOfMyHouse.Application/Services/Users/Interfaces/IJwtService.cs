@@ -1,7 +1,7 @@
 ﻿using BankOfMyHouse.Domain.Users;
 using System.Security.Claims;
 
-namespace BankOfMyHouse.Application.Users.Interfaces
+namespace BankOfMyHouse.Application.Services.Users.Interfaces
 {
 	public interface IJwtService
 	{

@@ -1,6 +1,6 @@
 ﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.API.Endpoints.Users.Login;
-using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Application.Services.Users.Interfaces;
 using FastEndpoints;
 
 public class LoginEndpoint : Endpoint<LoginRequestDto, LoginResponseDto>

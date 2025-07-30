@@ -1,5 +1,5 @@
 ﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
-using BankOfMyHouse.Application.Users.Interfaces;
+using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Users;
 using FastEndpoints;
 using IMapper = MapsterMapper.IMapper;
