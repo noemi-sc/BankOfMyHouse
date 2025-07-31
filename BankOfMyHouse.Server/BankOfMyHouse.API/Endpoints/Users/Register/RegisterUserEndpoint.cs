@@ -47,7 +47,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 			var user = await _userService.RegisterUserAsync(this._mapper.Map<User>(req), req.Password);
 
 			// Load user with roles for token generation
-			var userWithRoles = await _userService.GetUserWithRolesAsync(user.Id);
+			var userWithRoles = await _userService.GetUserWithRolesAsync(user.Id, ct);
 			if (userWithRoles == null)
 			{
 				AddError("Failed to retrieve user after registration");

@@ -19,6 +19,7 @@ public class CreateBankAccountEndpoint : Endpoint<CreateBankAccountRequestDto, C
 		this._userService = userService ?? throw new ArgumentNullException(nameof(userService));
 		this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
+
 	public override void Configure()
 	{
 		Post("/bankAccounts");
@@ -43,7 +44,7 @@ public class CreateBankAccountEndpoint : Endpoint<CreateBankAccountRequestDto, C
 			return;
 		}
 
-		var user = await _userService.GetUserWithRolesAsync(userId);
+		var user = await _userService.GetUserWithRolesAsync(userId, ct);
 		if (user == null)
 		{
 			await Send.NotFoundAsync(ct);

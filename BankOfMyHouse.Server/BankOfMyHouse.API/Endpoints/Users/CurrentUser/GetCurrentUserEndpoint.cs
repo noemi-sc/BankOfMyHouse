@@ -39,7 +39,7 @@ public class GetCurrentUserEndpoint : EndpointWithoutRequest<UserDto>
 				return;
 			}
 
-			var user = await _userService.GetUserWithRolesAsync(userId);
+			var user = await _userService.GetUserWithRolesAsync(userId, ct);
 			if (user == null)
 			{
 				await Send.NotFoundAsync(ct);

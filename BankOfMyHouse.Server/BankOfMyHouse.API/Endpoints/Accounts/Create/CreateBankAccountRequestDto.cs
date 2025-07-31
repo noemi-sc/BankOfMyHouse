@@ -1,10 +1,7 @@
-﻿using FastEndpoints;
-
-namespace BankOfMyHouse.API.Endpoints.Accounts.Create;
+﻿namespace BankOfMyHouse.API.Endpoints.Accounts.Create;
 
 
-public class CreateBankAccountRequestDto
+public sealed record CreateBankAccountRequestDto
 {
-    [FromBody]
-    public required string Name { get; set; }
+	public string Description { get; set; } = string.Empty;
 }

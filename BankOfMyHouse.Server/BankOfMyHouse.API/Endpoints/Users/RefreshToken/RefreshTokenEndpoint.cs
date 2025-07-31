@@ -71,7 +71,7 @@ public class RefreshTokenEndpoint : Endpoint<RefreshTokenRequestDto, RefreshToke
 				return;
 			}
 
-			var user = await _userService.GetUserWithRolesAsync(userId);
+			var user = await _userService.GetUserWithRolesAsync(userId, ct);
 			if (user == null || !user.IsActive)
 			{
 				AddError("User not found or inactive");
