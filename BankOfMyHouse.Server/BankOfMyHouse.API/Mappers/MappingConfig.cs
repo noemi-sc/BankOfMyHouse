@@ -1,9 +1,10 @@
-﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
+﻿using BankOfMyHouse.API.Endpoints.Transactions.DTOs;
+using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.API.Endpoints.Users.Login;
 using BankOfMyHouse.API.Endpoints.Users.Register;
+using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Users;
 using Mapster;
-using Microsoft.AspNetCore.Identity.Data;
 
 namespace BankOfMyHouse.API.Mappers
 {
@@ -38,6 +39,18 @@ namespace BankOfMyHouse.API.Mappers
 			// Additional mappings for other DTOs
 			config.NewConfig<LoginRequestDto, User>()
 				.Map(dest => dest.Username, src => src.Username);
+
+			//config.NewConfig<IbanCodeDto, IbanCode>()
+			//.Map(dest => dest.Value, src => IbanCode.Create(src.Value));
+
+			//config.NewConfig<IbanCode, IbanCodeDto>()
+			//	.Map(dest => new IbanCodeDto(dest.Value), src => src.Value);
+
+			config.NewConfig<IbanCodeDto, IbanCode>()
+				.MapWith(src => IbanCode.Create(src.Value)); // 👈 Uses MapWith for factory method
+
+			config.NewConfig<IbanCode, IbanCodeDto>()
+				.MapWith(src => new IbanCodeDto(src.Value)); // 👈 Uses MapWith for constructor
 		}
 	}
 }
