@@ -73,7 +73,7 @@ public class UserService : IUserService
 			.FirstOrDefaultAsync(u => u.Email == email);
 	}
 
-	public async Task<User?> GetUserWithRolesAsync(int userId)
+	public async Task<User?> GetUserWithRolesAsync(int userId, CancellationToken cancellationToken)
 	{
 		return await _context.Users
 			.Include(u => u.UserRoles)
