@@ -13,13 +13,14 @@ public class BankAccount
 	{
 		UserId = userId;
 		IBAN = iban;
-		CreationDate = DateTimeOffset.Now;
+		CreationDate = DateTimeOffset.Now;		
 	}
 
 	public int Id { get; set; }
 	public IbanCode IBAN { get; init; }
 	public int UserId { get; init; }
 	public DateTimeOffset CreationDate { get; init; }
+	public decimal Balance { get; set; } = 0;
 
 	// Navigation property
 	public User User { get; set; }

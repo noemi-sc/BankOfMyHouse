@@ -21,6 +21,9 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 		builder.Property(b => b.CreationDate)
 			.IsRequired();
 
+		builder.Property(b => b.Balance)
+			.IsRequired();
+
 		// Configure the IBAN property
 		builder.OwnsOne(b => b.IBAN, iban =>
 		{
