@@ -5,9 +5,9 @@ namespace BankOfMyHouse.Domain.BankAccounts;
 public sealed record Transaction
 {
 	//EF CORE
-	public Transaction() { }
+	private Transaction() { }
 
-	public Transaction(decimal amount, IbanCode sender, IbanCode receiver, PaymentCategory category)
+	private Transaction(decimal amount, IbanCode sender, IbanCode receiver, PaymentCategory category)
 	{
 		Id = Guid.NewGuid();
 		Amount = amount;
@@ -25,4 +25,9 @@ public sealed record Transaction
 	// NAVIGATION PROPERTIES
 	public IbanCode Sender { get; set; }
 	public IbanCode	Receiver { get; set; }
+
+	public static Transaction CreateNew(decimal amount, BankAccount senderAccount, BankAccount receiverAccount, PaymentCategory other)
+	{
+		return new Transaction(amount, senderAccount.IBAN, receiverAccount.IBAN, other);
+	}
 }
