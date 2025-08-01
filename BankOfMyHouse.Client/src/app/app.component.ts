@@ -5,15 +5,13 @@ import {
   Router,
   NavigationEnd,
 } from '@angular/router';
-import { MatGridList } from "@angular/material/grid-list";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    RouterLink,
-    MatGridList
+    RouterLink
 ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
