@@ -2,5 +2,5 @@
 
 public class GetBankAccountResponseDto
 {
-	public object BankAccounts { get; internal set; }
+	public object BankAccounts { get; set; }
 }

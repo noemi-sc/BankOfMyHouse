@@ -1,6 +1,8 @@
 using BankOfMyHouse.Application.Configurations;
 using BankOfMyHouse.Application.Services.Accounts;
 using BankOfMyHouse.Application.Services.Accounts.Interfaces;
+using BankOfMyHouse.Application.Services.Investments;
+using BankOfMyHouse.Application.Services.Investments.Interfaces;
 using BankOfMyHouse.Application.Services.Users;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Iban;
@@ -104,14 +106,15 @@ builder.Services.AddHostedService<StockPriceGenerator>();
 
 var app = builder.Build();
 
-await using (var serviceScope = app.Services.CreateAsyncScope())
-{
-	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>())
-	{
-		await dbContext.Database.EnsureCreatedAsync();
-		dbContext.Database.EnsureCreated();
-	}
-}
+//await using (var serviceScope = app.Services.CreateAsyncScope())
+//{
+//	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>())
+//	{
+//		//await dbContext.Database.EnsureCreatedAsync();
+//		//dbContext.Database.EnsureCreated();
+//		//DO NOT USE ENSURE ETC BECAUSE IT BYPASSES THE MIGRATION PATTERN COMPLETELY!!!!
+//	}
+//}
 
 app.UseCors("AllowAll");
 
