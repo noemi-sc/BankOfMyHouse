@@ -10,7 +10,7 @@ public class Role
 		CreatedAt = DateTime.Now;
 	}
 
-	public Role() { }
+	private Role() { }
 
 	public int Id { get; init; }
 	public string Name { get; init; } = string.Empty;
