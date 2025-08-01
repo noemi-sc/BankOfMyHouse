@@ -10,11 +10,10 @@ internal class InvestmentConfiguration : IEntityTypeConfiguration<Investment>
 	{
 		builder.ToTable("Investments");
 
-		// Primary key (assuming Company is unique per investment, otherwise add an Id property)
 		builder.HasKey(i => i.Id);
 
 		builder.Property(r => r.Id)
-			.UseIdentityByDefaultColumn(); // PostgreSQL identity
+			.UseIdentityByDefaultColumn();
 
 		// SharesAmount
 		builder.Property(i => i.SharesAmount)
@@ -22,10 +21,22 @@ internal class InvestmentConfiguration : IEntityTypeConfiguration<Investment>
 		 .HasColumnType("numeric(18,2)")
 		 .HasComment("Amount of shares invested in the company");
 
+		builder.Property(x => x.CreatedAt)
+			.IsRequired();
+
 		// Configure Company navigation property
 		builder
 			.HasOne(i => i.Company)
-			.WithMany() // If Company has a collection of Investments, use .WithMany(c => c.Investments)
+			.WithMany()
+			.HasForeignKey(x => x.CompanyId)
+			.HasConstraintName("FK_Investments_Companies")
+			.IsRequired();
+
+		builder
+			.HasOne(i => i.BankAccount)
+			.WithMany(x => x.Investments)
+			.HasForeignKey(x => x.BankAccountId)
+			.HasConstraintName("FK_Investments_BankAccounts")
 			.IsRequired();
 	}
 }

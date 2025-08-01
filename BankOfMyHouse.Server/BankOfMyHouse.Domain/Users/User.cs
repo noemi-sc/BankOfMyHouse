@@ -8,7 +8,7 @@ public class User
 	private static readonly PasswordHasher<User> _passwordHasher = new();
 
 	public int Id { get; set; }
-	public string Username { get; set; } = string.Empty;
+	public string Username { get; set; } = string.Empty;//Maybe here generate a username from name+surname?
 	public string Email { get; set; } = string.Empty;
 	public string PasswordHash { get; set; } = string.Empty;
 	public string? FirstName { get; set; } // Optional

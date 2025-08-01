@@ -24,7 +24,6 @@ public class BankAccount
 
 	// Navigation property
 	public User User { get; set; }
-	public ICollection<Transaction> Transactions { get; set; }
 	public ICollection<Investment> Investments { get; set; }
 
 	public static BankAccount CreateNew(int userId, IbanCode ibanCode)

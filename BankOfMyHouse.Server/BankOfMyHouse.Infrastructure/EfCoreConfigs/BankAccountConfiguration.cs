@@ -40,11 +40,5 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 			.HasForeignKey(b => b.UserId)
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
-
-		// Configure relationship with Transactions
-		builder.HasMany(b => b.Transactions)
-			.WithOne()
-			.HasForeignKey("BankAccountId")
-			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

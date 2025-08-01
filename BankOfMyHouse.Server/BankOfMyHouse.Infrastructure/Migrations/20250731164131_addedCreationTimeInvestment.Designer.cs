@@ -3,6 +3,7 @@ using System;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankOfMyHouse.Infrastructure.Migrations
 {
     [DbContext(typeof(BankOfMyHouseDbContext))]
-    partial class BankOfMyHouseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250731164131_addedCreationTimeInvestment")]
+    partial class addedCreationTimeInvestment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,6 +59,9 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)")
                         .HasComment("Transaction amount in the account's base currency");
 
+                    b.Property<int?>("BankAccountId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PaymentCategory")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -82,6 +88,8 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                         .HasComment("UTC timestamp when transaction was created");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
 
                     b.ToTable("Transactions", (string)null);
                 });
@@ -302,6 +310,14 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.Transaction", b =>
+                {
+                    b.HasOne("BankOfMyHouse.Domain.BankAccounts.BankAccount", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("BankAccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("BankOfMyHouse.Domain.Investments.CompanyStockPrice", b =>
                 {
                     b.HasOne("BankOfMyHouse.Domain.Investments.Company", null)
@@ -356,6 +372,8 @@ namespace BankOfMyHouse.Infrastructure.Migrations
             modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.BankAccount", b =>
                 {
                     b.Navigation("Investments");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("BankOfMyHouse.Domain.Investments.Company", b =>

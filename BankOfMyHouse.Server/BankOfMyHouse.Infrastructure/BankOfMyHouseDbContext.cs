@@ -31,5 +31,7 @@ public class BankOfMyHouseDbContext : DbContext
 			.ApplyConfiguration(new InvestmentConfiguration())
 			.ApplyConfiguration(new CompanyConfiguration())
 			.ApplyConfiguration(new CompanyStockPriceConfiguration());
+
+		base.OnModelCreating(modelBuilder);
 	}
 }
