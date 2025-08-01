@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import {
-  UserDto,
   UserLoginRequest,
   UserLoginResponse,
   RegisterUserRequestDto,
   RegisterUserResponseDto,
 } from './models/auth-response';
+import { UserDto } from './models/user';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
