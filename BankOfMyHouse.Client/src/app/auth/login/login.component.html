@@ -1,0 +1,113 @@
+<div class="login-container">
+  <div class="login-form-wrapper">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to your account</p>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="alert alert-error">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="submitted && f['email'].errors"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+
+        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+          <div *ngIf="f['email'].errors['required']">Email is required</div>
+          <div *ngIf="f['email'].errors['email']">
+            Please enter a valid email address
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input-container">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-control"
+            [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            <span *ngIf="!showPassword">👁️</span>
+            <span *ngIf="showPassword">🙈</span>
+          </button>
+        </div>
+
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <div *ngIf="f['password'].errors['required']">
+            Password is required
+          </div>
+          <div *ngIf="f['password'].errors['minlength']">
+            Password must be at least 6 characters
+          </div>
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <!-- <label class="checkbox-container">
+          <input type="checkbox" formControlName="rememberMe" />
+          <span class="checkmark"></span>
+          Remember me
+        </label> -->
+
+        <a href="#" class="forgot-password" (click)="onForgotPassword($event)">
+          Forgot password?
+        </a>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? "Signing in..." : "Sign In" }}
+      </button>
+    </form>
+
+    <!-- Register Link -->
+    <div class="register-link">
+      <p>
+        Don't have an account?
+        <a routerLink="/register">Create one here</a>
+      </p>
+    </div>
+
+    <!-- Social Login (Optional) -->
+    <div class="social-login">
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <!-- <button type="button" class="btn btn-social btn-google" (click)="loginWithGoogle()">
+        <span class="social-icon">🔍</span>
+        Continue with Google
+      </button>
+      
+      <button type="button" class="btn btn-social btn-facebook" (click)="loginWithFacebook()">
+        <span class="social-icon">📘</span>
+        Continue with Facebook
+      </button> -->
+    </div>
+  </div>
+</div>
