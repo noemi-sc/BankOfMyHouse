@@ -1,32 +1,33 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { HomeComponent } from "./home/home.component";
+import {
+  RouterOutlet,
+  RouterLink,
+  Router,
+  NavigationEnd,
+} from '@angular/router';
+import { MatGridList } from "@angular/material/grid-list";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HomeComponent, MatSidenavModule, MatButtonModule, MatGridListModule],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    MatGridList
+],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
+  currentRoute: string = '';
   title = 'BankOfMyHouse.Client';
   showFiller: boolean = false;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.url;
+      }
+    });
+  }
 }
-
-
-import {MatButtonModule} from '@angular/material/button';
-import {MatSidenavModule} from '@angular/material/sidenav';
-
-export class SidenavAutosizeExample {
-  showFiller = false;
-}
-import {MatGridListModule} from '@angular/material/grid-list';
-
-/**
- * @title Basic grid-list
- */
-export class GridListOverviewExample { 
-}
-
-

@@ -1,48 +1,18 @@
-
 <main class="main">
   <div class="content">
     <div class="left-side">
-      <header>
-        
-<!--         <mat-drawer-container class="example-container">
-          <mat-drawer #drawer>link 1</mat-drawer>
-    
-          <mat-drawer-content>
-            
-
-            <button mat-raised-button (click)="drawer.toggle()">Menu</button>
-          </mat-drawer-content>
-        </mat-drawer-container> -->
-        <mat-grid-list cols="2" rowHeight="100px">
-          <mat-grid-tile width = '150 px'> <mat-drawer-container class="example-container" autosize>
-            <mat-drawer #drawer class="example-sidenav" mode="side">
-              <p>Auto-resizing sidenav</p>
-              <p>Auto-resizing sidenav</p>
-              @if (showFiller) {
-                <p>Lorem, ipsum dolor sit amet consectetur.</p>
-                <p>Lorem, ipsum dolor sit amet consectetur.</p>
-              }
-              <button (click)="showFiller = !showFiller" mat-raised-button>
-                Toggle extra text
-              </button>
-            </mat-drawer>
-          
-            <div class="example-sidenav-content">
-              <button type="button" mat-button (click)="drawer.toggle()">
-                Toggle sidenav
-              </button>
-            </div>
-          
-          </mat-drawer-container></mat-grid-tile>
-          <mat-grid-tile><img src="assets/imagines/BoHLogo.png" alt="Bank of My House Logo" class="logo"></mat-grid-tile>
-        </mat-grid-list>
-        
-      </header>
-     
       
-      <app-home></app-home>
+<header>
+  
+</header>
+      <router-outlet></router-outlet>
     </div>
-
   </div>
 </main>
-<router-outlet />
+
+<div>
+  <nav>
+    <a routerLink="/login">Login</a>
+    <a routerLink="/register">Register</a>
+  </nav>
+</div>
