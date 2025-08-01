@@ -50,7 +50,8 @@ public class StockPriceGenerator : BackgroundService
 		var dbContext = scope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>();
 
 		var companies = await dbContext.Companies
-			.Include(c => c.StockPriceHistory.OrderByDescending(h => h.TimeOfPriceChange).Take(1))
+			.Include(c => c.StockPriceHistory.OrderByDescending(h => h.TimeOfPriceChange)
+			.Take(1))
 			.ToListAsync(cancellationToken);
 
 		if (companies.Count <= 0)

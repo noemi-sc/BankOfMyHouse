@@ -11,6 +11,9 @@ services:
       ConnectionStrings__DefaultConnection: "Host=postgres_db;Port=5432;Database=bankOfMyHouse;Username=myuser;Password=mypassword"
     depends_on:
       - postgres_db
+    ports:
+      - 57460:8080
+       
 
   postgres_db:
     image: postgres:16-alpine

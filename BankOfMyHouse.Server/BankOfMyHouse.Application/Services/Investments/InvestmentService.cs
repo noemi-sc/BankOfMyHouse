@@ -49,6 +49,11 @@ namespace BankOfMyHouse.Application.Services.Investments
 				.Take(1))
 				.SingleOrDefaultAsync(x => x.Id == companyId, ct);
 
+			if (company is null)
+			{
+				throw new InvalidOperationException("Company not found.");
+			}
+
 			var currentStockPrice = company.StockPriceHistory.First();
 
 			var sharesAmount = Math.Round(investmentAmount / currentStockPrice.StockPrice * 1000 / 1000, 3);
