@@ -1,5 +1,5 @@
 .logo {
-  width: 40%;
+  width: 60%;
   height: auto;
   /* display: flex; */
   margin: 0 auto;
@@ -11,7 +11,7 @@ main {
   display: flex;
 /*   justify-content: center; */  
   /* align-items: center; */
-  padding: 1rem;
+  /* padding: 1rem; */
   box-sizing: inherit;
   position: relative;
 }
