@@ -1,11 +1,11 @@
 import { UserDto } from "./user";
 
-export interface UserLoginRequest {
+export interface UserLoginRequestDto {
   username: string;
   password: string;
 }
 
-export interface UserLoginResponse {
+export interface UserLoginResponseDto {
   accessToken: string;
   refreshToken: string;
   expiresAt: string; // Use string for ISO date, or Date if you parse it

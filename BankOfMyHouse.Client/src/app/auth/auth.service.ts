@@ -1,10 +1,10 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
 import {
-  UserLoginRequest,
-  UserLoginResponse,
+  UserLoginRequestDto,
+  UserLoginResponseDto,
   RegisterUserRequestDto,
   RegisterUserResponseDto,
 } from './models/auth-response';
@@ -59,13 +59,14 @@ export class AuthService {
     }
   }
 
-  login(userLoginRequest: UserLoginRequest): Observable<any> {
+  login(userLoginRequest: UserLoginRequestDto): Observable<any> {
     this.loadingSubject.next(true);
 
     return this.httpClient
-      .post<UserLoginResponse>(`${this.apiUrl}/auth/login`, {
-        userLoginRequest: userLoginRequest,
-      })
+      .post<UserLoginResponseDto>(
+        `${this.apiUrl}/auth/login`,
+        userLoginRequest
+      )
       .pipe(
         map((response) => {
           if (isPlatformBrowser(this.platformId)) {
@@ -106,7 +107,45 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  logout(): Observable<any> {
+    // Get current token before removing it
+    let token: string | null = null;
+    if (isPlatformBrowser(this.platformId)) {
+      token = localStorage.getItem(this.TOKEN_KEY);
+    }
+
+    // Set loading state
+    this.loadingSubject.next(true);
+
+    // Prepare headers with bearer token
+    const headers = new HttpHeaders();
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.httpClient
+      .post(
+        `${this.apiUrl}/auth/logout`,
+        {},
+        { headers }
+      )
+      .pipe(
+        map((response) => {
+          // Clear local state after successful logout
+          this.clearAuthData();
+          this.loadingSubject.next(false);
+          return response;
+        }),
+        catchError((error) => {
+          // Clear local state even if logout fails
+          this.clearAuthData();
+          this.loadingSubject.next(false);
+          return error(() => error);
+        })
+      );
+  }
+
+  private clearAuthData(): void {
     // Remove token
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.TOKEN_KEY);
@@ -115,9 +154,6 @@ export class AuthService {
     // Reset state
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
-
-    // Navigate to login
-    this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
