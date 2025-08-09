@@ -1,7 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, catchError, finalize, map, Observable, throwError } from 'rxjs';
 import {
   UserLoginRequestDto,
   UserLoginResponseDto,
@@ -10,6 +9,7 @@ import {
 } from './models/auth-response';
 import { UserDto } from './models/user';
 import { isPlatformBrowser } from '@angular/common';
+import { AUTH_CONSTANTS } from '../shared/constants/auth.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,6 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthService {
   // API Configuration
   private apiUrl = 'http://localhost:57460/users';
-  private readonly TOKEN_KEY = '';
 
   // State Management
   private currentUserSubject = new BehaviorSubject<any>(null);
@@ -29,32 +28,40 @@ export class AuthService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
+  private refreshTimer: any;
+
   constructor(
     private httpClient: HttpClient,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object // Add this
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.httpClient = httpClient;
-    this.router = router;
-    // Initialize auth state on service creation
     this.checkInitialAuthState();
   }
 
-  // Helper getter
   public get currentUserValue(): UserDto {
     return this.currentUserSubject.value;
   }
 
   private checkInitialAuthState(): void {
-    // Only access localStorage in browser environment
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem(this.TOKEN_KEY);
-      if (token) {
-        this.isAuthenticatedSubject.next(true);
-        // Optionally decode token to get user info
+      const token = localStorage.getItem(AUTH_CONSTANTS.TOKEN_KEY);
+      const expiresAt = localStorage.getItem(AUTH_CONSTANTS.EXPIRES_AT_KEY);
+
+      if (token && expiresAt) {
+        const expirationDate = new Date(expiresAt);
+        const now = new Date();
+
+        if (expirationDate > now) {
+          // Token is still valid
+          this.isAuthenticatedSubject.next(true);
+          this.scheduleTokenRefresh(expirationDate);
+
+          // TODO: Optionally decode token to get user info or fetch user profile
+        } else {
+          // Token is expired, try to refresh
+          this.attemptTokenRefresh();
+        }
       } else {
-        this.isAuthenticatedSubject.next(false);
-        this.currentUserSubject.next(null);
+        this.clearAuthData();
       }
     }
   }
@@ -63,26 +70,16 @@ export class AuthService {
     this.loadingSubject.next(true);
 
     return this.httpClient
-      .post<UserLoginResponseDto>(
-        `${this.apiUrl}/auth/login`,
-        userLoginRequest
-      )
+      .post<UserLoginResponseDto>(`${this.apiUrl}/auth/login`, userLoginRequest)
       .pipe(
         map((response) => {
-          if (isPlatformBrowser(this.platformId)) {
-            localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-          }
-
-          // Update state
-          this.currentUserSubject.next(response.user);
-          this.isAuthenticatedSubject.next(true);
+          this.storeAuthData(response);
           this.loadingSubject.next(false);
-
           return response;
         }),
         catchError((error) => {
           this.loadingSubject.next(false);
-          return error(error);
+          return throwError(() => error);
         })
       );
   }
@@ -91,10 +88,7 @@ export class AuthService {
     this.loadingSubject.next(true);
 
     return this.httpClient
-      .post<RegisterUserResponseDto>(
-        `${this.apiUrl}/auth/register`,
-        registerUserRequestDto
-      )
+      .post<RegisterUserResponseDto>(`${this.apiUrl}/auth/register`, registerUserRequestDto)
       .pipe(
         map((response) => {
           this.loadingSubject.next(false);
@@ -102,68 +96,155 @@ export class AuthService {
         }),
         catchError((error) => {
           this.loadingSubject.next(false);
-          return error(error);
+          return throwError(() => error);
         })
       );
   }
 
   logout(): Observable<any> {
-    // Get current token before removing it
-    let token: string | null = null;
-    if (isPlatformBrowser(this.platformId)) {
-      token = localStorage.getItem(this.TOKEN_KEY);
-    }
-
-    // Set loading state
     this.loadingSubject.next(true);
 
-    // Prepare headers with bearer token
-    const headers = new HttpHeaders();
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-
     return this.httpClient
-      .post(
-        `${this.apiUrl}/auth/logout`,
-        {},
-        { headers }
-      )
+      .post(`${this.apiUrl}/auth/logout`, {})
       .pipe(
-        map((response) => {
-          // Clear local state after successful logout
+        finalize(() => {
           this.clearAuthData();
           this.loadingSubject.next(false);
-          return response;
         }),
         catchError((error) => {
-          // Clear local state even if logout fails
-          this.clearAuthData();
-          this.loadingSubject.next(false);
-          return error(() => error);
+          return throwError(() => error);
         })
       );
   }
 
-  private clearAuthData(): void {
-    // Remove token
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.TOKEN_KEY);
+  // New: Token refresh method
+  refreshToken(): Observable<UserLoginResponseDto> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return throwError(() => new Error('Not in browser environment'));
     }
 
-    // Reset state
+    const refreshToken = localStorage.getItem(AUTH_CONSTANTS.REFRESH_TOKEN_KEY);
+    if (!refreshToken) {
+      this.clearAuthData();
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.httpClient
+      .post<UserLoginResponseDto>(`${this.apiUrl}/auth/refresh`, {
+        refreshToken: refreshToken
+      })
+      .pipe(
+        map((response) => {
+          this.storeAuthData(response);
+          return response;
+        }),
+        catchError((error) => {
+          // Refresh failed, logout user
+          this.clearAuthData();
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // New: Store all auth data
+  private storeAuthData(response: UserLoginResponseDto): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(AUTH_CONSTANTS.TOKEN_KEY, response.accessToken);
+      localStorage.setItem(AUTH_CONSTANTS.REFRESH_TOKEN_KEY, response.refreshToken);
+      localStorage.setItem(AUTH_CONSTANTS.EXPIRES_AT_KEY, response.expiresAt);
+
+      console.log('🔍 Auth data stored:');
+      console.log('Token:', response.accessToken);
+      console.log('Expires at:', response.expiresAt);
+    }
+
+    // Update state
+    this.currentUserSubject.next(response.user);
+    this.isAuthenticatedSubject.next(true);
+
+    // Schedule token refresh
+    this.scheduleTokenRefresh(new Date(response.expiresAt));
+  }
+
+  // New: Schedule automatic token refresh
+  private scheduleTokenRefresh(expirationDate: Date): void {
+    // Clear existing timer
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+
+    const now = new Date().getTime();
+    const expiration = expirationDate.getTime();
+
+    // Refresh 5 minutes before expiration
+    const refreshTime = expiration - now - (5 * 60 * 1000);
+
+    if (refreshTime > 0) {
+      console.log(`🔍 Token refresh scheduled in ${refreshTime / 1000} seconds`);
+
+      this.refreshTimer = setTimeout(() => {
+        this.attemptTokenRefresh();
+      }, refreshTime);
+    } else {
+      // Token expires very soon, refresh immediately
+      this.attemptTokenRefresh();
+    }
+  }
+
+  // New: Attempt to refresh token
+  private attemptTokenRefresh(): void {
+    this.refreshToken().subscribe({
+      next: (response) => {
+        console.log('🔍 Token refreshed successfully');
+      },
+      error: (error) => {
+        console.log('🔍 Token refresh failed, logging out');
+        this.clearAuthData();
+      }
+    });
+  }
+
+  private clearAuthData(): void {
+    // Clear timer
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(AUTH_CONSTANTS.TOKEN_KEY);
+      localStorage.removeItem(AUTH_CONSTANTS.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_CONSTANTS.EXPIRES_AT_KEY);
+    }
+
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.TOKEN_KEY);
+      return localStorage.getItem(AUTH_CONSTANTS.TOKEN_KEY);
     }
     return null;
   }
 
   isLoggedIn(): boolean {
     return this.isAuthenticatedSubject.value;
+  }
+
+  // New: Check if token is expired
+  isTokenExpired(): boolean {
+    if (!isPlatformBrowser(this.platformId)) {
+      return true;
+    }
+
+    const expiresAt = localStorage.getItem(AUTH_CONSTANTS.EXPIRES_AT_KEY);
+    if (!expiresAt) {
+      return true;
+    }
+
+    const expirationDate = new Date(expiresAt);
+    const now = new Date();
+
+    return expirationDate <= now;
   }
 }
