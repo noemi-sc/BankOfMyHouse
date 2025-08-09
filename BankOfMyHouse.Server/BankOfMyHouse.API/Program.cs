@@ -1,4 +1,5 @@
 using BankOfMyHouse.Application.Configurations;
+using BankOfMyHouse.Application.Hubs;
 using BankOfMyHouse.Application.Services.Accounts;
 using BankOfMyHouse.Application.Services.Accounts.Interfaces;
 using BankOfMyHouse.Application.Services.Investments;
@@ -30,6 +31,11 @@ var config = new TypeAdapterConfig();
 config.Scan(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<IMapper, ServiceMapper>();
+
+builder.Services.AddSignalR(options =>
+{
+	options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddDbContext<BankOfMyHouseDbContext>(options =>
 {
@@ -96,9 +102,10 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowAll", policy =>
 	{
-		policy.AllowAnyOrigin()
+		policy.WithOrigins("http://localhost:4200")
 			  .AllowAnyMethod()
-			  .AllowAnyHeader();
+			  .AllowAnyHeader()
+			  .AllowCredentials();
 	});
 });
 
@@ -106,18 +113,23 @@ builder.Services.AddHostedService<StockPriceGenerator>();
 
 var app = builder.Build();
 
-//await using (var serviceScope = app.Services.CreateAsyncScope())
-//{
-//	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>())
-//	{
-//		//await dbContext.Database.EnsureCreatedAsync();
-//		//dbContext.Database.EnsureCreated();
-//		//DO NOT USE ENSURE ETC BECAUSE IT BYPASSES THE MIGRATION PATTERN COMPLETELY!!!!
-//	}
-//}
+await using (var serviceScope = app.Services.CreateAsyncScope())
+{
+	await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>())
+	{
+		await dbContext.Database.MigrateAsync();
+		dbContext.Database.Migrate();
+
+		//await dbContext.Database.EnsureCreatedAsync();
+		//dbContext.Database.EnsureCreated();
+		//DO NOT USE ENSURE ETC BECAUSE IT BYPASSES THE MIGRATION PATTERN COMPLETELY!!!!
+	}
+}
 
 app.UseCors("AllowAll");
+app.UseRouting();
 
+app.MapHub<InvestmentHub>(InvestmentHub.Url);
 
 app.UseAuthentication()
 	.UseAuthorization()

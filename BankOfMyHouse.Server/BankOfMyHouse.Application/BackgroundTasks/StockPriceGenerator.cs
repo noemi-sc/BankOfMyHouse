@@ -1,5 +1,7 @@
-﻿using BankOfMyHouse.Domain.Investments;
+﻿using BankOfMyHouse.Application.Hubs;
+using BankOfMyHouse.Domain.Investments;
 using BankOfMyHouse.Infrastructure;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,11 +12,13 @@ public class StockPriceGenerator : BackgroundService
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 	private readonly ILogger<StockPriceGenerator> _logger;
 	private readonly Random _random = new Random();
+	private readonly IHubContext<InvestmentHub> _hubContext;
 
-	public StockPriceGenerator(IServiceScopeFactory serviceScopeFactory, ILogger<StockPriceGenerator> logger)
+	public StockPriceGenerator(IServiceScopeFactory serviceScopeFactory, ILogger<StockPriceGenerator> logger, IHubContext<InvestmentHub> hubContext)
 	{
 		_serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+		_hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -77,7 +81,9 @@ public class StockPriceGenerator : BackgroundService
 
 			var newPrice = oldPrice * (1 + percentageChange / 100);
 
-			await dbContext.AddAsync(new CompanyStockPrice(newPrice, company.Id));
+			await dbContext.AddAsync(new CompanyStockPrice(newPrice, company.Id), cancellationToken);
+
+			await _hubContext.Clients.All.SendAsync("TransferChartData", newPrice, cancellationToken);
 
 			_logger.LogDebug("Updated {CompanyName} stock price from {OldPrice:C} to {NewPrice:C} ({Change:+0.00;-0.00}%)",
 				company.Name, oldPrice, newPrice, percentageChange);
