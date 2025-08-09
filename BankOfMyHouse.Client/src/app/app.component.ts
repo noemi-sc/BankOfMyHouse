@@ -5,7 +5,7 @@ import {
   Router,
   NavigationEnd,
 } from '@angular/router';
-import {  AdvancedHeaderComponent } from "./home/header/header.component";
+import {  HeaderComponent } from "./home/header/header.component";
 import { BankFooterComponent } from "./home/footer/footer.component";
 
 @Component({
@@ -14,7 +14,7 @@ import { BankFooterComponent } from "./home/footer/footer.component";
   imports: [
     RouterOutlet,
     RouterLink,
-    AdvancedHeaderComponent,
+    HeaderComponent,
     BankFooterComponent
     
 ],
