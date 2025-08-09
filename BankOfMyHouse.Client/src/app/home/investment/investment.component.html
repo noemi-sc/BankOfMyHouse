@@ -1,1 +1,55 @@
-<p>investment works!</p>
+<div class="investment-container">
+    <!-- Connection Status -->
+    <div class="status-indicator" [class]="connectionStatusClass()">
+        <strong>Status:</strong> {{ signalrService.connectionStatus() }}        
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button (click)="reconnect()" [disabled]="signalrService.connectionStatus() === 'connecting'">
+            Reconnect
+        </button>
+        <button (click)="clearChart()">Clear Chart</button>
+        <button>Add Test Data</button> <!-- 🔧 FIXED: Added click handler -->
+    </div>
+
+    <!-- Data Info -->
+    <div class="data-info">
+        <strong>Data points:</strong> {{ dataPointCount() }}
+        @if (lastUpdate(); as lastUpdate) {
+            <span> | <strong>Last update:</strong> {{ lastUpdate.toLocaleTimeString() }}</span>
+        }
+        @if (latestPrice(); as price) {
+            <span> | <strong>Latest price:</strong> ${{ price.toFixed(4) }}</span>
+        }
+    </div>
+
+    <!-- Chart Container -->
+    <div class="chart-container">
+        @if (dataPointCount() > 0) {
+            <div class="chart-wrapper">
+                <canvas 
+                    baseChart 
+                    [data]="chartConfiguration()" 
+                    [options]="chartOptions" 
+                    [type]="chartType"
+                    #chartCanvas> <!-- 🔧 ADDED: Template reference for debugging -->
+                </canvas>
+            </div>
+        } @else {
+            <div class="no-data-placeholder">
+                <h3>No Data Available</h3>
+                <p>Waiting for real-time stock price data...</p>
+                <button class="test-btn">Add Test Data to See Chart</button> <!-- 🔧 FIXED: Added click handler -->
+            </div>
+        }
+    </div>
+
+    <!-- Debug Info -->
+    <div class="debug-section">
+        <details>
+            <summary>Debug Information</summary>
+            <pre>{{ debugInfo() | json }}</pre>
+        </details>
+    </div>
+</div>
