@@ -22,15 +22,17 @@ export class RegisterComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.registerForm = this.formBuilder.group(
       {
-        name: ['', [Validators.required, Validators.minLength(2)]],
+        username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', [Validators.required]],
+        firstname: ['', [Validators.required, Validators.maxLength(50)]],
+        lastname: ['', [Validators.required, Validators.maxLength(50)]],
       },
       {
         validators: this.passwordMatchValidator, // Custom validator for password matching
@@ -51,8 +53,7 @@ export class RegisterComponent implements OnInit {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
-
-    return null;
+    return;
   }
 
   // Getter for easy access to form controls in template
@@ -77,11 +78,12 @@ export class RegisterComponent implements OnInit {
       firstName: this.f['firstname'].value,
       lastName: this.f['lastname'].value,
       email: this.f['email'].value,
-      password: this.f['password'].value,      
+      password: this.f['password'].value,
       confirmPassword: this.f['confirmPassword'].value,
     };
 
     this.authService.register(userData).subscribe({
+
       next: (response) => {
         this.loading = false;
         this.success = true;

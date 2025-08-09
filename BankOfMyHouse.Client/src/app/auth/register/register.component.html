@@ -1,102 +1,145 @@
 <div class="register-container">
   <div class="register-form-wrapper">
     <h2>Create Account</h2>
-    
+
     <!-- Success Message -->
-    <div *ngIf="success" class="alert alert-success">
+    @if(success) {
+    <div class="alert alert-success">
       Registration successful! Redirecting to login...
     </div>
+    }
 
+    @if(error){
     <!-- Error Message -->
-    <div *ngIf="error" class="alert alert-error">
+    <div class="alert alert-error">
       {{ error }}
     </div>
+    }
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      
+
       <!-- Name Field -->
       <div class="form-group">
-        <label for="name">Full Name</label>
-        <input 
-          type="text" 
-          id="name"
-          formControlName="name"
-          class="form-control"
-          [class.is-invalid]="submitted && f['name'].errors"
-          placeholder="Enter your full name">
-        
-        <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
-          <div *ngIf="f['name'].errors['required']">Name is required</div>
-          <div *ngIf="f['name'].errors['minlength']">Name must be at least 2 characters</div>
+        <label for="username">Username</label>
+        <input type="text" id="username" formControlName="username" class="form-control"
+          [class.is-invalid]="submitted && f['username'].errors" placeholder="Enter your username">
+
+        @if (submitted && f['username'].errors) {
+        <div class="invalid-feedback">
+          @if (f['username'].errors['required']) {
+          <div>Username is required</div>
+          }
+          @if (f['username'].errors['minlength']) {
+          <div>Username must be at least 3 characters</div>
+          }
+          @if (f['username'].errors['maxLength']) {
+          <div>Username must have maximum 50 characters</div>
+          }
         </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="firstname">First Name</label>
+        <input type="text" id="firstname" formControlName="firstname" class="form-control"
+          [class.is-invalid]="submitted && f['firstname'].errors" placeholder="Enter your firstname">
+
+        @if (submitted && f['firstname'].errors) {
+        <div class="invalid-feedback">
+          @if (f['firstname'].errors['required']) {
+          <div>First Name is required</div>
+          }
+          @if (f['firstname'].errors['maxLength']) {
+          <div>First Name must have maximum 50 characters</div>
+          }
+        </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="lastname">Last Name</label>
+        <input type="text" id="lastname" formControlName="lastname" class="form-control"
+          [class.is-invalid]="submitted && f['lastname'].errors" placeholder="Enter your lastname">
+
+        @if (submitted && f['lastname'].errors) {
+        <div class="invalid-feedback">
+          @if (f['lastname'].errors['required']) {
+          <div>Last Name is required</div>
+          }
+          @if (f['lastname'].errors['maxLength']) {
+          <div>Last Name must have maximum 50 characters</div>
+          }
+        </div>
+        }
       </div>
 
       <!-- Email Field -->
       <div class="form-group">
         <label for="email">Email</label>
-        <input 
-          type="email" 
-          id="email"
-          formControlName="email"
-          class="form-control"
-          [class.is-invalid]="submitted && f['email'].errors"
-          placeholder="Enter your email">
-        
-        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
-          <div *ngIf="f['email'].errors['required']">Email is required</div>
-          <div *ngIf="f['email'].errors['email']">Please enter a valid email</div>
+        <input type="email" id="email" formControlName="email" class="form-control"
+          [class.is-invalid]="submitted && f['email'].errors" placeholder="Enter your email">
+
+        @if (submitted && f['email'].errors) {
+        <div class="invalid-feedback">
+          @if (f['email'].errors['required']) {
+          <div>Email is required</div>
+          }
+          @if (f['email'].errors['email']) {
+          <div>Please enter a valid email</div>
+          }
         </div>
+        }
       </div>
 
       <!-- Password Field -->
       <div class="form-group">
         <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password"
-          formControlName="password"
-          class="form-control"
-          [class.is-invalid]="submitted && f['password'].errors"
-          placeholder="Enter your password">
-        
-        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-          <div *ngIf="f['password'].errors['required']">Password is required</div>
-          <div *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</div>
+        <input type="password" id="password" formControlName="password" class="form-control"
+          [class.is-invalid]="submitted && f['password'].errors" placeholder="Enter your password">
+
+        @if (submitted && f['password'].errors) {
+        <div class="invalid-feedback">
+          @if (f['password'].errors['required']) {
+          <div>Password is required</div>
+          }
+          @if (f['password'].errors['minlength']) {
+          <div>Password must be at least 6 characters</div>
+          }
         </div>
+        }
       </div>
 
       <!-- Confirm Password Field -->
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input 
-          type="password" 
-          id="confirmPassword"
-          formControlName="confirmPassword"
-          class="form-control"
-          [class.is-invalid]="submitted && f['confirmPassword'].errors"
-          placeholder="Confirm your password">
-        
-        <div *ngIf="submitted && f['confirmPassword'].errors" class="invalid-feedback">
-          <div *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</div>
-          <div *ngIf="f['confirmPassword'].errors['passwordMismatch']">Passwords do not match</div>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control"
+          [class.is-invalid]="submitted && f['confirmPassword'].errors" placeholder="Confirm your password">
+
+        @if (submitted && f['confirmPassword'].errors) {
+        <div class="invalid-feedback">
+          @if (f['confirmPassword'].errors['required']) {
+          <div>Please confirm your password</div>
+          }
+          @if (f['confirmPassword'].errors['passwordMismatch']) {
+          <div>Passwords do not match</div>
+          }
         </div>
+        }
       </div>
 
       <!-- Submit Button -->
-      <button 
-        type="submit" 
-        class="btn btn-primary"
-        [disabled]="loading">
-        <span *ngIf="loading" class="spinner"></span>
+      <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading || registerForm.invalid">
+        @if (loading) {
+        <span class="spinner"></span>
+        }
         {{ loading ? 'Creating Account...' : 'Register' }}
       </button>
 
+      <!-- Login Link -->
+      <p class="login-link">
+        Already have an account?
+        <a routerLink="/login">Login here</a>
+      </p>
     </form>
-
-    <!-- Login Link -->
-    <p class="login-link">
-      Already have an account? 
-      <a routerLink="/login">Login here</a>
-    </p>
   </div>
 </div>
