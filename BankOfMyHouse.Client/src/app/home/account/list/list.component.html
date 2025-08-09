@@ -1,10 +1,17 @@
 <form [formGroup]="form">
-  <mat-selection-list #shoesList [ngModel]="shoesControl.value" (ngModelChange)="shoesControl.setValue($event)" name="shoes" [multiple]="false">
-    @for (shoe of shoes; track shoe) {
-      <mat-list-option [value]="shoe.value">{{shoe.name}}</mat-list-option>
+  <mat-selection-list formControlName="accountsList" [multiple]="false">
+    @for (bankAccount of bankAccounts; track bankAccount.Id) {
+    <mat-list-option [value]="bankAccount">{{bankAccount.IBAN}}</mat-list-option>
     }
   </mat-selection-list>
   <p>
-     Option selected: {{shoesControl.value ? shoesControl.value[0] : 'None'}} 
+    Option selected: {{form.get('accountsList')?.value?.name || 'None'}}
   </p>
-</form> 
+</form>
+
+<mat-list role="list">
+  @for (bankAccount of bankAccounts; track bankAccount.Id)
+  {
+  <mat-list-item role="listitem">{{bankAccount.IBAN}}</mat-list-item>
+  }
+</mat-list>
