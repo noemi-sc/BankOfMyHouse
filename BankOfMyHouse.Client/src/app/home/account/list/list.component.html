@@ -1,0 +1,10 @@
+<form [formGroup]="form">
+  <mat-selection-list #shoesList [ngModel]="shoesControl.value" (ngModelChange)="shoesControl.setValue($event)" name="shoes" [multiple]="false">
+    @for (shoe of shoes; track shoe) {
+      <mat-list-option [value]="shoe.value">{{shoe.name}}</mat-list-option>
+    }
+  </mat-selection-list>
+  <p>
+     Option selected: {{shoesControl.value ? shoesControl.value[0] : 'None'}} 
+  </p>
+</form> 
