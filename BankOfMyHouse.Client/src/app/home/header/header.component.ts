@@ -1,9 +1,10 @@
 // advanced-header.component.ts
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { UserDto } from '../../auth/models/user';
+import { AuthService } from '../../auth/auth.service';
 
 interface Notification {
   id: string;
@@ -14,8 +15,8 @@ interface Notification {
 }
 
 @Component({
-  selector: 'app-advanced-header',
-    templateUrl: './header.component.html',
+  selector: 'app-header',
+  templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +25,7 @@ interface Notification {
     '(document:click)': 'onDocumentClick($event)'
   }
 })
-export class AdvancedHeaderComponent {
+export class HeaderComponent {
   // State signals
   currentUser = signal<UserDto | null>({
     email: 'John Doe',
@@ -32,9 +33,10 @@ export class AdvancedHeaderComponent {
     createdAt: '2023-10-01T12:00:00Z',
     isActive: true,
     roles: ['User'],
-   
+
   });
 
+  constructor(private router: Router, private authService: AuthService) { }
   mobileMenuOpen = signal(false);
   notificationsOpen = signal(false);
   userMenuOpen = signal(false);
@@ -64,7 +66,7 @@ export class AdvancedHeaderComponent {
   ]);
 
   navItems = signal([
-   // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
+    // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
     { label: 'Accounts', path: '/accounts', icon: 'icon-wallet', highlight: false },
     { label: 'Transfers', path: '/transfers', icon: 'icon-exchange', highlight: false },
     { label: 'Payments', path: '/payments', icon: 'icon-credit-card', highlight: true },
@@ -73,7 +75,7 @@ export class AdvancedHeaderComponent {
   ]);
 
   // Computed values
-  unreadCount = computed(() => 
+  unreadCount = computed(() =>
     this.notifications().filter(n => !n.read).length
   );
 
@@ -131,7 +133,7 @@ export class AdvancedHeaderComponent {
     const now = new Date();
     const diff = now.getTime() - timestamp.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    
+
     if (hours < 1) return 'Just now';
     if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
@@ -139,7 +141,16 @@ export class AdvancedHeaderComponent {
   }
 
   onLogout() {
-    // Implement logout logic
     console.log('Logging out...');
+
+    // Optional: Call logout API
+    this.authService.logout();
+    this.clearUserData();
+    this.router.navigate(['/login']);
+  }
+
+  private clearUserData() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 }
