@@ -81,9 +81,11 @@ public class StockPriceGenerator : BackgroundService
 
 			var newPrice = oldPrice * (1 + percentageChange / 100);
 
-			await dbContext.AddAsync(new CompanyStockPrice(newPrice, company.Id), cancellationToken);
+			var companyPrice = new CompanyStockPrice(newPrice, company.Id);
 
-			await _hubContext.Clients.All.SendAsync("TransferChartData", newPrice, cancellationToken);
+			await dbContext.AddAsync(companyPrice, cancellationToken);
+
+			await _hubContext.Clients.All.SendAsync("TransferChartData", companyPrice, cancellationToken);
 
 			_logger.LogDebug("Updated {CompanyName} stock price from {OldPrice:C} to {NewPrice:C} ({Change:+0.00;-0.00}%)",
 				company.Name, oldPrice, newPrice, percentageChange);
