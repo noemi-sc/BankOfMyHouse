@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { HomeComponent } from './home/home.component';
+import { DashboardComponent } from './home/dashboard.component';
 import { GuestGuard } from './auth/guards/guest.guard';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { TransactionComponent } from './home/transaction/transaction.component';
@@ -10,7 +10,7 @@ import { ListAccountComponent } from './home/account/list/list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'home', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'accounts', component: ListAccountComponent, canActivate: [AuthGuard] },
   { path: 'transactions', component: TransactionComponent, canActivate: [AuthGuard] },
   { path: 'investments', component: InvestmentComponent, canActivate: [AuthGuard] },
