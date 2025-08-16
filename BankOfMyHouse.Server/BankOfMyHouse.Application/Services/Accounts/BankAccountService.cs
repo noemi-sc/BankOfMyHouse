@@ -63,7 +63,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 
 			this._dbContext.BankAccounts.UpdateRange([senderAccount, receiverAccount]);
 
-			var transaction = Transaction.CreateNew(amount, senderAccount, receiverAccount, PaymentCategory.Other);
+			var transaction = Transaction.CreateNew(amount, senderAccount, receiverAccount, PaymentCategory.Other, null);
 
 			await this._dbContext.Transactions.AddAsync(transaction, ct);
 
@@ -98,6 +98,24 @@ namespace BankOfMyHouse.Application.Services.Accounts
 		{
 			return await this._dbContext.BankAccounts.Where(x => x.UserId == id)
 				.ToListAsync(ct);
+		}
+
+		public async Task<IEnumerable<Transaction>> GetTransactions(string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+		{
+			var ibanAsClass = IbanCode.Create(iban);
+
+			var query = this._dbContext.Transactions.Where(x => x.Sender == ibanAsClass);
+
+			if (startDate.HasValue)
+			{
+				query = query.Where(x => x.TransactionCreation >= startDate.Value);
+			}
+			if (endDate.HasValue)
+			{
+				query = query.Where(x => x.TransactionCreation <= endDate.Value);
+			}
+
+			return await query.ToListAsync(ct);
 		}
 	}
 }
