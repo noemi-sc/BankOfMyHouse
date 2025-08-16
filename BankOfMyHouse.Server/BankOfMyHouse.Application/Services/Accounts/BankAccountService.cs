@@ -2,6 +2,7 @@
 using BankOfMyHouse.Domain.BankAccounts;
 using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Iban.Interfaces;
+using BankOfMyHouse.Domain.Users;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -100,8 +101,14 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				.ToListAsync(ct);
 		}
 
-		public async Task<IEnumerable<Transaction>> GetTransactions(string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+		public async Task<IEnumerable<Transaction>> GetTransactions(User user, string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
 		{
+			if (user.BankAccounts.Count(ba => ba.IBAN.Value == iban) == 0)
+			{
+				_logger.LogWarning("User {UserId} does not have access to IBAN {Iban}", user.Id, iban);
+				return null;
+			}
+
 			var ibanAsClass = IbanCode.Create(iban);
 
 			var query = this._dbContext.Transactions.Where(x => x.Sender == ibanAsClass);

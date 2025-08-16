@@ -46,13 +46,14 @@ public class GetTransactionsEndpoint : Endpoint<GetTransactionsRequestDto, GetTr
 		}
 
 		var user = await _userService.GetUserWithRolesAsync(userId, ct);
+
 		if (user == null)
 		{
 			await Send.NotFoundAsync(ct);
 			return;
 		}
 
-		var transactions = await _bankAccountService.GetTransactions(req.Iban, ct, req.StartDate, req.EndDate);
+		var transactions = await _bankAccountService.GetTransactions(user, req.Iban, ct, req.StartDate, req.EndDate);
 
 		var response = new GetTransactionsResponseDto
 		{
