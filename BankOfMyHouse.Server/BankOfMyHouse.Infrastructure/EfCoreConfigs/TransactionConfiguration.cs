@@ -57,8 +57,23 @@ internal class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 			.IsRequired()
 			.HasComment("Receiver's IBAN code");
 
-		// Check constraints
-		//builder.ToTable(t => t.HasCheckConstraint("CK_Transaction_Amount_Positive", "[Amount] > 0"));
-		//builder.ToTable(t => t.HasCheckConstraint("CK_Transaction_Different_Parties", "[SenderId] != [ReceiverId]"));
+		builder.Property(t => t.Description)
+		   .HasMaxLength(500) // Adjust length as needed
+		   .IsRequired(false)
+		   .HasComment("Optional transaction description");
+
+		// Currency as owned entity (recommended approach)
+		builder.OwnsOne(t => t.Currency, currency =>
+		{
+			currency.Property(c => c.Name)
+				.HasColumnName("CurrencyName")
+				.HasMaxLength(50)
+				.IsRequired();
+
+			currency.Property(c => c.Code)
+				.HasColumnName("CurrencyCode")
+				.HasMaxLength(3) // ISO currency codes are 3 characters
+				.IsRequired();
+		});
 	}
 }
