@@ -1,5 +1,4 @@
 ﻿using BankOfMyHouse.Application.Services.Accounts.Interfaces;
-using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.BankAccounts;
 using FastEndpoints;
 
@@ -8,16 +7,13 @@ namespace BankOfMyHouse.API.Endpoints.Transactions.GetTransactions;
 public class GetTransactionsEndpoint : Endpoint<GetTransactionsRequestDto, GetTransactionsResponseDto>
 {
 	private readonly IBankAccountService _bankAccountService;
-	private readonly IUserService _userService;
 	private readonly ILogger<GetTransactionsEndpoint> _logger;
 
 	public GetTransactionsEndpoint(
 		IBankAccountService bankAccountService,
-		IUserService userService,
 		ILogger<GetTransactionsEndpoint> logger)
 	{
 		_bankAccountService = bankAccountService ?? throw new ArgumentNullException(nameof(bankAccountService));
-		_userService = userService ?? throw new ArgumentNullException(nameof(userService));
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
 
@@ -45,15 +41,7 @@ public class GetTransactionsEndpoint : Endpoint<GetTransactionsRequestDto, GetTr
 			return;
 		}
 
-		var user = await _userService.GetUserWithRolesAsync(userId, ct);
-
-		if (user == null)
-		{
-			await Send.NotFoundAsync(ct);
-			return;
-		}
-
-		var transactions = await _bankAccountService.GetTransactions(user, req.Iban, ct, req.StartDate, req.EndDate);
+		var transactions = await _bankAccountService.GetTransactions(userId, req.Iban, ct, req.StartDate, req.EndDate);
 
 		var response = new GetTransactionsResponseDto
 		{

@@ -101,8 +101,15 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				.ToListAsync(ct);
 		}
 
-		public async Task<IEnumerable<Transaction>> GetTransactions(User user, string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
+		public async Task<IEnumerable<Transaction>> GetTransactions(int userId, string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
 		{
+			var user = await this._dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
+
+			if (user == null)
+			{	
+				return null;
+			}
+
 			if (user.BankAccounts.Count(ba => ba.IBAN.Value == iban) == 0)
 			{
 				_logger.LogWarning("User {UserId} does not have access to IBAN {Iban}", user.Id, iban);
