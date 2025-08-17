@@ -1,8 +1,8 @@
-﻿using BankOfMyHouse.Application.Services.Investments.Interfaces;
+using BankOfMyHouse.Application.Services.Investments.Interfaces;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using FastEndpoints;
 
-namespace BankOfMyHouse.API.Endpoints.Investments
+namespace BankOfMyHouse.API.Endpoints.Investments.Create
 {
 	public class CreateInvestmentEndpoint : Endpoint<CreateInvestmentRequestDto, CreateInvestmentResponseDto>
 	{
@@ -24,12 +24,14 @@ namespace BankOfMyHouse.API.Endpoints.Investments
 		{
 			Post("/investments");
 			Roles("BankUser");
+			Validator<CreateInvestmentRequestValidator>();
 			Summary(s =>
 			{
-				s.Summary = "Create investment for the Current User";
-				s.Description = "Create investment for the Current User"; ;
-				s.Responses[200] = "investment is created";
-				s.Responses[400] = "investment creation has failed";
+				s.Summary = "Create Investment";
+				s.Description = "Create a new investment for the authenticated user";
+				s.Responses[201] = "Investment created successfully";
+				s.Responses[400] = "Invalid investment data or insufficient funds";
+				s.Responses[404] = "User or bank account not found";
 				s.Responses[500] = "Internal server error";
 			});
 		}
