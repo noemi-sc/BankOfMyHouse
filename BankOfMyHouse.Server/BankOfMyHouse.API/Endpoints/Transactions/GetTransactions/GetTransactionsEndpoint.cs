@@ -1,6 +1,7 @@
-﻿using BankOfMyHouse.Application.Services.Accounts.Interfaces;
-using BankOfMyHouse.Domain.BankAccounts;
+using BankOfMyHouse.API.Endpoints.Transactions.DTOs;
+using BankOfMyHouse.Application.Services.Accounts.Interfaces;
 using FastEndpoints;
+using Mapster;
 
 namespace BankOfMyHouse.API.Endpoints.Transactions.GetTransactions;
 
@@ -23,11 +24,11 @@ public class GetTransactionsEndpoint : Endpoint<GetTransactionsRequestDto, GetTr
 		Roles("BankUser");
 		Summary(s =>
 		{
-			s.Summary = $"Get {nameof(Transaction)}s for the Current ";
-			s.Description = "Get {nameof(Transaction)}s for the Current User"; ;
-			s.Responses[200] = $"List of {nameof(Transaction)} of the user";
-			s.Responses[404] = $"{nameof(Transaction)}s for the user not found";
-			s.Responses[500] = $"Internal server error";
+			s.Summary = "Get Transactions for Current User";
+			s.Description = "Retrieve all transactions for the authenticated user's bank accounts";
+			s.Responses[200] = "List of transactions for the user";
+			s.Responses[404] = "No transactions found for the user";
+			s.Responses[500] = "Internal server error";
 		});
 	}
 
@@ -45,7 +46,7 @@ public class GetTransactionsEndpoint : Endpoint<GetTransactionsRequestDto, GetTr
 
 		var response = new GetTransactionsResponseDto
 		{
-			Transactions = transactions
+			Transactions = transactions?.Adapt<List<TransactionDto>>() ?? new List<TransactionDto>()
 		};
 
 		await Send.OkAsync(response, ct);

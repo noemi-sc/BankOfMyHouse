@@ -26,10 +26,11 @@ public class CreateBankAccountEndpoint : Endpoint<CreateBankAccountRequestDto, C
 		Roles("BankUser");
 		Summary(s =>
 		{
-			s.Summary = "Create BankAccount for the Current User";
-			s.Description = "Create BankAccount for the Current User"; ;
-			s.Responses[200] = "BankAccount is created";
-			s.Responses[400] = "BankAccount creation has failed";
+			s.Summary = "Create Bank Account";
+			s.Description = "Create a new bank account for the authenticated user";
+			s.Responses[201] = "Bank account created successfully";
+			s.Responses[400] = "Invalid request or user already has account";
+			s.Responses[404] = "User not found";
 			s.Responses[500] = "Internal server error";
 		});
 	}
@@ -55,12 +56,9 @@ public class CreateBankAccountEndpoint : Endpoint<CreateBankAccountRequestDto, C
 
 		var response = new CreateBankAccountResponseDto
 		{
-			IBAN = newBankAccountForUser.IBAN,
+			IBAN = newBankAccountForUser.IBAN.Value,
 		};
 
-		await Send.CreatedAtAsync<CreateBankAccountEndpoint>(
-			routeValues: new { },
-			responseBody: response,
-			cancellation: ct);
+		await Send.CreatedAtAsync<CreateBankAccountEndpoint>(responseBody: response, cancellation: ct);
 	}
 }

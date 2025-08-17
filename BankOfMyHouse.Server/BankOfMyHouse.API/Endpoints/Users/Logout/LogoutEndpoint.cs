@@ -6,7 +6,7 @@ public class LogoutEndpoint : EndpointWithoutRequest<LogoutResponseDto>
 	public override void Configure()
 	{
 		Post("/users/auth/logout");
-		Roles("User", "Admin", "Moderator", "Manager");
+		Roles("BankUser");
 		Summary(s =>
 		{
 			s.Summary = "User Logout";

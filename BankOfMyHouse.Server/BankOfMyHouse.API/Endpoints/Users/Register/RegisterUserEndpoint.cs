@@ -1,8 +1,9 @@
-﻿using BankOfMyHouse.API.Endpoints.Users.DTOs;
+using BankOfMyHouse.API.Endpoints.Users.CurrentUser;
+using BankOfMyHouse.API.Endpoints.Users.DTOs;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Users;
 using FastEndpoints;
-using IMapper = MapsterMapper.IMapper;
+using Mapster;
 
 namespace BankOfMyHouse.API.Endpoints.Users.Register;
 
@@ -11,24 +12,22 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 	private readonly IUserService _userService;
 	private readonly IJwtService _jwtService;
 	private readonly ILogger<RegisterUserEndpoint> _logger;
-	private readonly IMapper _mapper;
 
 	public RegisterUserEndpoint(
 		IUserService userService,
 		IJwtService jwtService,
-		ILogger<RegisterUserEndpoint> logger,
-		IMapper mapper)
+		ILogger<RegisterUserEndpoint> logger)
 	{
 		this._userService = userService;
 		this._jwtService = jwtService;
 		this._logger = logger;
-		this._mapper = mapper;
 	}
 
 	public override void Configure()
 	{
 		Post("/users/auth/register");
 		AllowAnonymous();
+		Validator<RegisterUserRequestValidator>();
 		Summary(s =>
 		{
 			s.Summary = "Register New User";
@@ -44,7 +43,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 		try
 		{
 			// Register the user
-			var user = await _userService.RegisterUserAsync(this._mapper.Map<User>(req), req.Password);
+			var user = await _userService.RegisterUserAsync(req.Adapt<User>(), req.Password);
 
 			// Load user with roles for token generation
 			var userWithRoles = await _userService.GetUserWithRolesAsync(user.Id, ct);

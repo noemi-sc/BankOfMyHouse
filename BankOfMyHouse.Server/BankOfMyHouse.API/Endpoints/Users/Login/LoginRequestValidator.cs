@@ -1,8 +1,7 @@
-﻿using BankOfMyHouse.API.Endpoints.Users.Login;
 using FastEndpoints;
 using FluentValidation;
 
-namespace BankOfMyHouse.API.Endpoints.Users.Validators;
+namespace BankOfMyHouse.API.Endpoints.Users.Login;
 
 public class LoginRequestValidator : Validator<LoginRequestDto>
 {

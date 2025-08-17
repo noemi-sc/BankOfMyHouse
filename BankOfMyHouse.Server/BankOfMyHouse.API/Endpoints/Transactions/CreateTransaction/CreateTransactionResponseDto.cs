@@ -3,4 +3,5 @@
 public sealed record CreateTransactionResponseDto
 {
 	public DateTimeOffset CreatedAt { get; set; }
+	public Guid	TransactionId { get; set; }
 }

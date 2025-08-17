@@ -1,8 +1,7 @@
-﻿using BankOfMyHouse.API.Endpoints.Users.RefreshToken;
 using FastEndpoints;
 using FluentValidation;
 
-namespace BankOfMyHouse.API.Endpoints.Users.Validators
+namespace BankOfMyHouse.API.Endpoints.Users.RefreshToken
 {
 	public class RefreshTokenRequestValidator : Validator<RefreshTokenRequestDto>
 	{
