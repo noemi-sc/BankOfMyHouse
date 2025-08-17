@@ -3,6 +3,7 @@ using System;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankOfMyHouse.Infrastructure.Migrations
 {
     [DbContext(typeof(BankOfMyHouseDbContext))]
-    partial class BankOfMyHouseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817104951_MakeUserIdNullableForExternalAccounts")]
+    partial class MakeUserIdNullableForExternalAccounts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -77,47 +80,6 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                     b.ToTable("Currencies", (string)null);
                 });
 
-            modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.PaymentCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("code");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_payment_categories_code");
-
-                    b.ToTable("payment_categories", (string)null);
-                });
-
             modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -136,9 +98,24 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                         .HasColumnType("character varying(500)")
                         .HasComment("Optional transaction description");
 
-                    b.Property<int>("PaymentCategoryId")
-                        .HasColumnType("integer")
-                        .HasComment("Foreign key to payment category");
+                    b.Property<string>("PaymentCategory")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Receiver")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("character varying(34)")
+                        .HasColumnName("ReceiverIban")
+                        .HasComment("Receiver's IBAN code");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("character varying(34)")
+                        .HasColumnName("SenderIban")
+                        .HasComment("Sender's IBAN code");
 
                     b.Property<DateTimeOffset>("TransactionCreation")
                         .ValueGeneratedOnAdd()
@@ -149,8 +126,6 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CurrencyId");
-
-                    b.HasIndex("PaymentCategoryId");
 
                     b.ToTable("Transactions", (string)null);
                 });
@@ -378,61 +353,7 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BankOfMyHouse.Domain.BankAccounts.PaymentCategory", "PaymentCategory")
-                        .WithMany("Transactions")
-                        .HasForeignKey("PaymentCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsOne("BankOfMyHouse.Domain.Iban.IbanCode", "Receiver", b1 =>
-                        {
-                            b1.Property<Guid>("TransactionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(34)
-                                .HasColumnType("character varying(34)")
-                                .HasColumnName("ReceiverIban")
-                                .HasComment("Receiver's IBAN code");
-
-                            b1.HasKey("TransactionId");
-
-                            b1.ToTable("Transactions");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TransactionId");
-                        });
-
-                    b.OwnsOne("BankOfMyHouse.Domain.Iban.IbanCode", "Sender", b1 =>
-                        {
-                            b1.Property<Guid>("TransactionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(34)
-                                .HasColumnType("character varying(34)")
-                                .HasColumnName("SenderIban")
-                                .HasComment("Sender's IBAN code");
-
-                            b1.HasKey("TransactionId");
-
-                            b1.ToTable("Transactions");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TransactionId");
-                        });
-
                     b.Navigation("Currency");
-
-                    b.Navigation("PaymentCategory");
-
-                    b.Navigation("Receiver")
-                        .IsRequired();
-
-                    b.Navigation("Sender")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BankOfMyHouse.Domain.Investments.CompanyStockPrice", b =>
@@ -489,11 +410,6 @@ namespace BankOfMyHouse.Infrastructure.Migrations
             modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.BankAccount", b =>
                 {
                     b.Navigation("Investments");
-                });
-
-            modelBuilder.Entity("BankOfMyHouse.Domain.BankAccounts.PaymentCategory", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("BankOfMyHouse.Domain.Investments.Company", b =>

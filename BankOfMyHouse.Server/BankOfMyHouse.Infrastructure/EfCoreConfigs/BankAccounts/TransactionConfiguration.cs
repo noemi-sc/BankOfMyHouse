@@ -3,7 +3,7 @@ using BankOfMyHouse.Domain.Iban;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BankOfMyHouse.Infrastructure.EfCoreConfigs;
+namespace BankOfMyHouse.Infrastructure.EfCoreConfigs.BankAccounts;
 
 internal class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 {
@@ -32,28 +32,35 @@ internal class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 			.HasDefaultValueSql("NOW()") // PostgreSQL function
 			.HasComment("UTC timestamp when transaction was created");
 
-		// Payment category enum
-		builder.Property(t => t.PaymentCategory)
+		// PaymentCategory foreign key
+		builder.Property(t => t.PaymentCategoryId)
 			.IsRequired()
-			.HasConversion<string>()  // Store as string in database
-			.HasMaxLength(50);
+			.HasComment("Foreign key to payment category");
 
+		// PaymentCategory navigation property
+		builder.HasOne(t => t.PaymentCategory)
+			.WithMany(pc => pc.Transactions)
+			.HasForeignKey(t => t.PaymentCategoryId)
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Restrict);
+
+		// Sender IBAN - simple conversion
 		builder.Property(t => t.Sender)
-				.HasConversion(
-					iban => iban.Value,  // Convert to string for storage
-					value => IbanCode.Create(value))  // Convert from string to IbanCode
-				.HasColumnName("SenderIban")
-				.HasMaxLength(34)  // IBAN max length is 34 characters
-				.IsRequired()
-				.HasComment("Sender's IBAN code");
+			.HasConversion(
+				iban => iban.Value,  // Convert to string for storage
+				value => IbanCode.Create(value))  // Convert from string to IbanCode
+			.HasColumnName("SenderIban")
+			.HasMaxLength(34)
+			.IsRequired()
+			.HasComment("Sender's IBAN code");
 
-		// Receiver IBAN
+		// Receiver IBAN - simple conversion
 		builder.Property(t => t.Receiver)
 			.HasConversion(
 				iban => iban.Value,  // Convert to string for storage
 				value => IbanCode.Create(value))  // Convert from string to IbanCode
 			.HasColumnName("ReceiverIban")
-			.HasMaxLength(34)  // IBAN max length is 34 characters
+			.HasMaxLength(34)
 			.IsRequired()
 			.HasComment("Receiver's IBAN code");
 
@@ -62,18 +69,11 @@ internal class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 		   .IsRequired(false)
 		   .HasComment("Optional transaction description");
 
-		// Currency as owned entity (recommended approach)
-		builder.OwnsOne(t => t.Currency, currency =>
-		{
-			currency.Property(c => c.Name)
-				.HasColumnName("CurrencyName")
-				.HasMaxLength(50)
-				.IsRequired();
-
-			currency.Property(c => c.Code)
-				.HasColumnName("CurrencyCode")
-				.HasMaxLength(3) // ISO currency codes are 3 characters
-				.IsRequired();
-		});
+		// Currency as foreign key relationship
+		builder.HasOne(t => t.Currency)
+			.WithMany()
+			.HasForeignKey("CurrencyId")
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

@@ -3,6 +3,7 @@ using System;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankOfMyHouse.Infrastructure.Migrations
 {
     [DbContext(typeof(BankOfMyHouseDbContext))]
-    partial class BankOfMyHouseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250817153122_AddPaymentCategoryEntity")]
+    partial class AddPaymentCategoryEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,6 +142,20 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                     b.Property<int>("PaymentCategoryId")
                         .HasColumnType("integer")
                         .HasComment("Foreign key to payment category");
+
+                    b.Property<string>("Receiver")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("character varying(34)")
+                        .HasColumnName("ReceiverIban")
+                        .HasComment("Receiver's IBAN code");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasMaxLength(34)
+                        .HasColumnType("character varying(34)")
+                        .HasColumnName("SenderIban")
+                        .HasComment("Sender's IBAN code");
 
                     b.Property<DateTimeOffset>("TransactionCreation")
                         .ValueGeneratedOnAdd()
@@ -384,55 +401,9 @@ namespace BankOfMyHouse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("BankOfMyHouse.Domain.Iban.IbanCode", "Receiver", b1 =>
-                        {
-                            b1.Property<Guid>("TransactionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(34)
-                                .HasColumnType("character varying(34)")
-                                .HasColumnName("ReceiverIban")
-                                .HasComment("Receiver's IBAN code");
-
-                            b1.HasKey("TransactionId");
-
-                            b1.ToTable("Transactions");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TransactionId");
-                        });
-
-                    b.OwnsOne("BankOfMyHouse.Domain.Iban.IbanCode", "Sender", b1 =>
-                        {
-                            b1.Property<Guid>("TransactionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(34)
-                                .HasColumnType("character varying(34)")
-                                .HasColumnName("SenderIban")
-                                .HasComment("Sender's IBAN code");
-
-                            b1.HasKey("TransactionId");
-
-                            b1.ToTable("Transactions");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TransactionId");
-                        });
-
                     b.Navigation("Currency");
 
                     b.Navigation("PaymentCategory");
-
-                    b.Navigation("Receiver")
-                        .IsRequired();
-
-                    b.Navigation("Sender")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BankOfMyHouse.Domain.Investments.CompanyStockPrice", b =>

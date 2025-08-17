@@ -2,7 +2,7 @@ using BankOfMyHouse.Domain.BankAccounts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BankOfMyHouse.Infrastructure.EfCoreConfigs;
+namespace BankOfMyHouse.Infrastructure.EfCoreConfigs.BankAccounts;
 
 internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 {
@@ -16,7 +16,7 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 			.UseIdentityByDefaultColumn();
 				
 		builder.Property(b => b.UserId)
-			.IsRequired();
+			.IsRequired(false);
 
 		builder.Property(b => b.CreationDate)
 			.IsRequired();
@@ -38,7 +38,7 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 		builder.HasOne(b => b.User)
 			.WithMany(x => x.BankAccounts)
 			.HasForeignKey(b => b.UserId)
-			.IsRequired()
-			.OnDelete(DeleteBehavior.Cascade);
+			.IsRequired(false)
+			.OnDelete(DeleteBehavior.SetNull);
 	}
 }

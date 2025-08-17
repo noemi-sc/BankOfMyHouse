@@ -23,7 +23,16 @@ namespace BankOfMyHouse.Domain.Investments
 		public int BankAccountId { get; init; }
 
 		//NAVIGATIONS
-		public Company Company { get; init; }
-		public BankAccount BankAccount { get; init; }
+		public required Company Company { get; init; }
+		public required BankAccount BankAccount { get; init; }
+
+		public static Investment Create(decimal sharesAmount, Company company, BankAccount bankAccount)
+		{
+			return new Investment(sharesAmount, company.Id, bankAccount.Id)
+			{
+				Company = company,
+				BankAccount = bankAccount
+			};
+		}
 	}
 }

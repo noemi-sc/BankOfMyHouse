@@ -11,9 +11,6 @@ public sealed record IbanCode
 		if (string.IsNullOrWhiteSpace(iban))
 			throw new Exception("IBAN cannot be empty");
 
-		//if (!ItalianIbanValidator.IsValid(iban))
-		//    return Result.Failure<IbanCode>("Invalid IBAN format");
-
-		return new IbanCode(iban);
+		return new IbanCode(iban.Trim());
 	}
 }
