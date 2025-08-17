@@ -30,8 +30,6 @@ namespace BankOfMyHouse.Application.Services.Investments
 
 			var bankAccount = user.BankAccounts.First(x => x.Id == bankAccountId);
 
-			bankAccount.Balance = 10000;
-
 			this._context.BankAccounts.Update(bankAccount);
 			this._context.SaveChanges();
 
@@ -58,7 +56,7 @@ namespace BankOfMyHouse.Application.Services.Investments
 
 			var sharesAmount = Math.Round(investmentAmount / currentStockPrice.StockPrice * 1000 / 1000, 3);
 
-			var investment = new Investment(sharesAmount, company.Id, bankAccount.Id);
+			var investment = Investment.Create(sharesAmount, company, bankAccount);
 
 			await this._context.Investments.AddAsync(investment);
 
