@@ -1,3 +1,5 @@
+using BankOfMyHouse.API.Handlers;
+using BankOfMyHouse.API.Mappers;
 using BankOfMyHouse.Application.Configurations;
 using BankOfMyHouse.Application.Hubs;
 using BankOfMyHouse.Application.Services.Accounts;
@@ -13,24 +15,16 @@ using BankOfMyHouse.Infrastructure.DbSeed;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Mapster;
-using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using System.Reflection;
 using System.Text;
-using IMapper = MapsterMapper.IMapper;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
-// Configure Mapster
-var config = new TypeAdapterConfig();
-// Scan and register all mapping configurations
-config.Scan(Assembly.GetExecutingAssembly());
-builder.Services.AddSingleton(config);
-builder.Services.AddScoped<IMapper, ServiceMapper>();
+new MappingConfig().Register(TypeAdapterConfig.GlobalSettings);
 
 builder.Services.AddSignalR(options =>
 {
@@ -43,6 +37,9 @@ builder.Services.AddDbContext<BankOfMyHouseDbContext>(options =>
 	.UseAsyncSeeding(async (context, _, ct) =>
 	{
 		await DatabaseSeeder.SeedRoles(context, ct);
+		await DatabaseSeeder.SeedUsers(context, ct);
+		await DatabaseSeeder.SeedPaymentCategories(context, ct);
+		await DatabaseSeeder.SeedCurrencies(context, ct);
 		await DatabaseSeeder.SeedCompanies(context, ct);
 	})
 	.UseSeeding((context, ct) =>
@@ -58,6 +55,9 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddScoped<IIbanGenerator, ItalianIbanGenerator>();
 builder.Services.AddScoped<IInvestmentService, InvestmentService>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var key = Encoding.ASCII.GetBytes(jwtSettings!.Secret);
@@ -126,6 +126,8 @@ await using (var serviceScope = app.Services.CreateAsyncScope())
 	}
 }
 
+app.UseExceptionHandler();
+
 app.UseCors("AllowAll");
 app.UseRouting();
 
@@ -149,4 +151,6 @@ app.MapScalarApiReference(options =>
 
 
 await app.RunAsync();
+
+public partial class Program { }
 
