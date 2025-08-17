@@ -4,7 +4,7 @@
 	{
 		public IbanCodeDto(string value)
 		{
-			Value = value;
+			Value = value.Trim();
 		}
 
 		public string Value { get; init; }
