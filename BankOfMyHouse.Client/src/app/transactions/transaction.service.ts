@@ -1,0 +1,59 @@
+import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CreateTransactionRequestDto } from './models/createTransactionRequestDto';
+import { CreateTransactionResponseDto } from './models/createTransactionResponseDto';
+import { map, catchError, throwError } from 'rxjs';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TransactionService {
+  private apiUrl =
+    'http://localhost:57460/transactions';
+
+  private transactionDetailsSignal =
+    signal<CreateTransactionResponseDto | null>(null);
+  private loadingSignal =
+    signal<boolean>(false);
+  private errorSignal = signal<any>(null);
+
+    public readonly loading =
+    this.loadingSignal.asReadonly();
+  public readonly error =
+    this.errorSignal.asReadonly();
+
+  constructor(private httpClient: HttpClient,
+    @Inject(PLATFORM_ID) private platformId:
+      Object) { }
+
+  public createTransaction(body: CreateTransactionRequestDto): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.httpClient
+      .post<CreateTransactionResponseDto>(`${this.apiUrl}`, body)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+
+          this.transactionDetailsSignal.set(response);
+          this.loadingSignal.set(false);
+        },
+        error: (error) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
+      });
+
+  }
+}
