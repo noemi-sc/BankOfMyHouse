@@ -1,70 +1,98 @@
 <div class="dashboard">
-      <header class="dashboard-header">
+  <header class="dashboard-header">
 
-@if (currentUser(); as user) {
-                <div class="user-dropdown">
-                  <div class="user-info">
-                    <h1>Hello {{ user.username }}</h1>
-       --   heutiges Datum --
-                  </div>
-                  </div>
-  }
-      </header>
+    @if (currentUser(); as user) {
+    <div class="user-dropdown">
+      <div class="user-info">
+        <h1>Hello {{ user.firstName }} {{ user.lastName }}</h1>
+      </div>
+    </div>
+    }
+  </header>
 
-      <div class="overview-cards">
-        <div class="overview-card">
-          <h3>IBAN</h3>
-          <div>--Kontoname--</div>
-<!--           <div class="overview-amount">
-            {{ dashboardService.totalBalance() | currency:'USD':'symbol':'1.2-2' }}
-          </div> -->
+  <div class="overview-cards">
+    <div class="overview-card">
+      <h2>Account</h2>
+      <div class="accounts-grid">
+        @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
+        <div class="bank-account-card">
+          <h3>{{ bankAccount.iban }}</h3>
+          <p class="balance">{{ bankAccount.balance | currency:'EUR':'symbol':'1.2-2' }}</p>
+          <p class="creation-date">Creato il: {{ bankAccount.creationDate | date:'short' }}</p>
         </div>
-        
-        <div class="overview-card">
-          <h3>Portfolio Value</h3>
-<!--           <div class="overview-amount">
+        } @empty {
+        <div class="empty-state">No bank accounts found</div>
+        }
+        <br>
+
+        <button mat-button (click)="openBankAccountPopup() " class="open-popup-btn">Crea nuovo IBAN</button>
+        @if (isBankAccountPopupOpen()) {
+        <app-create-bank-account [initialValue]="inputValue()" (confirmed)="onBankAccountPopupConfirmed($event)"
+          (cancelled)="onBankAccountPopupCancelled()" />
+        }
+<!--                   <div class="overview-amount">
+            {{ dashboardService.totalBalance() | currency:'USD':'symbol':'1.2-2' }}
+          </div> 
+ -->      </div>
+    </div> 
+
+
+    <div class="overview-card">
+      <h3>Portfolio Value</h3>
+      <!--           <div class="overview-amount">
             {{ dashboardService.portfolioValue() | currency:'USD':'symbol':'1.2-2' }}
           </div>
           <div class="portfolio-change" [class.positive]="portfolioChange().amount > 0" [class.negative]="portfolioChange().amount < 0">
             {{ portfolioChange().amount > 0 ? '+' : '' }}{{ portfolioChange().amount | currency:'USD':'symbol':'1.2-2' }}
             ({{ portfolioChange().percent > 0 ? '+' : '' }}{{ portfolioChange().percent | number:'1.2-2' }}%)
           </div> -->
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+<!--     <section class="accounts-section">
+       <h2 class="section-title">Accounts</h2>
+      <div class="accounts-grid">
+        @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
+        <div class="bank-account-card">
+          <h3>{{ bankAccount.iban }}</h3>
+          <p class="balance">{{ bankAccount.balance | currency:'EUR':'symbol':'1.2-2' }}</p>
+          <p class="creation-date">Created: {{ bankAccount.creationDate | date:'short' }}</p>
         </div>
-      </div>
-
-      <div class="dashboard-grid">
-        <section class="accounts-section">
-          <h2 class="section-title">Accounts</h2>
-          <div class="accounts-grid">
-        <!--     @for (account of dashboardService.accountsData(); track account.id) {
-              <app-account-card [account]="account" />
-            } -->
-          </div>
-        </section>
-
-        <section class="investments-section">
-          <h2 class="section-title">Investment Portfolio</h2>
-<!--           <div class="investments-container">
+        } @empty {
+        <div class="empty-state">No bank accounts found</div>
+        }
+      </div>  -->
+      <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un pagamento</button>
+      @if (isTransactionPopupOpen()) {
+      <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
+        (cancelled)="onTransactionPopupCancelled()" />
+      }
+<!--     </section>
+ -->
+    <section class="investments-section">
+      <h2 class="section-title">Investment Portfolio</h2>
+      <!--           <div class="investments-container">
             @for (investment of dashboardService.investmentsData(); track investment.id) {
               <app-investment-item [investment]="investment" />
             } @empty {
               <div class="empty-state">No investments found</div>
             }
           </div> -->
-        </section>
+    </section>
 
-        <section class="transactions-section">
-          <h2 class="section-title">Recent Transactions</h2>
-          <div class="transactions-container">
-       <!--      @for (transaction of recentTransactions(); track transaction.id) {
+    <section class="transactions-section">
+      <h2 class="section-title">Recent Transactions</h2>
+      <div class="transactions-container">
+        <!--      @for (transaction of recentTransactions(); track transaction.id) {
               <app-transaction-item [transaction]="transaction" />
             } @empty {
               <div class="empty-state">No recent transactions</div>
             } -->
-          </div>
-          <button class="view-all-btn">View All Transactions</button>
-        </section>
-
-<!--         <app-market-overview /> -->
       </div>
-    </div>
+      <button class="view-all-btn">View All Transactions</button>
+    </section>
+
+    <!--         <app-market-overview /> -->
+  </div>
+</div>
