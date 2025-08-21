@@ -68,10 +68,8 @@ export class HeaderComponent {
   navItems = signal([
     // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
     { label: 'Accounts', path: '/accounts', icon: 'icon-wallet', highlight: false },
-    { label: 'Transfers', path: '/transfers', icon: 'icon-exchange', highlight: false },
     { label: 'Payments', path: '/payments', icon: 'icon-credit-card', highlight: true },
-    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false },
-    { label: 'Support', path: '/support', icon: 'icon-help', highlight: false }
+    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false }
   ]);
 
   // Computed values
