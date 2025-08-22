@@ -10,6 +10,7 @@ import { CreateTransactionComponent } from '../transactions/create-transaction/c
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { GetTransactionComponent } from "../transactions/get-transaction/get-transaction.component";
 
 interface Food {
   value: string;
@@ -36,7 +37,9 @@ interface Food {
         InvestmentItemComponent,
         TransactionItemComponent,
         MarketOverviewComponent */
-  ],
+    ,
+    GetTransactionComponent
+],
 
 
 })

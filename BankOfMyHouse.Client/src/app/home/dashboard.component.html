@@ -30,11 +30,12 @@
         <app-create-bank-account [initialValue]="inputValue()" (confirmed)="onBankAccountPopupConfirmed($event)"
           (cancelled)="onBankAccountPopupCancelled()" />
         }
-<!--                   <div class="overview-amount">
+        <!--                   <div class="overview-amount">
             {{ dashboardService.totalBalance() | currency:'USD':'symbol':'1.2-2' }}
           </div> 
- -->      </div>
-    </div> 
+ -->
+      </div>
+    </div>
 
 
     <div class="overview-card">
@@ -50,7 +51,7 @@
   </div>
 
   <div class="dashboard-grid">
-<!--     <section class="accounts-section">
+    <!--     <section class="accounts-section">
        <h2 class="section-title">Accounts</h2>
       <div class="accounts-grid">
         @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
@@ -63,27 +64,24 @@
         <div class="empty-state">No bank accounts found</div>
         }
       </div>  -->
-      <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un pagamento</button>
-      @if (isTransactionPopupOpen()) {
-      <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
-        (cancelled)="onTransactionPopupCancelled()" />
-      }
-<!--     </section>
+
+    <!--     </section>
  -->
-    <section class="investments-section">
+    <!--     <section class="investments-section">
       <h2 class="section-title">Investment Portfolio</h2>
-      <!--           <div class="investments-container">
+           <div class="investments-container">
             @for (investment of dashboardService.investmentsData(); track investment.id) {
               <app-investment-item [investment]="investment" />
             } @empty {
               <div class="empty-state">No investments found</div>
             }
-          </div> -->
-    </section>
+          </div> 
+    </section> -->
 
     <section class="transactions-section">
       <h2 class="section-title">Recent Transactions</h2>
       <div class="transactions-container">
+        <app-get-transaction></app-get-transaction>
         <!--      @for (transaction of recentTransactions(); track transaction.id) {
               <app-transaction-item [transaction]="transaction" />
             } @empty {
@@ -94,5 +92,12 @@
     </section>
 
     <!--         <app-market-overview /> -->
+  </div>
+  <div class="dashboard-grid">
+    <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un pagamento</button>
+    @if (isTransactionPopupOpen()) {
+    <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
+      (cancelled)="onTransactionPopupCancelled()" />
+    }
   </div>
 </div>
