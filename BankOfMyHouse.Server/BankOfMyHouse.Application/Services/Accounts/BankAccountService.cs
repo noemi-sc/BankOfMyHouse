@@ -2,24 +2,35 @@
 using BankOfMyHouse.Domain.BankAccounts;
 using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Iban.Interfaces;
-using BankOfMyHouse.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using BankOfMyHouse.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace BankOfMyHouse.Application.Services.Accounts
 {
 	public class BankAccountService : IBankAccountService
 	{
-		private readonly BankOfMyHouseDbContext _dbContext;
+		private readonly IUserRepository _userRepository;
+		private readonly IBankAccountRepository _bankAccountRepository;
+		private readonly ITransactionRepository _transactionRepository;
+		private readonly ICurrencyRepository _currencyRepository;
+		private readonly IPaymentCategoryRepository _paymentCategoryRepository;
 		private readonly IIbanGenerator _ibanGenerator;
 		private readonly ILogger<BankAccountService> _logger;
 
 		public BankAccountService(
-			BankOfMyHouseDbContext dbContext,
+			IUserRepository userRepository,
+			IBankAccountRepository bankAccountRepository,
+			ITransactionRepository transactionRepository,
+			ICurrencyRepository currencyRepository,
+			IPaymentCategoryRepository paymentCategoryRepository,
 			IIbanGenerator ibanGenerator,
 			ILogger<BankAccountService> logger)
 		{
-			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+			_bankAccountRepository = bankAccountRepository ?? throw new ArgumentNullException(nameof(bankAccountRepository));
+			_transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
+			_currencyRepository = currencyRepository ?? throw new ArgumentNullException(nameof(currencyRepository));
+			_paymentCategoryRepository = paymentCategoryRepository ?? throw new ArgumentNullException(nameof(paymentCategoryRepository));
 			_ibanGenerator = ibanGenerator ?? throw new ArgumentNullException(nameof(ibanGenerator));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -27,8 +38,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 		public async Task<Transaction> CreateTransaction(IbanCode sender, IbanCode receiver, decimal amount, string currencyCode, CancellationToken ct, PaymentCategoryCode? paymentCategoryCode = null, string? description = null)
 		{
 			var categoryCode = paymentCategoryCode ?? PaymentCategoryCode.Other;
-			var paymentCategory = await _dbContext.PaymentCategories
-				.FirstOrDefaultAsync(pc => pc.Code == categoryCode, ct);
+			var paymentCategory = await _paymentCategoryRepository.GetByCodeAsync(categoryCode, ct);
 			
 			if (paymentCategory == null)
 			{
@@ -41,9 +51,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				throw new InvalidOperationException("Sender and receiver IBANs cannot be the same.");
 			}
 
-			var senderAccount = await this._dbContext.BankAccounts
-				.Include(x => x.User)
-				.SingleOrDefaultAsync(x => x.IBAN.Value == sender.Value, ct);
+			var senderAccount = await _bankAccountRepository.GetByIbanWithUserAsync(sender, ct);
 
 			if (senderAccount == null)
 			{
@@ -57,12 +65,9 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				throw new InvalidOperationException($"Insufficient funds in sender account with IBAN {sender}.");
 			}
 
-			var receiverAccount = await this._dbContext.BankAccounts
-				.Include(x => x.User)
-				.SingleOrDefaultAsync(x => x.IBAN.Value == receiver.Value, ct);
+			var receiverAccount = await _bankAccountRepository.GetByIbanWithUserAsync(receiver, ct);
 
-			var currency = await this._dbContext.Currencies
-				.SingleOrDefaultAsync(c => c.Code == currencyCode, ct);
+			var currency = await _currencyRepository.GetByCodeAsync(currencyCode, ct);
 
 			if (currency == null)
 			{
@@ -75,12 +80,12 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			if (receiverAccount != null)
 			{
 				receiverAccount.Balance += amount;
-				this._dbContext.BankAccounts.UpdateRange([senderAccount, receiverAccount]);
+				await _bankAccountRepository.UpdateRangeAsync([senderAccount, receiverAccount], ct);
 			}
 			else
 			{
 				// External transfer - just update sender
-				this._dbContext.BankAccounts.Update(senderAccount);
+				await _bankAccountRepository.UpdateAsync(senderAccount, ct);
 				_logger.LogInformation("External transfer to IBAN {Iban} - amount sent out of system.", receiver);
 			}
 
@@ -88,9 +93,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			? Transaction.Create(amount, currency, senderAccount, receiverAccount, paymentCategory, description)
 			: Transaction.CreateExternal(amount, currency, senderAccount, receiver, paymentCategory, description);
 
-			await this._dbContext.Transactions.AddAsync(transaction, ct);
-
-			await this._dbContext.SaveChangesAsync(ct);
+			await _transactionRepository.AddAsync(transaction, ct);
 
 			return transaction;
 		}
@@ -99,8 +102,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 		{
 			var iban = this._ibanGenerator.GenerateItalianIban();
 
-			var ibanExistsAlready = await this._dbContext.BankAccounts
-				.AnyAsync(x => x.IBAN.Value == iban.Value);
+			var ibanExistsAlready = await _bankAccountRepository.IbanExistsAsync(iban);
 
 			if (ibanExistsAlready)
 			{
@@ -110,22 +112,17 @@ namespace BankOfMyHouse.Application.Services.Accounts
 
 			var newBankAccount = BankAccount.CreateNew(userId, iban);
 
-			await this._dbContext.BankAccounts.AddAsync(newBankAccount);
-
-			await this._dbContext.SaveChangesAsync();
-
-			return newBankAccount;
+			return await _bankAccountRepository.AddAsync(newBankAccount);
 		}
 
 		public async Task<ICollection<BankAccount>> GetBankAccounts(int id, CancellationToken ct)
 		{
-			return await this._dbContext.BankAccounts.Where(x => x.UserId == id)
-				.ToListAsync(ct);
+			return (await _bankAccountRepository.GetByUserIdAsync(id, ct)).ToList();
 		}
 
 		public async Task<IEnumerable<Transaction>> GetTransactions(int userId, string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)
 		{
-			var user = await this._dbContext.Users.Include(u => u.BankAccounts).FirstOrDefaultAsync(x => x.Id == userId, ct);
+			var user = await _userRepository.GetWithBankAccountsAsync(userId, ct);
 
 			if (user == null)
 			{	
@@ -138,21 +135,8 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				return null;
 			}
 
-			var query = this._dbContext.Transactions
-				.Include(t => t.Currency)
-				.Include(t => t.PaymentCategory)
-				.Where(x => x.Sender.Value == iban);
-
-			if (startDate.HasValue)
-			{
-				query = query.Where(x => x.TransactionCreation >= startDate.Value);
-			}
-			if (endDate.HasValue)
-			{
-				query = query.Where(x => x.TransactionCreation <= endDate.Value);
-			}
-
-			return await query.ToListAsync(ct);
+			var ibanCode = IbanCode.Create(iban);
+			return await _transactionRepository.GetBySenderIbanAsync(ibanCode, startDate, endDate, ct);
 		}
 	}
 }

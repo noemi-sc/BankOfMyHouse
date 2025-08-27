@@ -10,6 +10,8 @@ using BankOfMyHouse.Application.Services.Users;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using BankOfMyHouse.Domain.Iban;
 using BankOfMyHouse.Domain.Iban.Interfaces;
+using BankOfMyHouse.Domain.Repositories;
+using BankOfMyHouse.Infrastructure.Repositories;
 using BankOfMyHouse.Infrastructure;
 using BankOfMyHouse.Infrastructure.DbSeed;
 using FastEndpoints;
@@ -48,6 +50,13 @@ builder.Services.AddDbContext<BankOfMyHouseDbContext>(options =>
 });
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
+
+// Add repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddScoped<IPaymentCategoryRepository, PaymentCategoryRepository>();
 
 // Add services
 builder.Services.AddScoped<IUserService, UserService>();
