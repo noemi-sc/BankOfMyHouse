@@ -1,7 +1,6 @@
 ﻿
 using BankOfMyHouse.Application.Services.Accounts.Interfaces;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
-using BankOfMyHouse.Domain.BankAccounts;
 using BankOfMyHouse.Domain.Iban;
 using FastEndpoints;
 using Mapster;
@@ -52,9 +51,9 @@ public class CreateTransactionEndpoint : Endpoint<CreateTransactionRequestDto, C
 		var transaction = await this._bankAccountService.CreateTransaction(
 			req.SenderIban.Adapt<IbanCode>(),
 			req.ReceiverIban.Adapt<IbanCode>(),
-			req.Amount, 
+			req.Amount,
 			req.CurrencyCode,
-			ct, 
+			ct,
 			req.PaymentCategory,
 			req.Description);
 
