@@ -2,10 +2,10 @@
 
 public sealed record RegisterUserRequestDto
 {
-	public string Username { get; set; } = string.Empty;
-	public string Email { get; set; } = string.Empty;
-	public string Password { get; set; } = string.Empty;
-	public string ConfirmPassword { get; set; } = string.Empty;
-	public string? FirstName { get; set; }
-	public string? LastName { get; set; }
+	public required string Username { get; set; } = string.Empty;
+	public required string Email { get; set; } = string.Empty;
+	public required string Password { get; set; } = string.Empty;
+	public required string ConfirmPassword { get; set; } = string.Empty;
+	public required string? FirstName { get; set; }
+	public required string? LastName { get; set; }
 }

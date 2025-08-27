@@ -7,7 +7,7 @@ namespace BankOfMyHouse.API.Endpoints.Transactions.CreateTransaction;
 public sealed record CreateTransactionRequestDto
 {
 	[FromClaim("userId")]
-	public int UserId { get; set; }
+	public required int UserId { get; set; }
 
 	public required IbanCodeDto SenderIban { get; set; }
 	public required IbanCodeDto ReceiverIban { get; set; }
