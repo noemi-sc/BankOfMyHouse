@@ -2,5 +2,5 @@
 
 public class GetBankAccountResponseDto
 {
-	public object BankAccounts { get; set; }
+	public required IEnumerable<BankAccountDto> BankAccounts { get; set; }
 }

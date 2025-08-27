@@ -1,6 +1,7 @@
 ﻿using BankOfMyHouse.Application.Services.Accounts.Interfaces;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using FastEndpoints;
+using Mapster;
 
 namespace BankOfMyHouse.API.Endpoints.Accounts.Get;
 
@@ -55,11 +56,7 @@ public class GetBankAccountEndpoint : EndpointWithoutRequest<GetBankAccountRespo
 
 		var response = new GetBankAccountResponseDto
 		{
-			BankAccounts = bankAccounts.Select(ba => new
-			{
-				ba.IBAN,
-				ba.Balance
-			}).ToList()
+			BankAccounts = bankAccounts.Select(ba => ba.Adapt<BankAccountDto>()).ToList()
 		};
 
 		await Send.OkAsync(response, ct);

@@ -1,3 +1,4 @@
+using BankOfMyHouse.API.Endpoints.Accounts.Get;
 using BankOfMyHouse.API.Endpoints.Currencies.GetCurrencies;
 using BankOfMyHouse.API.Endpoints.PaymentCategories.GetPaymentCategories;
 using BankOfMyHouse.API.Endpoints.Transactions.DTOs;
@@ -82,6 +83,12 @@ namespace BankOfMyHouse.API.Mappers
 				.Map(dest => dest.Description, src => src.Description)
 				.Map(dest => dest.SenderIban, src => src.Sender.Value)
 				.Map(dest => dest.ReceiverIban, src => src.Receiver.Value);
+
+			config.NewConfig<BankAccount, BankAccountDto>()
+				.Map(dest => dest.Id, src => src.Id)
+				.Map(dest => dest.IBAN, src => src.IBAN.Value)
+				.Map(dest => dest.Balance, src => src.Balance)
+				.Map(dest => dest.CreatedAt, src => src.CreationDate);
 		}
 	}
 }
