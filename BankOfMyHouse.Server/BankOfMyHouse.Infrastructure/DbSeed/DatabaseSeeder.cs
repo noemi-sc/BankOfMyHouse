@@ -3,7 +3,6 @@ using BankOfMyHouse.Domain.Investments;
 using BankOfMyHouse.Domain.Users;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace BankOfMyHouse.Infrastructure.DbSeed
 {
@@ -15,11 +14,12 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 		{
 			new User("username1", "user1@gmail.com", "Password1!", "FirstUserName", "FirstUserSurname"),
 			new User("username2", "user2@gmail.com", "Password1!", "SecondUserName", "SecondUserSurname"),
+			new User("username3", "user3@gmail.com", "Password1!", "ThirdUserName", "ThirdUserSurname"),
 		};
 
 			//Assign the user the basic BankAccount role
 			var bankAccountRole = await context.Set<Role>()
-					.FirstOrDefaultAsync(r => r.Id == 1, ct);
+					.FirstOrDefaultAsync(r => r.Id == 2, ct);
 
 			foreach (var user in users)
 			{
@@ -38,6 +38,10 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 				if (existingUser == null)
 				{
 					await context.Set<User>().AddAsync(user, ct);
+				}
+				else
+				{
+					context.Set<User>().Update(existingUser);
 				}
 			}
 
