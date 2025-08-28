@@ -3,19 +3,14 @@ import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit, V
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { UsersService } from '../users/users.service';
 import { Router } from '@angular/router';
-import { GetUserDetailsResponseDto } from '../auth/models/getUserDetails/getUserDetailsResponseDto';
 import { BankAccountService } from '../bank-account.service';
 import { CreateBankAccountComponent } from '../create-bank-account/create-bank-account.component';
 import { CreateTransactionComponent } from '../transactions/create-transaction/create-transaction.component';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { GetTransactionComponent } from "../transactions/get-transaction/get-transaction.component";
 
-interface Food {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -56,9 +51,6 @@ export class DashboardComponent implements OnInit {
   currentUser = this.usersService.userDetails;
   loading = this.usersService.loading;
   error = this.usersService.error;
-
-  
-
 
   ngOnInit() {
     this.usersService.getUserDetails();
