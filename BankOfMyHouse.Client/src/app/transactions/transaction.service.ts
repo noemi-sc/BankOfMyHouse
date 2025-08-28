@@ -1,12 +1,10 @@
-import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CreateTransactionRequestDto } from './models/createTransactionRequestDto';
 import { CreateTransactionResponseDto } from './models/createTransactionResponseDto';
 import { map, catchError, throwError } from 'rxjs';
 import { GetTransactionsResponseDto } from './models/getTransactionsResponseDto';
 import { GetTransactionsRequestDto } from './models/getTransactionsRequestDto';
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +20,7 @@ export class TransactionService {
   private loadingSignal =
     signal<boolean>(false);
   private errorSignal = signal<any>(null);
+  private httpClient = inject(HttpClient);
 
   public readonly getTransaction =
     this.getTransactionDetailsSignal.asReadonly();
@@ -29,10 +28,6 @@ export class TransactionService {
     this.loadingSignal.asReadonly();
   public readonly error =
     this.errorSignal.asReadonly();
-
-  constructor(private httpClient: HttpClient,
-    @Inject(PLATFORM_ID) private platformId:
-      Object) { }
 
   public createTransaction(body: CreateTransactionRequestDto): void {
     this.loadingSignal.set(true);
@@ -68,7 +63,7 @@ export class TransactionService {
     this.errorSignal.set(null);
 
     this.httpClient
-      .get<GetTransactionsResponseDto>(`${this.apiUrl}?startDate={getTransactionsRequestDto.startDate}`  )
+      .get<GetTransactionsResponseDto>(`${this.apiUrl}?iban=${getTransactionsRequestDto.iban}`)//&startDate=${getTransactionsRequestDto.startDate}`)
       .pipe(
         map((response) => {
           return response;
