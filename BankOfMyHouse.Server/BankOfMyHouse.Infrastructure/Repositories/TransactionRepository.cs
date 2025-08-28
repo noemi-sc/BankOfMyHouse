@@ -26,7 +26,7 @@ public class TransactionRepository : ITransactionRepository
 		var query = _context.Transactions
 			.Include(t => t.Currency)
 			.Include(t => t.PaymentCategory)
-			.Where(x => x.Sender.Value == iban.Value);
+			.Where(x => x.Sender == iban);
 
 		if (startDate.HasValue)
 		{
