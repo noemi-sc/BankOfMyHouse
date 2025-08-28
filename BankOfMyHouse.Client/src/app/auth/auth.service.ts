@@ -101,22 +101,6 @@ export class AuthService {
       );
   }
 
-  logout(): Observable<any> {
-    this.loadingSubject.next(true);
-
-    return this.httpClient
-      .post(`${this.apiUrl}/auth/logout`, {})
-      .pipe(
-        finalize(() => {
-          this.clearAuthData();
-          this.loadingSubject.next(false);
-        }),
-        catchError((error) => {
-          return throwError(() => error);
-        })
-      );
-  }
-
   // New: Token refresh method
   refreshToken(): Observable<UserLoginResponseDto> {
     if (!isPlatformBrowser(this.platformId)) {
@@ -204,7 +188,7 @@ export class AuthService {
     });
   }
 
-  private clearAuthData(): void {
+  public clearAuthData(): void {
     // Clear timer
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
