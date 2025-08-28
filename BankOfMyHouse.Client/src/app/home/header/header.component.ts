@@ -141,14 +141,7 @@ export class HeaderComponent {
   onLogout() {
     console.log('Logging out...');
 
-    // Optional: Call logout API
-    this.authService.logout();
-    this.clearUserData();
+    this.authService.clearAuthData();
     this.router.navigate(['/login']);
-  }
-
-  private clearUserData() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
   }
 }
