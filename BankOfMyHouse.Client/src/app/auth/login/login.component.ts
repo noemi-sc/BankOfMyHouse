@@ -14,17 +14,17 @@ import { UserLoginRequestDto as UserLoginRequestDto } from '../models/auth-respo
 })
 
 export class LoginComponent implements OnInit {
-  onForgotPassword($event: MouseEvent) {
+/*   onForgotPassword($event: MouseEvent) {
     throw new Error('Method not implemented.');
-  }
+  } */
   togglePasswordVisibility() {
-    throw new Error('Method not implemented.');
+    this.showPassword = !this.showPassword;
   }
   loginForm!: FormGroup;
   submitted = false;
   loading = false;
   error = '';
-  showPassword: any;
+  showPassword: boolean = false;
   success: boolean = false;
 
   constructor(

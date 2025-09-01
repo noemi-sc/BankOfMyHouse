@@ -1,3 +1,5 @@
+
+
 <div class="login-container">
   <div class="login-form-wrapper">
     <h2>Welcome Back</h2>
@@ -14,20 +16,21 @@
       <!-- username Field -->
       <div class="form-group">
         <label for="username">Username</label>
-        <input type="username" id="username" formControlName="username" class="form-control"
+        <input type="username" id="username" formControlName="username" class="form-control username-input"
           [class.is-invalid]="submitted && f['username'].errors" placeholder="Enter your username"
           autocomplete="username" />
         @if(submitted && f['username'].errors){
         <div class="invalid-feedback"></div>
         }
-        @if(f['username'].errors && f['username'].errors['required']) {
+<!--         @if(f['username'].errors && f['username'].errors['required']) {
         <div>Email is required</div>
-        }
+        } -->
         @if(f['username'].errors && f['username'].errors['username']) {
         <div>
-          Please enter a valid Username
+          Inserire l'username
         </div>
         }
+
       </div>
 
       <!-- Password Field -->
@@ -35,15 +38,14 @@
         <label for="password">Password</label>
         <div class="password-input-container">
           <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-            class="form-control" [class.is-invalid]="submitted && f['password'].errors"
-            placeholder="Enter your password" autocomplete="current-password" />
-
+            class="form-control password-input" [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Enter your password" autocomplete="current-password" >
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
-            <span>👁️</span>
+            <i class="fa fa-eye"></i>
             }
             @if(showPassword){
-            <span>🙈</span>
+            <i class="fa fa-eye-slash"></i>
             }
           </button>
         </div>
@@ -66,17 +68,17 @@
       </div>
 
       <!-- Remember Me & Forgot Password -->
-      <div class="form-options">
-        <!-- <label class="checkbox-container">
+      <!--       <div class="form-options">
+ --> <!-- <label class="checkbox-container">
           <input type="checkbox" formControlName="rememberMe" />
           <span class="checkmark"></span>
           Remember me
         </label> -->
 
-        <a href="#" class="forgot-password" (click)="onForgotPassword($event)">
+      <!--   <a href="#" class="forgot-password" (click)="onForgotPassword($event)">
           Forgot password?
         </a>
-      </div>
+      </div> -->
 
       <!-- Submit Button -->
       <button type="submit" class="btn btn-primary" [disabled]="loading || loginForm.invalid">
@@ -91,7 +93,7 @@
     <div class="register-link">
       <p>
         Don't have an account?
-        <a routerLink="/register">Create one here</a>
+        <a href="/register">Create one here</a>
       </p>
     </div>
   </div>
