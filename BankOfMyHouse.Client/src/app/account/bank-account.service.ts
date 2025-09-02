@@ -1,8 +1,8 @@
 import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, throwError } from 'rxjs';
-import { CreateBankAccountResponseDto } from './models/bankAccounts/create/CreateBankAccountResponseDto';
-import { CreateBankAccountRequestDto } from './models/bankAccounts/create/CreateBankAccountRequestDto';
+import { CreateBankAccountResponseDto } from './models/create/CreateBankAccountResponseDto';
+import { CreateBankAccountRequestDto } from './models/create/CreateBankAccountRequestDto';
 @Injectable({
   providedIn: 'root'
 })
