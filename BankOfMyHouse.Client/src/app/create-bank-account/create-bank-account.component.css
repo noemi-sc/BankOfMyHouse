@@ -43,6 +43,7 @@
     border-radius: 4px;
     font-size: 1rem;
     box-sizing: border-box;
+    background-color: #f3dde1 !important;
 }
 
 .popup-input:focus {
