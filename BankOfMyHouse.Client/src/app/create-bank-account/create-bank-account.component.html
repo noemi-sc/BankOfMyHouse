@@ -1,33 +1,21 @@
 <div class="popup-overlay" (click)="onOverlayClick($event)">
-      <div class="popup-content" (click)="$event.stopPropagation()">
-        <h2>Enter Information</h2>
-        
-        <div class="input-group">
-          <label for="popup-input">Nome del conto bancario:</label>
-          <input
-            id="popup-input"
-            type="text"
-            [(ngModel)]="currentValue"
-            class="popup-input"
-            placeholder="Inserire nome del conto bancario"
-            (keydown.enter)="onConfirm()"
-            (keydown.escape)="onCancel()" />
-        </div>
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <h2>Aggiungi una descrizione</h2>
 
-        <div class="button-group">
-          <button
-            type="button"
-            (click)="onCancel()"
-            class="btn btn-secondary">
-            Go Back
-          </button>
-          
-          <button
-            type="button"
-            (click)="onConfirm()"
-            class="btn btn-primary">
-            OK
-          </button>
-        </div>
-      </div>
+    <div class="input-group">
+      <label for="popup-input">Nome del conto bancario:</label>
+      <input id="popup-input" type="text" [(ngModel)]="currentValue" class="popup-input"
+        placeholder="Inserire nome del conto bancario" (keydown.enter)="onConfirm()" (keydown.escape)="onCancel()" />
     </div>
+
+    <div class="button-group">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">
+        Annulla
+      </button>
+
+      <button type="button" (click)="onConfirm()" class="btn btn-primary">
+        Crea
+      </button>
+    </div>
+  </div>
+</div>
