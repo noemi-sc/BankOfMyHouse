@@ -1,10 +1,10 @@
 <div class="dashboard">
   <header class="dashboard-header">
 
-    @if (currentUser(); as user) {
+    @if (currentUser();) {
     <div class="user-dropdown">
       <div class="user-info">
-        <h1>Salve {{ user.firstName }} {{ user.lastName }}</h1>
+        <h1>Salve {{ this.currentUser()?.firstName }} {{ this.currentUser()?.lastName }}</h1>
       </div>
     </div>
     }
@@ -22,12 +22,7 @@
       <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
         (cancelled)="onTransactionPopupCancelled()" />
       }</mat-grid-tile>
-
-
-
   </mat-grid-list>
-
-
 
   <div class="overview-cards">
     <div class="overview-card">
@@ -43,25 +38,14 @@
         <div class="empty-state">No bank accounts found</div>
         }
         <br>
-
-        <!--                   <div class="overview-amount">
-            {{ dashboardService.totalBalance() | currency:'USD':'symbol':'1.2-2' }}
-          </div> 
- -->
       </div>
     </div>
-
-
     <div class="overview-card">
-
       <div class="overview-amount">
-              <h3>Totale conti bancari:</h3>
-       {{ totalAccounts()  }}
-                     <h3>Somma del valore dei conti bancari:</h3>
-
+        <h3>Totale conti bancari:</h3>
+        {{ totalAccounts() }}
+        <h3>Somma del valore dei conti bancari:</h3>
         {{ totalBalance() | currency:'EUR':'symbol':'1.2-2' }}
-
-
       </div>
     </div>
   </div>
@@ -77,6 +61,5 @@
   <br>
 
   <div class="dashboard-grid">
-
   </div>
 </div>

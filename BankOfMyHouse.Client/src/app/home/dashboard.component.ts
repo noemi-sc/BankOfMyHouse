@@ -1,5 +1,5 @@
 // components/dashboard/dashboard.component.ts
-import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit, Signal } from '@angular/core';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { UsersService } from '../users/users.service';
 import { Router } from '@angular/router';
@@ -10,9 +10,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { GetTransactionComponent } from "../transactions/get-transaction/get-transaction.component";
-import {MatGridListModule} from '@angular/material/grid-list';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { TransactionService } from '../transactions/transaction.service';
 import { effect } from '@angular/core';
+import { GetUserDetailsResponseDto } from '../auth/models/getUserDetails/getUserDetailsResponseDto';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,13 +31,9 @@ import { effect } from '@angular/core';
     MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
-    /*     AccountCardComponent,
-        InvestmentItemComponent,
-        TransactionItemComponent,
-        MarketOverviewComponent */
     GetTransactionComponent,
     MatGridListModule
-],
+  ],
 
 
 })
@@ -51,40 +48,29 @@ export class DashboardComponent implements OnInit {
   protected readonly inputValue = signal('');
 
   // State signals from service
-  currentUser = this.usersService.userDetails;
+  protected currentUser: Signal<GetUserDetailsResponseDto | null>;
   loading = this.usersService.loading;
   error = this.usersService.error;
 
   // Computed signal for total balance of all accounts
   totalBalance = computed(() => {
-    const user = this.currentUser();
-    if (!user?.bankAccounts) return 0;
-    return user.bankAccounts.reduce((sum, account) => sum + account.balance, 0);
+    if (!this.currentUser()?.bankAccounts) return 0;
+    return this.currentUser()?.bankAccounts.reduce((sum, account) => sum + account.balance, 0);
   });
 
   totalAccounts = computed(() => {
-    const user = this.currentUser();
-    if (!user?.bankAccounts) return 0;
-    return user.bankAccounts.length;
+    if (!this.currentUser()?.bankAccounts) return 0;
+    return this.currentUser()?.bankAccounts.length;
   });
 
   constructor() {
-    // Effect to refresh user details when transactions are refreshed
-    effect(() => {
-      const trigger = this.transactionService.refreshTrigger();
-      if (trigger > 0) {
-        // Delay to ensure transaction has been processed and balances updated
-        setTimeout(() => {
-          this.usersService.getUserDetails();
-        }, 600);
-      }
-    });
+    this.currentUser = this.usersService.userDetails;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.usersService.getUserDetails();
   }
-  
+
   // Popup for new IBAN
   protected openBankAccountPopup(): void {
     this.isBankAccountPopupOpen.set(true);
