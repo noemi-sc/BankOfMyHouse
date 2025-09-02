@@ -4,19 +4,24 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { UserLoginRequestDto as UserLoginRequestDto } from '../models/auth-response';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, FontAwesomeModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 
 export class LoginComponent implements OnInit {
-/*   onForgotPassword($event: MouseEvent) {
-    throw new Error('Method not implemented.');
-  } */
+  /*   onForgotPassword($event: MouseEvent) {
+      throw new Error('Method not implemented.');
+    } */
+
+  protected readonly faEye = faEye;
+  protected readonly faEyeSlash = faEyeSlash;
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }

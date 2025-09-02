@@ -3,59 +3,59 @@
   <div class="footer-main">
     <div class="footer-container">
       <mat-grid-list cols="2" rowHeight="100px">
-      <!-- Company Info -->
-       <mat-grid-tile colspan="1">
-        <div class="footer-logo logo-img">
-          <img ngSrc="assets/BoHLogo.png" alt="BankOfMyHouse" width="150" height="150" priority>
-        </div>
-</mat-grid-tile>
+        <!-- Company Info -->
+        <mat-grid-tile colspan="1">
+          <div class="footer-logo logo-img">
+            <img ngSrc="assets/BoHLogo.png" alt="BankOfMyHouse" width="150" height="150" priority>
+          </div>
+        </mat-grid-tile>
 
         <!-- Contact Info -->
-         <mat-grid-tile colspan="1">
-        <div class="contact-info">
-          <div class="contact-item">
-            <i class="icon-phone" aria-hidden="true"></i>
-            <div>
-              <span class="contact-label">Customer Service</span>
-              <a href="tel:+1-800-123-4567" class="contact-link">1-800-123-BANK</a>
+        <mat-grid-tile colspan="1">
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="icon-phone" aria-hidden="true"></i>
+              <div>
+                <span class="contact-label">Customer Service</span>
+                <a href="tel:+1-800-123-4567" class="contact-link">1-800-123-BANK</a>
+              </div>
             </div>
-          </div>
 
-          <div class="contact-item">
-            <i class="icon-clock" aria-hidden="true"></i>
-            <div>
-              <span class="contact-label">Available</span>
-              <span class="contact-text">24/7 Support</span>
+            <div class="contact-item">
+              <i class="icon-clock" aria-hidden="true"></i>
+              <div>
+                <span class="contact-label">Available</span>
+                <span class="contact-text">24/7 Support</span>
+              </div>
             </div>
           </div>
-        </div>
-</mat-grid-tile>
+        </mat-grid-tile>
 
         <!-- Security Notice -->
-                  <mat-grid-tile colspan="2">
-        <div class="security-notice">
-          <i class="icon-shield-check" aria-hidden="true"></i>
-          <div>
-            <strong>Security Notice:</strong> SecureBank will never ask for your login
-            credentials via email or phone.
+        <mat-grid-tile colspan="2">
+          <div class="security-notice">
+            <i class="icon-shield-check" aria-hidden="true"></i>
+            <div>
+              <strong>Security Notice:</strong> SecureBank will never ask for your login
+              credentials via email or phone.
+            </div>
           </div>
-        </div>
         </mat-grid-tile>
-                          <mat-grid-tile colspan="2">
-      <div class="footer-bottom-content">
-                <div class="copyright">
-          <p>&copy; {{ currentYear() }} BankOfMyHouse. All rights reserved.</p>
-        </div>
-        </div>
+        <mat-grid-tile colspan="2">
+          <div class="footer-bottom-content">
+            <div class="copyright">
+              <p>&copy; {{ currentYear() }} BankOfMyHouse. All rights reserved.</p>
+            </div>
+          </div>
         </mat-grid-tile>
-        </mat-grid-list>
-      </div>
+      </mat-grid-list>
     </div>
+  </div>
 
   <!-- Back to Top Button -->
   @if (showBackToTop()) {
   <button class="back-to-top" (click)="scrollToTop()" aria-label="Back to top" [class.visible]="showBackToTop()">
-    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+    <fa-icon [icon]="faChevronUp" aria-hidden="true" />
   </button>
   }
 </footer>

@@ -34,7 +34,7 @@
       @if (currentUser(); as user) {
       <div class="user-menu-wrapper">
         <button class="user-menu-btn" (click)="toggleUserMenu()" aria-label="User menu">
-          <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+          <fa-icon [icon]="faUserCircle" aria-hidden="true" />
         </button>
 
         @if (userMenuOpen()) {

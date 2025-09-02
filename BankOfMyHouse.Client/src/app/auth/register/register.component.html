@@ -100,10 +100,10 @@
             placeholder="Enter your password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
-            <i class="fa fa-eye"></i>
+            <fa-icon [icon]="faEye" />
             }
             @if(showPassword){
-            <i class="fa fa-eye-slash"></i>
+            <fa-icon [icon]="faEyeSlash" />
             }
           </button>
           @if (submitted && f['password'].errors) {

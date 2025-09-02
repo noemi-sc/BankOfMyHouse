@@ -1,9 +1,10 @@
-// bank-footer.component.ts
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 interface FooterLink {
   label: string;
@@ -16,17 +17,10 @@ interface FooterSection {
   links: FooterLink[];
 }
 
-interface SocialLink {
-  platform: string;
-  url: string;
-  icon: string;
-  ariaLabel: string;
-}
-
 @Component({
   selector: 'app-bank-footer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NgOptimizedImage, MatGridListModule],
+  imports: [CommonModule, RouterModule, NgOptimizedImage, MatGridListModule, FontAwesomeModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css'],
   standalone: true,
@@ -36,9 +30,12 @@ interface SocialLink {
   }
 })
 export class BankFooterComponent {
+
+  protected readonly faChevronUp = faChevronUp;
+
   // State signals
   showBackToTop = signal(false);
-  
+
   currentYear = computed(() => new Date().getFullYear());
 
   footerSections = signal<FooterSection[]>([
@@ -76,33 +73,6 @@ export class BankFooterComponent {
         { label: 'Report Fraud', path: '/report-fraud' },
         { label: 'Feedback', path: '/feedback' }
       ]
-    }
-  ]);
-
-  socialLinks = signal<SocialLink[]>([
-    {
-      platform: 'facebook',
-      url: 'https://facebook.com/securebank',
-      icon: 'icon-facebook',
-      ariaLabel: 'Follow us on Facebook'
-    },
-    {
-      platform: 'twitter',
-      url: 'https://twitter.com/securebank',
-      icon: 'icon-twitter',
-      ariaLabel: 'Follow us on Twitter'
-    },
-    {
-      platform: 'linkedin',
-      url: 'https://linkedin.com/company/securebank',
-      icon: 'icon-linkedin',
-      ariaLabel: 'Follow us on LinkedIn'
-    },
-    {
-      platform: 'youtube',
-      url: 'https://youtube.com/securebank',
-      icon: 'icon-youtube',
-      ariaLabel: 'Subscribe to our YouTube channel'
     }
   ]);
 

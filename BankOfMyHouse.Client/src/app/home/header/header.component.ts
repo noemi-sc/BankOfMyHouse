@@ -3,17 +3,10 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
-import { UserDto } from '../../auth/models/user';
 import { AuthService } from '../../auth/auth.service';
 import { UsersService } from '../../users/users.service';
-
-interface Notification {
-  id: string;
-  message: string;
-  type: 'info' | 'warning' | 'success';
-  timestamp: Date;
-  read: boolean;
-}
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: 'app-header',
@@ -21,21 +14,23 @@ interface Notification {
   styleUrl: './header.component.css',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NgOptimizedImage],
+  imports: [CommonModule, RouterModule, NgOptimizedImage, FontAwesomeModule],
   host: {
     '(document:click)': 'onDocumentClick($event)'
   }
 })
 export class HeaderComponent implements OnInit {
 
-    private usersService = inject(UsersService);
-  
+  protected readonly faUserCircle = faUserCircle;
+
+  private usersService = inject(UsersService);
+
   // State signals -- da mettere current user
   currentUser = this.usersService.userDetails;
   loading = this.usersService.loading;
   error = this.usersService.error;
 
-    ngOnInit() {
+  ngOnInit() {
     this.usersService.getUserDetails();
   }
 
@@ -46,7 +41,7 @@ export class HeaderComponent implements OnInit {
 
   navItems = signal([
     // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
-     { label: 'Accounts', path: '/home', icon: 'icon-wallet', highlight: false },
+    { label: 'Accounts', path: '/home', icon: 'icon-wallet', highlight: false },
 /*     { label: 'Payments', path: '/home', icon: 'icon-credit-card', highlight: true },
  */    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false }
   ]);
