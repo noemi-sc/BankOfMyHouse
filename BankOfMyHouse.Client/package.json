@@ -6,8 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:BankOfMyHouse.Client": "node dist/bank-of-my-house.client/server/server.mjs"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -22,12 +21,13 @@
     "@angular/platform-server": "^20.1.4",
     "@angular/router": "^20.1.4",
     "@angular/ssr": "^20.1.4",
+    "@fortawesome/angular-fontawesome": "^3.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "@microsoft/signalr": "^9.0.6",
-    "@types/chart.js": "^4.0.1",
     "chart.js": "^4.5.0",
-    "ng2-charts": "^8.0.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
+    "ng2-charts": "^8.0.0",
     "rxjs": "~7.8.2",
     "tslib": "^2.8.1",
     "zone.js": "~0.15.1"
