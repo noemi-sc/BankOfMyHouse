@@ -1,12 +1,7 @@
 import { Component } from '@angular/core';
-import {
-  RouterOutlet,
-  RouterLink,
-  Router,
-  NavigationEnd,
-} from '@angular/router';
-import {  HeaderComponent } from "./home/header/header.component";
-import { BankFooterComponent } from "./home/footer/footer.component";
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { BankFooterComponent } from "./dashboard/footer/footer.component";
+import { HeaderComponent } from './dashboard/header/header.component';
 
 @Component({
   selector: 'app-root',
@@ -16,8 +11,8 @@ import { BankFooterComponent } from "./home/footer/footer.component";
     RouterLink,
     HeaderComponent,
     BankFooterComponent
-    
-],
+
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
