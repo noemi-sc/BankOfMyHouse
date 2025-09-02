@@ -23,13 +23,23 @@
                     placeholder="IBAN del destinatario" (keydown.enter)="onConfirm()" (keydown.escape)="onCancel()" />
             </p>
 
-            <!--Importo-->
+            <!--Importo e Valuta-->
             <label for="popup-input">Inserisci l'importo da versare:</label>
-            <mat-form-field floatLabel="always">
-                <mat-label>Importo</mat-label>
-                <input matInput type="number" [(ngModel)]="amount" class="amount-right-align" placeholder="0" />
-                <span matTextSuffix>€&nbsp;</span>
-            </mat-form-field>
+            <div class="amount-currency-row">
+                <mat-form-field class="amount-field">
+                    <mat-label>Importo</mat-label>
+                    <input matInput type = "number" [(ngModel)]="amount" class="amount-right-align"  min="0" placeholder="0,00"/>
+                </mat-form-field>
+
+                <mat-form-field class="currency-field">
+                    <mat-label>Seleziona valuta</mat-label>
+                    <mat-select [(ngModel)]="selectedCurrency">
+                        @for (currency of currencies; track currency.code) {
+                            <mat-option [value]="currency">{{ currency.name }} ({{ currency.symbol }})</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
 <!--Causale-->
             
                 <label for="popup-input">Causale:</label>
