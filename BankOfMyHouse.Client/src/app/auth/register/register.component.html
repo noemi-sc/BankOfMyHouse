@@ -21,7 +21,7 @@
       <!-- Name Field -->
       <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" id="username" formControlName="username" class="form-control"
+        <input type="text" id="username" formControlName="username" class="form-control field-input"
           [class.is-invalid]="submitted && f['username'].errors" placeholder="Enter your username">
 
         @if (submitted && f['username'].errors) {
@@ -41,7 +41,7 @@
 
       <div class="form-group">
         <label for="firstname">First Name</label>
-        <input type="text" id="firstname" formControlName="firstname" class="form-control"
+        <input type="text" id="firstname" formControlName="firstname" class="form-control field-input"
           [class.is-invalid]="submitted && f['firstname'].errors" placeholder="Enter your firstname">
 
         @if (submitted && f['firstname'].errors) {
@@ -58,7 +58,7 @@
 
       <div class="form-group">
         <label for="lastname">Last Name</label>
-        <input type="text" id="lastname" formControlName="lastname" class="form-control"
+        <input type="text" id="lastname" formControlName="lastname" class="form-control field-input"
           [class.is-invalid]="submitted && f['lastname'].errors" placeholder="Enter your lastname">
 
         @if (submitted && f['lastname'].errors) {
@@ -76,7 +76,7 @@
       <!-- Email Field -->
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" id="email" formControlName="email" class="form-control"
+        <input type="email" id="email" formControlName="email" class="form-control field-input"
           [class.is-invalid]="submitted && f['email'].errors" placeholder="Enter your email">
 
         @if (submitted && f['email'].errors) {
@@ -94,38 +94,60 @@
       <!-- Password Field -->
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" formControlName="password" class="form-control"
-          [class.is-invalid]="submitted && f['password'].errors" placeholder="Enter your password">
-
-        @if (submitted && f['password'].errors) {
-        <div class="invalid-feedback">
-          @if (f['password'].errors['required']) {
-          <div>Password is required</div>
-          }
-          @if (f['password'].errors['minlength']) {
-          <div>Password must be at least 6 characters</div>
+        <div class="password-input-container">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+            class="form-control password-input" [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+            @if(!showPassword){
+            <i class="fa fa-eye"></i>
+            }
+            @if(showPassword){
+            <i class="fa fa-eye-slash"></i>
+            }
+          </button>
+          @if (submitted && f['password'].errors) {
+          <div class="invalid-feedback">
+            @if (f['password'].errors['required']) {
+            <div>Password is required</div>
+            }
+            @if (f['password'].errors['minlength']) {
+            <div>Password must be at least 6 characters</div>
+            }
+          </div>
           }
         </div>
-        }
       </div>
 
       <!-- Confirm Password Field -->
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control"
-          [class.is-invalid]="submitted && f['confirmPassword'].errors" placeholder="Confirm your password">
+        <div class="password-input-container">
 
-        @if (submitted && f['confirmPassword'].errors) {
-        <div class="invalid-feedback">
-          @if (f['confirmPassword'].errors['required']) {
-          <div>Please confirm your password</div>
-          }
-          @if (f['confirmPassword'].errors['passwordMismatch']) {
-          <div>Passwords do not match</div>
+          <input [type]="showPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword"
+            class="form-control password-input" [class.is-invalid]="submitted && f['confirmPassword'].errors"
+            placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+            @if(!showPassword){
+            <i class="fa fa-eye"></i>
+            }
+            @if(showPassword){
+            <i class="fa fa-eye-slash"></i>
+            }
+          </button>
+          @if (submitted && f['confirmPassword'].errors) {
+          <div class="invalid-feedback">
+            @if (f['confirmPassword'].errors['required']) {
+            <div>Password is required</div>
+            }
+            @if (f['confirmPassword'].errors['minlength']) {
+            <div>Password must be at least 6 characters</div>
+            }
+          </div>
           }
         </div>
-        }
       </div>
+
 
       <!-- Submit Button -->
       <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading || registerForm.invalid">

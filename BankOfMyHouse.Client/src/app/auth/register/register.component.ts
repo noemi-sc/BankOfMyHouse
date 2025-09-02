@@ -17,6 +17,7 @@ export class RegisterComponent implements OnInit {
   submitted = false;
   loading = false;
   error = '';
+  showPassword: boolean = false;
   success = false;
   constructor(
     private formBuilder: FormBuilder,
@@ -100,5 +101,11 @@ export class RegisterComponent implements OnInit {
           error.error?.message || 'Registration failed. Please try again.';
       },
     });
+
+
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
