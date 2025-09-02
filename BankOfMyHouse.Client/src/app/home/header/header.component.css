@@ -87,7 +87,7 @@
     }
 
     /* Notifications */
-    .notifications-wrapper {
+    /*     .notifications-wrapper {
         position: relative;
     }
 
@@ -196,11 +196,12 @@
     .notification-content time {
         font-size: 0.75rem;
         color: #6b7280;
-    }
+    } */
 
     /* User Menu */
     .user-menu-wrapper {
         position: relative;
+        margin-right: 50px;
     }
 
     .user-menu-btn {
@@ -298,6 +299,10 @@
         border-top: 1px solid #e5e7eb;
     }
 
+    .fa {
+        font-size: large !important;
+    }
+
     /* Mobile Styles */
     @media (max-width: 768px) {
         .mobile-menu-toggle {
@@ -309,7 +314,7 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: #1e40af;
+            background: linear-gradient(135deg, #52dc35 0%, #9df63b 50%, #d45406 100%);
             transform: translateY(-100%);
             opacity: 0;
             visibility: hidden;

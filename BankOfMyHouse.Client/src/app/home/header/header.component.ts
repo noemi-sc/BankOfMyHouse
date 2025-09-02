@@ -1,10 +1,11 @@
 // advanced-header.component.ts
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { UserDto } from '../../auth/models/user';
 import { AuthService } from '../../auth/auth.service';
+import { UsersService } from '../../users/users.service';
 
 interface Notification {
   id: string;
@@ -25,57 +26,30 @@ interface Notification {
     '(document:click)': 'onDocumentClick($event)'
   }
 })
-export class HeaderComponent {
-  // State signals
-  currentUser = signal<UserDto | null>({
-    email: 'John Doe',
-    username: '1234567890',
-    createdAt: '2023-10-01T12:00:00Z',
-    isActive: true,
-    roles: ['User'],
+export class HeaderComponent implements OnInit {
 
-  });
+    private usersService = inject(UsersService);
+  
+  // State signals -- da mettere current user
+  currentUser = this.usersService.userDetails;
+  loading = this.usersService.loading;
+  error = this.usersService.error;
+
+    ngOnInit() {
+    this.usersService.getUserDetails();
+  }
 
   constructor(private router: Router, private authService: AuthService) { }
   mobileMenuOpen = signal(false);
   notificationsOpen = signal(false);
   userMenuOpen = signal(false);
 
-  notifications = signal<Notification[]>([
-    {
-      id: '1',
-      message: 'Your monthly statement is now available',
-      type: 'info',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      read: false
-    },
-    {
-      id: '2',
-      message: 'Security alert: New device login detected',
-      type: 'warning',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      read: false
-    },
-    {
-      id: '3',
-      message: 'Transfer to John Smith completed successfully',
-      type: 'success',
-      timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000),
-      read: true
-    }
-  ]);
-
   navItems = signal([
     // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
-    { label: 'Accounts', path: '/accounts', icon: 'icon-wallet', highlight: false },
-    { label: 'Payments', path: '/payments', icon: 'icon-credit-card', highlight: true },
-    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false }
+     { label: 'Accounts', path: '/home', icon: 'icon-wallet', highlight: false },
+/*     { label: 'Payments', path: '/home', icon: 'icon-credit-card', highlight: true },
+ */    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false }
   ]);
-
-  // Computed values
-  unreadCount = computed(() =>
-    this.notifications().filter(n => !n.read).length
-  );
 
   // Event handlers
   toggleMobileMenu() {
@@ -100,19 +74,6 @@ export class HeaderComponent {
     this.mobileMenuOpen.set(false);
   }
 
-  markAsRead(notificationId: string) {
-    this.notifications.update(notifications =>
-      notifications.map(n =>
-        n.id === notificationId ? { ...n, read: true } : n
-      )
-    );
-  }
-
-  markAllAsRead() {
-    this.notifications.update(notifications =>
-      notifications.map(n => ({ ...n, read: true }))
-    );
-  }
 
   onDocumentClick(event: Event) {
     const target = event.target as Element;
