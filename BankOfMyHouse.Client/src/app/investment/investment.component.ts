@@ -1,9 +1,10 @@
 import { Component, computed, effect, OnDestroy, OnInit } from '@angular/core';
 import { ChartType, ChartConfiguration } from 'chart.js';
-import { SignalrService } from './dashboard.service';
+
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { CompanyStockPrice } from './models/investment';
+import { DashboardService } from '../dashboard/investements_dashboard/dashboard.service';
 
 @Component({
   selector: 'app-investment',
@@ -147,7 +148,7 @@ export class InvestmentComponent implements OnInit, OnDestroy {
     };
   });
 
-  constructor(public signalrService: SignalrService) {
+  constructor(public signalrService: DashboardService) {
     effect(() => {
       const status = this.signalrService.connectionStatus();
       console.log('Connection status changed:', status);

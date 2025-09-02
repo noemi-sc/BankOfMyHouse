@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, throwError } from 'rxjs';
+import { map, catchError, throwError, Observable } from 'rxjs';
 import { CreateBankAccountResponseDto } from './models/create/CreateBankAccountResponseDto';
 import { CreateBankAccountRequestDto } from './models/create/CreateBankAccountRequestDto';
 @Injectable({
@@ -52,6 +52,10 @@ export class BankAccountService {
           this.loadingSignal.set(false);
         }
       });
+  }
+  
+  listAccounts(): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}`);
   }
 }
 

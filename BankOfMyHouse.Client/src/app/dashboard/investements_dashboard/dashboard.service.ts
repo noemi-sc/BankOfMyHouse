@@ -1,12 +1,12 @@
 // signalr.service.ts
 import { Injectable, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { CompanyStockPrice } from './models/investment';
+import { CompanyStockPrice } from '../../investment/models/investment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SignalrService {
+export class DashboardService {
   public chartData = signal<CompanyStockPrice[]>([]);
   public connectionStatus = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
   private hubConnection!: signalR.HubConnection;

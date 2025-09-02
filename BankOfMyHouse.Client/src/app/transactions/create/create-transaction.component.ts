@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BankAccountService } from '../../bank-account.service';
+import { BankAccountService } from '../../account/bank-account.service';
 import { CreateTransactionRequestDto, IbanCodeDto } from '../models/createTransactionRequestDto';
 import { TransactionService } from '../transaction.service';
 import { UsersService } from '../../users/users.service';
@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule],
   templateUrl: './create-transaction.component.html',
-  styleUrls: ['./create-transaction.component.css', '../create-transaction-custom-style.scss']
+  styleUrls: ['./create-transaction.component.css', './create-transaction-custom-style.scss']
 })
 export class CreateTransactionComponent {
   // Inputs
@@ -34,7 +34,7 @@ export class CreateTransactionComponent {
     { name: "Euro", code: "EUR", symbol: "€" },
     { name: "British Pound", code: "GBP", symbol: "£" }
   ];
-    protected readonly selectedCurrency = signal<any>(this.currencies[1].code);
+  protected readonly selectedCurrency = signal<any>(this.currencies[1].code);
 
   private transactionService = inject(TransactionService);
   private usersService = inject(UsersService);
@@ -66,8 +66,8 @@ export class CreateTransactionComponent {
     // Set amount
     requestBody.amount = this.amount() ?? 0;
 
-      // Set currency
-    requestBody.currencyCode  = this.selectedCurrency().code;
+    // Set currency
+    requestBody.currencyCode = this.selectedCurrency().code;
 
     // Set description (causale)
     requestBody.description = this.currentValue();

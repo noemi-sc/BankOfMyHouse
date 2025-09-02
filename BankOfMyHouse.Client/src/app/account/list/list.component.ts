@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
-import { AccountService } from '../account.service';
-import { BankAccount, GetBankAccountResponseDto } from '../models/accounts';
+import { GetBankAccountResponseDto } from '../models/list/GetBankAccountResponseDto';
+import { BankAccountDto } from '../models/list/BankAccountDto';
+import { BankAccountService } from '../bank-account.service';
 
 /**
  * @title List with single selection using Reactive forms
@@ -17,9 +18,9 @@ import { BankAccount, GetBankAccountResponseDto } from '../models/accounts';
 export class ListAccountComponent {
   form: FormGroup<any>;
   bankAccountsControl: FormControl<any> = new FormControl<any>(null);
-  bankAccounts: BankAccount[] = [];
+  bankAccounts: BankAccountDto[] = [];
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: BankAccountService) {
 
     this.form = new FormGroup({
       accountsList: this.bankAccountsControl,
