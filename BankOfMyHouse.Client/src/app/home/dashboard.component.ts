@@ -1,5 +1,5 @@
 // components/dashboard/dashboard.component.ts
-import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { UsersService } from '../users/users.service';
 import { Router } from '@angular/router';
@@ -10,7 +10,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { GetTransactionComponent } from "../transactions/get-transaction/get-transaction.component";
-
+import {MatGridListModule} from '@angular/material/grid-list';
+import { TransactionService } from '../transactions/transaction.service';
+import { effect } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,13 +29,13 @@ import { GetTransactionComponent } from "../transactions/get-transaction/get-tra
     MatFormFieldModule,
     MatSelectModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
     /*     AccountCardComponent,
         InvestmentItemComponent,
         TransactionItemComponent,
         MarketOverviewComponent */
-    ,
-    GetTransactionComponent
+    GetTransactionComponent,
+    MatGridListModule
 ],
 
 
@@ -43,6 +45,7 @@ export class DashboardComponent implements OnInit {
   private usersService = inject(UsersService);
   private router = inject(Router);
   private bankAccountService = inject(BankAccountService);
+  private transactionService = inject(TransactionService);
   protected readonly isBankAccountPopupOpen = signal(false);
   protected readonly isTransactionPopupOpen = signal(false);
   protected readonly inputValue = signal('');
@@ -52,21 +55,36 @@ export class DashboardComponent implements OnInit {
   loading = this.usersService.loading;
   error = this.usersService.error;
 
+  // Computed signal for total balance of all accounts
+  totalBalance = computed(() => {
+    const user = this.currentUser();
+    if (!user?.bankAccounts) return 0;
+    return user.bankAccounts.reduce((sum, account) => sum + account.balance, 0);
+  });
+
+  totalAccounts = computed(() => {
+    const user = this.currentUser();
+    if (!user?.bankAccounts) return 0;
+    return user.bankAccounts.length;
+  });
+
+  constructor() {
+    // Effect to refresh user details when transactions are refreshed
+    effect(() => {
+      const trigger = this.transactionService.refreshTrigger();
+      if (trigger > 0) {
+        // Delay to ensure transaction has been processed and balances updated
+        setTimeout(() => {
+          this.usersService.getUserDetails();
+        }, 600);
+      }
+    });
+  }
+
   ngOnInit() {
     this.usersService.getUserDetails();
   }
-  // dashboardService = inject(DashboardService);
-
-//   portfolioChange = computed(() => this.dashboardService.portfolioChange());
-
-  /*   recentTransactions = computed(() => 
-      this.dashboardService.transactionsData()
-        .slice()
-        .sort((a, b) => b.date.getTime() - a.date.getTime())
-        .slice(0, 5)
-    ); */
-
-
+  
   // Popup for new IBAN
   protected openBankAccountPopup(): void {
     this.isBankAccountPopupOpen.set(true);
@@ -99,7 +117,4 @@ export class DashboardComponent implements OnInit {
     console.log('Transaction popup cancelled');
     this.isTransactionPopupOpen.set(false);
   }
-
-
-
 }

@@ -4,16 +4,35 @@
     @if (currentUser(); as user) {
     <div class="user-dropdown">
       <div class="user-info">
-        <h1>Hello {{ user.firstName }} {{ user.lastName }}</h1>
+        <h1>Salve {{ user.firstName }} {{ user.lastName }}</h1>
       </div>
     </div>
     }
   </header>
+  <mat-grid-list cols="2" rowHeight="100px">
+
+    <mat-grid-tile> <button mat-button (click)="openBankAccountPopup() " class="open-popup-btn">Crea nuovo IBAN</button>
+      @if (isBankAccountPopupOpen()) {
+      <app-create-bank-account [initialValue]="inputValue()" (confirmed)="onBankAccountPopupConfirmed($event)"
+        (cancelled)="onBankAccountPopupCancelled()" />
+      }</mat-grid-tile>
+    <mat-grid-tile> <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un
+        pagamento</button>
+      @if (isTransactionPopupOpen()) {
+      <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
+        (cancelled)="onTransactionPopupCancelled()" />
+      }</mat-grid-tile>
+
+
+
+  </mat-grid-list>
+
+
 
   <div class="overview-cards">
     <div class="overview-card">
       <h2>Account</h2>
-      <div class="accounts-grid">
+      <div class="accounts-grid" id="scroll-overflow">
         @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
         <div class="bank-account-card">
           <h3>{{ bankAccount.iban }}</h3>
@@ -25,11 +44,6 @@
         }
         <br>
 
-        <button mat-button (click)="openBankAccountPopup() " class="open-popup-btn">Crea nuovo IBAN</button>
-        @if (isBankAccountPopupOpen()) {
-        <app-create-bank-account [initialValue]="inputValue()" (confirmed)="onBankAccountPopupConfirmed($event)"
-          (cancelled)="onBankAccountPopupCancelled()" />
-        }
         <!--                   <div class="overview-amount">
             {{ dashboardService.totalBalance() | currency:'USD':'symbol':'1.2-2' }}
           </div> 
@@ -39,14 +53,16 @@
 
 
     <div class="overview-card">
-      <h3>Portfolio Value</h3>
-      <!--           <div class="overview-amount">
-            {{ dashboardService.portfolioValue() | currency:'USD':'symbol':'1.2-2' }}
-          </div>
-          <div class="portfolio-change" [class.positive]="portfolioChange().amount > 0" [class.negative]="portfolioChange().amount < 0">
-            {{ portfolioChange().amount > 0 ? '+' : '' }}{{ portfolioChange().amount | currency:'USD':'symbol':'1.2-2' }}
-            ({{ portfolioChange().percent > 0 ? '+' : '' }}{{ portfolioChange().percent | number:'1.2-2' }}%)
-          </div> -->
+
+      <div class="overview-amount">
+              <h3>Totale conti bancari:</h3>
+       {{ totalAccounts()  }}
+                     <h3>Somma del valore dei conti bancari:</h3>
+
+        {{ totalBalance() | currency:'EUR':'symbol':'1.2-2' }}
+
+
+      </div>
     </div>
   </div>
 
@@ -59,12 +75,8 @@
   </div>
 
   <br>
-  
+
   <div class="dashboard-grid">
-    <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un pagamento</button>
-    @if (isTransactionPopupOpen()) {
-    <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
-      (cancelled)="onTransactionPopupCancelled()" />
-    }
+
   </div>
 </div>
