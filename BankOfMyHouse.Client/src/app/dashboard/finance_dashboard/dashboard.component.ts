@@ -1,19 +1,18 @@
 // components/dashboard/dashboard.component.ts
 import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit, Signal } from '@angular/core';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/users.service';
 import { Router } from '@angular/router';
-import { BankAccountService } from '../bank-account.service';
-import { CreateBankAccountComponent } from '../create-bank-account/create-bank-account.component';
-import { CreateTransactionComponent } from '../transactions/create-transaction/create-transaction.component';
+import { BankAccountService } from '../../account/bank-account.service';
+import { CreateTransactionComponent } from '../../transactions/create/create-transaction.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { GetTransactionComponent } from "../transactions/get-transaction/get-transaction.component";
+import { GetTransactionComponent } from "../../transactions/list/get-transaction.component";
 import { MatGridListModule } from '@angular/material/grid-list';
-import { TransactionService } from '../transactions/transaction.service';
-import { effect } from '@angular/core';
-import { GetUserDetailsResponseDto } from '../auth/models/getUserDetails/getUserDetailsResponseDto';
+import { TransactionService } from '../../transactions/transaction.service';
+import { GetUserDetailsResponseDto } from '../../auth/models/getUserDetails/getUserDetailsResponseDto';
+import { CreateBankAccountComponent } from '../../account/create/create-bank-account.component';
 
 @Component({
   selector: 'app-dashboard',
