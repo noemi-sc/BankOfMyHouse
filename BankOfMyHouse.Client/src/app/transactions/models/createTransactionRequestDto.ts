@@ -2,7 +2,7 @@ export class CreateTransactionRequestDto {
     senderIban: IbanCodeDto = new IbanCodeDto('');
     receiverIban: IbanCodeDto = new IbanCodeDto('');
     amount: number = 0;
-    currencyCode: string = '€';
+    currencyCode: string = 'EUR';
     paymentCategory: PaymentCategoryCode = PaymentCategoryCode.Other;
     description: string = '';
 }
