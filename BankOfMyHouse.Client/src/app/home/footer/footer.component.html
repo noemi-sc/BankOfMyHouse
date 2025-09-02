@@ -1,181 +1,61 @@
- <footer class="bank-footer">
-      <!-- Main Footer Content -->
-      <div class="footer-main">
-        <div class="footer-container">
-          <!-- Company Info -->
-          <div class="footer-section company-info">
-            <div class="footer-logo">
-              <img 
-                ngSrc="/assets/bank-logo.svg" 
-                alt="SecureBank" 
-                width="140" 
-                height="45"
-                class="logo-img">
-              <h3>SecureBank</h3>
-            </div>
-            <p class="company-description">
-              Your trusted financial partner since 1985. We're committed to providing 
-              secure, innovative banking solutions for individuals and businesses.
-            </p>
-            
-            <!-- Contact Info -->
-            <div class="contact-info">
-              <div class="contact-item">
-                <i class="icon-phone" aria-hidden="true"></i>
-                <div>
-                  <span class="contact-label">Customer Service</span>
-                  <a href="tel:+1-800-123-4567" class="contact-link">1-800-123-BANK</a>
-                </div>
-              </div>
-              
-              <div class="contact-item">
-                <i class="icon-clock" aria-hidden="true"></i>
-                <div>
-                  <span class="contact-label">Available</span>
-                  <span class="contact-text">24/7 Support</span>
-                </div>
-              </div>
-            </div>
+<footer class="bank-footer">
+  <!-- Main Footer Content -->
+  <div class="footer-main">
+    <div class="footer-container">
+      <mat-grid-list cols="2" rowHeight="100px">
+      <!-- Company Info -->
+       <mat-grid-tile colspan="1">
+        <div class="footer-logo logo-img">
+          <img ngSrc="assets/BoHLogo.png" alt="BankOfMyHouse" width="150" height="150" priority>
+        </div>
+</mat-grid-tile>
 
-            <!-- Social Media -->
-            <div class="social-links">
-              <h4>Follow Us</h4>
-              <div class="social-icons">
-                @for (social of socialLinks(); track social.platform) {
-                  <a 
-                    [href]="social.url"
-                    [attr.aria-label]="social.ariaLabel"
-                    class="social-link"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <i [class]="social.icon" aria-hidden="true"></i>
-                  </a>
-                }
-              </div>
+        <!-- Contact Info -->
+         <mat-grid-tile colspan="1">
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="icon-phone" aria-hidden="true"></i>
+            <div>
+              <span class="contact-label">Customer Service</span>
+              <a href="tel:+1-800-123-4567" class="contact-link">1-800-123-BANK</a>
             </div>
           </div>
 
-          <!-- Footer Links Sections -->
-          @for (section of footerSections(); track section.title) {
-            <div class="footer-section">
-              <h4 class="section-title">{{ section.title }}</h4>
-              <ul class="footer-links">
-                @for (link of section.links; track link.path) {
-                  <li>
-                    @if (link.external) {
-                      <a 
-                        [href]="link.path"
-                        class="footer-link"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        {{ link.label }}
-                        <i class="icon-external-link" aria-hidden="true"></i>
-                      </a>
-                    } @else {
-                      <a 
-                        [routerLink]="link.path"
-                        class="footer-link">
-                        {{ link.label }}
-                      </a>
-                    }
-                  </li>
-                }
-              </ul>
-            </div>
-          }
-
-          <!-- Security & Compliance -->
-          <div class="footer-section security-section">
-            <h4 class="section-title">Security & Trust</h4>
-            
-            <div class="security-badges">
-              <div class="security-badge">
-                <img 
-                  ngSrc="/assets/fdic-logo.png" 
-                  alt="FDIC Insured" 
-                  width="80" 
-                  height="40"
-                  class="badge-img">
-                <span class="badge-text">FDIC Insured</span>
-              </div>
-              
-              <div class="security-badge">
-                <img 
-                  ngSrc="/assets/ssl-secure.png" 
-                  alt="SSL Secured" 
-                  width="60" 
-                  height="40"
-                  class="badge-img">
-                <span class="badge-text">256-bit SSL</span>
-              </div>
-              
-              <div class="security-badge">
-                <img 
-                  ngSrc="/assets/equal-housing.png" 
-                  alt="Equal Housing Lender" 
-                  width="40" 
-                  height="40"
-                  class="badge-img">
-                <span class="badge-text">Equal Housing</span>
-              </div>
-            </div>
-
-            <div class="compliance-info">
-              <p class="compliance-text">
-                <strong>Member FDIC.</strong> Deposits are insured up to $250,000 per depositor.
-              </p>
-              <p class="compliance-text">
-                <strong>Equal Housing Lender.</strong> We do not discriminate based on race, 
-                color, religion, national origin, sex, handicap, or familial status.
-              </p>
-            </div>
-
-            <!-- Security Notice -->
-            <div class="security-notice">
-              <i class="icon-shield-check" aria-hidden="true"></i>
-              <div>
-                <strong>Security Notice:</strong> SecureBank will never ask for your login 
-                credentials via email or phone. 
-                <a href="/security/fraud-prevention" class="security-link">Learn more</a>
-              </div>
+          <div class="contact-item">
+            <i class="icon-clock" aria-hidden="true"></i>
+            <div>
+              <span class="contact-label">Available</span>
+              <span class="contact-text">24/7 Support</span>
             </div>
           </div>
         </div>
-      </div>
+</mat-grid-tile>
 
-      <!-- Footer Bottom -->
-      <div class="footer-bottom">
-        <div class="footer-container">
-          <div class="footer-bottom-content">
-            <div class="copyright">
-              <p>&copy; {{ currentYear() }} SecureBank. All rights reserved.</p>
-            </div>
-            
-            <div class="legal-links">
-              <a href="/privacy-policy" class="legal-link">Privacy Policy</a>
-              <span class="separator">|</span>
-              <a href="/terms-of-service" class="legal-link">Terms of Service</a>
-              <span class="separator">|</span>
-              <a href="/accessibility" class="legal-link">Accessibility</a>
-              <span class="separator">|</span>
-              <a href="/sitemap" class="legal-link">Site Map</a>
-            </div>
-
-            <div class="footer-meta">
-              <span class="routing-number">Routing Number: 123456789</span>
-            </div>
+        <!-- Security Notice -->
+                  <mat-grid-tile colspan="2">
+        <div class="security-notice">
+          <i class="icon-shield-check" aria-hidden="true"></i>
+          <div>
+            <strong>Security Notice:</strong> SecureBank will never ask for your login
+            credentials via email or phone.
           </div>
         </div>
+        </mat-grid-tile>
+                          <mat-grid-tile colspan="2">
+      <div class="footer-bottom-content">
+                <div class="copyright">
+          <p>&copy; {{ currentYear() }} BankOfMyHouse. All rights reserved.</p>
+        </div>
+        </div>
+        </mat-grid-tile>
+        </mat-grid-list>
       </div>
+    </div>
 
-      <!-- Back to Top Button -->
-      @if (showBackToTop()) {
-        <button 
-          class="back-to-top"
-          (click)="scrollToTop()"
-          aria-label="Back to top"
-          [class.visible]="showBackToTop()">
-          <i class="icon-chevron-up" aria-hidden="true"></i>
-        </button>
-      }
-    </footer>
+  <!-- Back to Top Button -->
+  @if (showBackToTop()) {
+  <button class="back-to-top" (click)="scrollToTop()" aria-label="Back to top" [class.visible]="showBackToTop()">
+    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+  </button>
+  }
+</footer>

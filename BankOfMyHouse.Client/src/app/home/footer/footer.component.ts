@@ -3,6 +3,7 @@ import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 interface FooterLink {
   label: string;
@@ -25,7 +26,7 @@ interface SocialLink {
 @Component({
   selector: 'app-bank-footer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NgOptimizedImage],
+  imports: [CommonModule, RouterModule, NgOptimizedImage, MatGridListModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css'],
   standalone: true,
