@@ -1,21 +1,29 @@
-import { Component, computed, effect, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, OnInit, Signal, signal } from '@angular/core';
 import { ChartType, ChartConfiguration } from 'chart.js';
-
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-import { CompanyStockPrice } from './models/investment';
 import { DashboardService } from '../dashboard/investements_dashboard/dashboard.service';
+import { MatGridListModule } from "@angular/material/grid-list";
+import { CreateInvestmentComponent } from "./create-investment/create-investment.component";
+import { InvestmentService } from '../dashboard/investments_dashboard/investment.service';
+import { listCompanyResponseDto } from './models/create/listCompany/listCompanyResponseDto';
+/* import { MatCarouselModule } from '@ngmodule/material-carousel';
+import { FlexLayoutModule } from '@angular/flex-layout'; */
 
 @Component({
   selector: 'app-investment',
   templateUrl: './investment.component.html',
   styleUrl: './investment.component.css',
   standalone: true,
-  imports: [BaseChartDirective, CommonModule]
+  imports: [BaseChartDirective, CommonModule, MatGridListModule, CreateInvestmentComponent]
 })
 export class InvestmentComponent implements OnInit, OnDestroy {
   public chartType: ChartType = 'line';
 
+  protected readonly isInvestmentPopupOpen = signal(false);
+  protected readonly inputValue = signal('');
+  protected readonly investments = signal<any[]>([]);
+  
   // Computed signals
   public dataPointCount = computed(() => {
     const data = this.signalrService.chartData();
@@ -148,7 +156,10 @@ export class InvestmentComponent implements OnInit, OnDestroy {
     };
   });
 
-  constructor(public signalrService: DashboardService) {
+  constructor(
+    public signalrService: DashboardService,
+    private investmentService: InvestmentService
+  ) {
     effect(() => {
       const status = this.signalrService.connectionStatus();
       console.log('Connection status changed:', status);
@@ -158,19 +169,37 @@ export class InvestmentComponent implements OnInit, OnDestroy {
       const dataCount = this.dataPointCount();
       console.log('Data points updated:', dataCount);
     });
+
+    this.investments
+
   }
+
+
 
   async ngOnInit(): Promise<void> {
     try {
       await this.signalrService.startConnection();
+      this.loadInvestments();
     } catch (error) {
       console.error('Failed to start SignalR connection:', error);
     }
   }
 
+  private loadInvestments(): void {
+    this.investmentService.listInvestment().subscribe({
+      next: (investments) => {
+        this.investments.set(investments);
+      },
+      error: (error) => {
+        console.error('Failed to load investments:', error);
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this.signalrService.stopConnection();
   }
+
 
   public async reconnect(): Promise<void> {
     try {
@@ -184,4 +213,24 @@ export class InvestmentComponent implements OnInit, OnDestroy {
   public clearChart(): void {
     this.signalrService.clearData();
   }
+
+
+  // Popup for new payment
+
+  protected openInvestmentPopup(): void {
+    this.isInvestmentPopupOpen.set(true);
+  }
+
+  protected onInvestmentPopupConfirmed(value: string): void {
+    console.log('Transaction confirmed with value:', value);
+    this.inputValue.set(value);
+    this.isInvestmentPopupOpen.set(false);
+  }
+
+  protected onInvestmentPopupCancelled(): void {
+    console.log('Transaction popup cancelled');
+    this.isInvestmentPopupOpen.set(false);
+  }
 }
+
+
