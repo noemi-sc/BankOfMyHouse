@@ -41,9 +41,9 @@ export class HeaderComponent implements OnInit {
 
   navItems = signal([
     // { label: 'Dashboard', path: '/dashboard', icon: 'icon-dashboard', highlight: false },
-    { label: 'Accounts', path: '/home', icon: 'icon-wallet', highlight: false },
+    { label: 'Conti bancari', path: '/home', icon: 'icon-wallet', highlight: false },
 /*     { label: 'Payments', path: '/home', icon: 'icon-credit-card', highlight: true },
- */    { label: 'Investments', path: '/investments', icon: 'icon-trending-up', highlight: false }
+ */    { label: 'Investimenti', path: '/investments', icon: 'icon-trending-up', highlight: false }
   ]);
 
   // Event handlers

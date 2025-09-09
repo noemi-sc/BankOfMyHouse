@@ -26,8 +26,8 @@
 
   <div class="overview-cards">
     <div class="overview-card">
-      <h2>Account</h2>
-      <div class="accounts-grid" id="scroll-overflow">
+      <h2>Conti bancari</h2>
+      <div class="accounts-grid">
         @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
         <div class="bank-account-card">
           <h3>{{ bankAccount.iban }}</h3>
@@ -35,7 +35,7 @@
           <p class="creation-date">Creato il: {{ bankAccount.creationDate | date:'short' }}</p>
         </div>
         } @empty {
-        <div class="empty-state">No bank accounts found</div>
+        <div class="empty-state">Nessun conto bancario trovato</div>
         }
         <br>
       </div>
@@ -60,6 +60,4 @@
 
   <br>
 
-  <div class="dashboard-grid">
-  </div>
 </div>

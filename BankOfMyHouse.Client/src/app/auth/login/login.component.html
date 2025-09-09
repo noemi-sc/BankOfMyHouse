@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-form-wrapper">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Sign in to your account</p>
+    <h2>Benvenuto</h2>
+    <p class="subtitle">Accede al suo account</p>
 
     <!-- Error Message -->
     @if(error) {
@@ -15,7 +15,7 @@
       <div class="form-group">
         <label for="username">Username</label>
         <input type="username" id="username" formControlName="username" class="form-control username-input"
-          [class.is-invalid]="submitted && f['username'].errors" placeholder="Enter your username"
+          [class.is-invalid]="submitted && f['username'].errors" placeholder="Inserire l'username"
           autocomplete="username" />
         @if(submitted && f['username'].errors){
         <div class="invalid-feedback"></div>
@@ -37,7 +37,7 @@
         <div class="password-input-container">
           <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
             class="form-control password-input" [class.is-invalid]="submitted && f['password'].errors"
-            placeholder="Enter your password" autocomplete="current-password">
+            placeholder="Inserire la password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
             <fa-icon [icon]="faEye" />
@@ -52,12 +52,12 @@
         <div class="invalid-feedback">
           @if(f['password'].errors['required']){
           <div>
-            Password is required
+            La password è obbligatoria
           </div>
           }
           @if(f['password'].errors['minlength']) {
           <div>
-            Password must be at least 6 characters
+            La password deve contenere almeno 6 caratteri
           </div>
           }
         </div>
@@ -83,15 +83,15 @@
         @if(loading){
         <span class="spinner"></span>
         }
-        {{ loading ? "Signing in..." : "Sign In" }}
+        {{ loading ? "Accesso in corso..." : "Accedi" }}
       </button>
     </form>
 
     <!-- Register Link -->
     <div class="register-link">
       <p>
-        Don't have an account?
-        <a href="/register">Create one here</a>
+        Non ha un account?
+        <a href="/register">Create uno qui</a>
       </p>
     </div>
   </div>
