@@ -1,0 +1,55 @@
+<div class="popup-overlay" (click)="onOverlayClick($event)">
+    <div class="popup-content" (click)="$event.stopPropagation()">
+        <h2>Crea un investimento</h2>
+        <!--Scegliere tuo IBAN-->
+        <div class="input-group">
+
+            <label for="popup-input">Scegli il tuo Iban:</label>
+            <mat-form-field>
+                <mat-label>Scegli il tuo IBAN</mat-label>
+                <mat-select [(ngModel)]="selectedSenderIban">
+                    @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
+                    <mat-option [value]="bankAccount">{{ bankAccount.iban }}</mat-option>
+                    } @empty {
+                    <div class="empty-state">Nessun IBAN trovato</div>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <!--Inserire ditta-->
+            <p>
+                <label for="popup-input">Scegli ditta:</label>
+            <mat-form-field>
+                <mat-label>Scegli la ditta</mat-label>
+                <mat-select [(ngModel)]="selectedCompany">
+                    @for (company of companies(); track company.id) {
+                            <mat-option [value]="company">{{ company.name }}</mat-option>
+                        } @empty {
+                        <div class="empty-state">Nessuna ditta trovata</div>
+                        }
+                </mat-select>
+            </mat-form-field>
+            </p>
+
+            <!--Importo e Valuta-->
+            <label for="popup-input">Inserisci l'importo da versare:</label>
+            <div class="amount-currency-row">
+                <mat-form-field class="amount-field">
+                    <mat-label>Importo</mat-label>
+                    <input matInput type="number" [(ngModel)]="amount" class="amount-right-align" min="0"
+                        placeholder="0,00" />
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" (click)="onCancel()" class="btn btn-secondary">
+                Annulla
+            </button>
+
+            <button type="button" (click)="onConfirm()" class="btn btn-primary" [disabled]="!isFormValid()">
+                Crea investimento
+            </button>
+        </div>
+    </div>
+</div>
