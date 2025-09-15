@@ -1,6 +1,7 @@
 {
   "name": "bank-of-my-house.client",
   "version": "0.0.0",
+  "packageManager": "pnpm",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

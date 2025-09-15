@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { BankFooterComponent } from "./dashboard/footer/footer.component";
 import { HeaderComponent } from './dashboard/header/header.component';
 
@@ -8,10 +8,8 @@ import { HeaderComponent } from './dashboard/header/header.component';
   standalone: true,
   imports: [
     RouterOutlet,
-    RouterLink,
     HeaderComponent,
     BankFooterComponent
-
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
