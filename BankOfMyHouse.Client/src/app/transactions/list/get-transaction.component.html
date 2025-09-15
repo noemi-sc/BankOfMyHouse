@@ -1,14 +1,16 @@
 <h2>Movimenti</h2>
-@for (transaction of currentTransactions()?.transactions; track transaction.id) {
-<div >
-  <p>{{ transaction.transactionCreation | date:'short' }}</p>
-  <p>{{ transaction.amount | currency:'EUR':'symbol':'1.2-2' }}</p>
-  <p>{{ transaction.description }}</p>
-  <p>{{ transaction.senderIban }}</p>
-  <p>{{ transaction.receiverIban }}</p>
-  <hr>
+<div class=" transaction-grid">
+  @for (transaction of currentTransactions()?.transactions; track transaction.id) {
+  <div>
+    <p>{{ transaction.transactionCreation | date:'short' }}</p>
+    <p><i>Importo: </i>{{ transaction.amount | currency:'EUR':'symbol':'1.2-2' }}</p>
+    <p><i>Causale: </i>{{ transaction.description }}</p>
+    <p><i>IBAN mittente: </i>{{ transaction.senderIban }}</p>
+    <p><i>IBAN destinatario: </i>{{ transaction.receiverIban }}</p>
+    <hr>
+  </div>
+  } @empty {
+  <div class="empty-state">Nessuna transazione trovata</div>
+  }
+  <br>
 </div>
-} @empty {
-<div class="empty-state">No transactions found</div>
-}
-<br>

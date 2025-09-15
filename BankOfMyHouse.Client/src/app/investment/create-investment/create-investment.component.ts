@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { InvestmentService } from '../../dashboard/investments_dashboard/investment.service';
 import { createInvestmentRequestDto } from '../models/create/createInvestmentRequestDto';
 
@@ -30,7 +30,7 @@ export class CreateInvestmentComponent {
   protected readonly companies = signal<any[]>([]);
 
   private investmentService = inject(InvestmentService);
-  private usersService = inject(UsersService);
+  private usersService = inject(UserService);
 
 
 

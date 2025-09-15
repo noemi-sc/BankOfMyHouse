@@ -3,8 +3,7 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
-import { AuthService } from '../../auth/auth.service';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
@@ -23,7 +22,8 @@ export class HeaderComponent implements OnInit {
 
   protected readonly faUserCircle = faUserCircle;
 
-  private usersService = inject(UsersService);
+  private usersService = inject(UserService);
+  private router: Router = inject(Router);
 
   // State signals -- da mettere current user
   currentUser = this.usersService.userDetails;
@@ -34,7 +34,6 @@ export class HeaderComponent implements OnInit {
     this.usersService.getUserDetails();
   }
 
-  constructor(private router: Router, private authService: AuthService) { }
   mobileMenuOpen = signal(false);
   notificationsOpen = signal(false);
   userMenuOpen = signal(false);
@@ -54,12 +53,6 @@ export class HeaderComponent implements OnInit {
   }
 
   closeMobileMenu() {
-    this.mobileMenuOpen.set(false);
-  }
-
-  toggleNotifications() {
-    this.notificationsOpen.update(open => !open);
-    this.userMenuOpen.set(false);
     this.mobileMenuOpen.set(false);
   }
 
@@ -97,7 +90,7 @@ export class HeaderComponent implements OnInit {
   onLogout() {
     console.log('Logging out...');
 
-    this.authService.clearAuthData();
+    this.usersService.clearAuthData();
     this.router.navigate(['/login']);
   }
 }

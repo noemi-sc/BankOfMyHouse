@@ -1,0 +1,6 @@
+.transaction-grid {
+  display: grid;
+  gap: 16px;
+  height: 630px;
+  overflow-y: scroll;
+}

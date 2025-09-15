@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BankAccountService } from '../../account/bank-account.service';
 import { CreateTransactionRequestDto, IbanCodeDto } from '../models/createTransactionRequestDto';
 import { TransactionService } from '../transaction.service';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -37,7 +37,7 @@ export class CreateTransactionComponent {
   protected readonly selectedCurrency = signal<any>(this.currencies[1].code);
 
   private transactionService = inject(TransactionService);
-  private usersService = inject(UsersService);
+  private usersService = inject(UserService);
 
 
   // State signals from service

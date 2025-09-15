@@ -1,11 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, Inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BankAccountService } from '../bank-account.service';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { CreateBankAccountRequestDto } from '../models/create/CreateBankAccountRequestDto';
-
-
-
 
 @Component({
   selector: 'app-create-bank-account',
@@ -28,7 +25,7 @@ export class CreateBankAccountComponent {
   protected readonly currentValue = signal('');
 
     private bankAccountService = inject(BankAccountService);
-    private usersService = inject(UsersService);
+    private usersService = inject(UserService);
 
   // State signals from service
   currentUser = this.usersService.userDetails;

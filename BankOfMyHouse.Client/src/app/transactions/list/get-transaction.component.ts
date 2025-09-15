@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, Signal, effect } from '@angular/core';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { TransactionService } from '../transaction.service';
 import { GetUserDetailsResponseDto } from '../../auth/models/getUserDetails/getUserDetailsResponseDto';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -20,7 +20,7 @@ import { GetTransactionsRequestDto } from '../models/getTransactionsRequestDto';
 })
 export class GetTransactionComponent implements OnInit {
 
-  private usersService = inject(UsersService);
+  private usersService = inject(UserService);
   private transactionService = inject(TransactionService);
 
   // State signals from service

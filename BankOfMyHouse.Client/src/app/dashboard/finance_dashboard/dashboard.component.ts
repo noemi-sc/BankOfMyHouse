@@ -1,7 +1,7 @@
 // components/dashboard/dashboard.component.ts
 import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit, Signal } from '@angular/core';
 import { CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
-import { UsersService } from '../../users/users.service';
+import { UserService } from '../../services/users/users.service';
 import { Router } from '@angular/router';
 import { BankAccountService } from '../../account/bank-account.service';
 import { CreateTransactionComponent } from '../../transactions/create/create-transaction.component';
@@ -22,7 +22,6 @@ import { CreateBankAccountComponent } from '../../account/create/create-bank-acc
   standalone: true,
   imports: [
     CurrencyPipe,
-    DecimalPipe,
     DatePipe,
     CreateBankAccountComponent,
     CreateTransactionComponent,
@@ -38,7 +37,7 @@ import { CreateBankAccountComponent } from '../../account/create/create-bank-acc
 })
 export class DashboardComponent implements OnInit {
 
-  private usersService = inject(UsersService);
+  private usersService = inject(UserService);
   private router = inject(Router);
   private bankAccountService = inject(BankAccountService);
   private transactionService = inject(TransactionService);
