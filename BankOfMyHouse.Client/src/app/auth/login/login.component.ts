@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { UserLoginRequestDto as UserLoginRequestDto } from '../models/auth-response';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { UserService } from '../../services/users/users.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-login',  
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, FontAwesomeModule],
   templateUrl: './login.component.html',
@@ -16,27 +16,21 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 })
 
 export class LoginComponent implements OnInit {
-  /*   onForgotPassword($event: MouseEvent) {
-      throw new Error('Method not implemented.');
-    } */
 
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-  }
-  loginForm!: FormGroup;
-  submitted = false;
-  loading = false;
-  error = '';
-  showPassword: boolean = false;
-  success: boolean = false;
+  protected error = signal<string>('');
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-  ) { }
+  private formBuilder: FormBuilder = inject(FormBuilder);
+  private userService: UserService = inject(UserService);
+  private router: Router = inject(Router);
+
+  protected loginForm!: FormGroup;
+  protected submitted = signal<boolean>(false);
+  loading = this.userService.loading;
+
+  protected showPassword: boolean = false;
+  private success = signal<boolean>(false);
 
   get f() {
     return this.loginForm.controls;
@@ -50,15 +44,13 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.submitted = true;
-    this.error = '';
+    this.submitted.set(true);
+    this.error.set('');
 
     // Stop if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
-
-    this.loading = true;
 
     // Prepare user data (exclude confirmPassword)
     const userData: UserLoginRequestDto = {
@@ -66,11 +58,10 @@ export class LoginComponent implements OnInit {
       password: this.f['password'].value,
     };
 
-    this.authService.login(userData).subscribe({
+    this.userService.login(userData).subscribe({
 
       next: (response) => {
-        this.loading = false;
-        this.success = true;
+        this.success.set(true);
 
         // Optional: Auto-login after registration
         // Or redirect to login page
@@ -79,10 +70,12 @@ export class LoginComponent implements OnInit {
         }, 2000);
       },
       error: (error) => {
-        this.loading = false;
-        this.error =
-          error.error?.message || 'Login failed. Please try again.';
+        this.error = error.error?.message || 'Login failed. Please try again.';
       },
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../auth.service';
 import { RegisterUserRequestDto } from '../models/auth-response';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { UserService } from '../../services/users/users.service';
 
 @Component({
   selector: 'app-register',
@@ -15,9 +15,13 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
   styleUrl: './register.component.css',
 })
 export class RegisterComponent implements OnInit {
-  
+
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
+
+  private formBuilder: FormBuilder = inject(FormBuilder);
+  private userService: UserService = inject(UserService);
+  private router: Router = inject(Router);
 
   registerForm!: FormGroup;
   submitted = false;
@@ -25,11 +29,6 @@ export class RegisterComponent implements OnInit {
   error = '';
   showPassword: boolean = false;
   success = false;
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) { }
 
   ngOnInit(): void {
     this.registerForm = this.formBuilder.group(
@@ -89,7 +88,7 @@ export class RegisterComponent implements OnInit {
       confirmPassword: this.f['confirmPassword'].value,
     };
 
-    this.authService.register(userData).subscribe({
+    this.userService.register(userData).subscribe({
 
       next: (response) => {
         this.loading = false;

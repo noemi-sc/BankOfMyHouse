@@ -1,12 +1,12 @@
 <div class="login-container">
   <div class="login-form-wrapper">
     <h2>Benvenuto</h2>
-    <p class="subtitle">Accede al suo account</p>
+    <p class="subtitle">Acceda al suo account</p>
 
     <!-- Error Message -->
-    @if(error) {
+    @if(error()) {
     <div class="alert alert-error">
-      {{ error }}
+      {{ error() }}
     </div>
     }
 
@@ -15,9 +15,9 @@
       <div class="form-group">
         <label for="username">Username</label>
         <input type="username" id="username" formControlName="username" class="form-control username-input"
-          [class.is-invalid]="submitted && f['username'].errors" placeholder="Inserire l'username"
+          [class.is-invalid]="submitted() && f['username'].errors" placeholder="Inserire l'username"
           autocomplete="username" />
-        @if(submitted && f['username'].errors){
+        @if(submitted() && f['username'].errors){
         <div class="invalid-feedback"></div>
         }
         <!--         @if(f['username'].errors && f['username'].errors['required']) {
@@ -36,7 +36,7 @@
         <label for="password">Password</label>
         <div class="password-input-container">
           <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
-            class="form-control password-input" [class.is-invalid]="submitted && f['password'].errors"
+            class="form-control password-input" [class.is-invalid]="submitted() && f['password'].errors"
             placeholder="Inserire la password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
@@ -48,7 +48,7 @@
           </button>
         </div>
 
-        @if(submitted && f['password'].errors) {
+        @if(submitted() && f['password'].errors) {
         <div class="invalid-feedback">
           @if(f['password'].errors['required']){
           <div>
@@ -79,11 +79,11 @@
       </div> -->
 
       <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary" [disabled]="loading || loginForm.invalid">
-        @if(loading){
+      <button type="submit" class="btn btn-primary" [disabled]="loading() || loginForm.invalid">
+        @if(loading()){
         <span class="spinner"></span>
         }
-        {{ loading ? "Accesso in corso..." : "Accedi" }}
+        {{ loading() ? "Accesso in corso..." : "Accedi" }}
       </button>
     </form>
 
