@@ -1,26 +1,24 @@
 import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { Observable, map, take } from 'rxjs';
-import { AuthService } from '../auth.service';
+import { UserService } from '../../services/users/users.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GuestGuard implements CanActivate {
-  private authService = inject(AuthService);
+
+  private authService = inject(UserService);
   private router = inject(Router);
 
-  canActivate(): Observable<boolean> {
-    return this.authService.isAuthenticated$.pipe(
-      take(1),
-      map(isAuthenticated => {
-        if (!isAuthenticated) {
-          return true; // Allow access to login/register
-        } else {
-          this.router.navigate(['/home']); // Redirect authenticated users
-          return false;
-        }
-      })
-    );
+  canActivate(): boolean {
+
+    const isAuthenticated = this.authService.isAuthenticated();
+
+    if (!isAuthenticated) {
+      return true; // Allow access to login/register
+    } else {
+      this.router.navigate(['/home']); // Redirect authenticated users
+      return false;
+    }
   }
 }

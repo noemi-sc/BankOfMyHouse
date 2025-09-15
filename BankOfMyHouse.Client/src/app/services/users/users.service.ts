@@ -1,44 +1,69 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
+import { GetUserDetailsResponseDto } from '../../auth/models/getUserDetails/getUserDetailsResponseDto';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, finalize, map, Observable, throwError } from 'rxjs';
-import {
-  UserLoginRequestDto,
-  UserLoginResponseDto,
-  RegisterUserRequestDto,
-  RegisterUserResponseDto,
-} from './models/auth-response';
-import { UserDto } from './models/user';
+import { map, catchError, throwError, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
-import { AUTH_CONSTANTS } from '../shared/constants/auth.constants';
+import { UserLoginRequestDto, UserLoginResponseDto, RegisterUserRequestDto, RegisterUserResponseDto } from '../../auth/models/auth-response';
+import { AUTH_CONSTANTS } from '../../shared/constants/auth.constants';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class AuthService {
-  // API Configuration
-  private apiUrl = 'http://localhost:57460/users';
+export class UserService {
+  private apiUrl: string ='http://localhost:57460/users';
+  private userDetailsSignal = signal<GetUserDetailsResponseDto | null>(null);
+  private loadingSignal = signal<boolean>(false);
+  private errorSignal = signal<any>(null);
+  private currentUserSignal = signal<any>(null);
+  private isAuthenticatedSignal = signal<boolean>(false);
 
-  // State Management
-  private currentUserSubject = new BehaviorSubject<any>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$ = this.loadingSubject.asObservable();
+  public readonly userDetails =
+    this.userDetailsSignal.asReadonly();
+  public readonly loading =
+    this.loadingSignal.asReadonly();
+  public readonly error =
+    this.errorSignal.asReadonly();
+  public readonly currentUser =
+    this.currentUserSignal.asReadonly();
+  public readonly isAuthenticated =
+    this.isAuthenticatedSignal.asReadonly();
 
   private refreshTimer: any;
 
-  constructor(
-    private httpClient: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
+  private httpClient = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
+
+  constructor() {
     this.checkInitialAuthState();
   }
 
-  public get currentUserValue(): UserDto {
-    return this.currentUserSubject.value;
+  public getUserDetails(): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    this.httpClient
+      .get<GetUserDetailsResponseDto>(`${this.apiUrl}/details`)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+
+          this.userDetailsSignal.set(response);
+          this.loadingSignal.set(false);
+        },
+        error: (error) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
+      });
   }
 
   private checkInitialAuthState(): void {
@@ -52,7 +77,7 @@ export class AuthService {
 
         if (expirationDate > now) {
           // Token is still valid
-          this.isAuthenticatedSubject.next(true);
+          this.isAuthenticatedSignal.set(true);
           this.scheduleTokenRefresh(expirationDate);
 
           // TODO: Optionally decode token to get user info or fetch user profile
@@ -67,35 +92,37 @@ export class AuthService {
   }
 
   login(userLoginRequest: UserLoginRequestDto): Observable<any> {
-    this.loadingSubject.next(true);
+    this.loadingSignal.set(true);
 
     return this.httpClient
       .post<UserLoginResponseDto>(`${this.apiUrl}/auth/login`, userLoginRequest)
       .pipe(
         map((response) => {
           this.storeAuthData(response);
-          this.loadingSubject.next(false);
+          this.loadingSignal.set(false);
           return response;
         }),
         catchError((error) => {
-          this.loadingSubject.next(false);
+          this.loadingSignal.set(false);
+          this.errorSignal.set(error);
           return throwError(() => error);
         })
       );
   }
 
   register(registerUserRequestDto: RegisterUserRequestDto): Observable<any> {
-    this.loadingSubject.next(true);
+    this.loadingSignal.set(true);
 
     return this.httpClient
       .post<RegisterUserResponseDto>(`${this.apiUrl}/auth/register`, registerUserRequestDto)
       .pipe(
         map((response) => {
-          this.loadingSubject.next(false);
+          this.loadingSignal.set(false);
           return response;
         }),
         catchError((error) => {
-          this.loadingSubject.next(false);
+          this.loadingSignal.set(false);
+          this.errorSignal.set(error);
           return throwError(() => error);
         })
       );
@@ -143,8 +170,8 @@ export class AuthService {
     }
 
     // Update state
-    this.currentUserSubject.next(response.user);
-    this.isAuthenticatedSubject.next(true);
+    this.currentUserSignal.set(response.user);
+    this.isAuthenticatedSignal.set(true);
 
     // Schedule token refresh
     this.scheduleTokenRefresh(new Date(response.expiresAt));
@@ -200,35 +227,7 @@ export class AuthService {
       localStorage.removeItem(AUTH_CONSTANTS.EXPIRES_AT_KEY);
     }
 
-    this.currentUserSubject.next(null);
-    this.isAuthenticatedSubject.next(false);
-  }
-
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(AUTH_CONSTANTS.TOKEN_KEY);
-    }
-    return null;
-  }
-
-  isLoggedIn(): boolean {
-    return this.isAuthenticatedSubject.value;
-  }
-
-  // New: Check if token is expired
-  isTokenExpired(): boolean {
-    if (!isPlatformBrowser(this.platformId)) {
-      return true;
-    }
-
-    const expiresAt = localStorage.getItem(AUTH_CONSTANTS.EXPIRES_AT_KEY);
-    if (!expiresAt) {
-      return true;
-    }
-
-    const expirationDate = new Date(expiresAt);
-    const now = new Date();
-
-    return expirationDate <= now;
+    this.currentUserSignal.set(null);
+    this.isAuthenticatedSignal.set(false);
   }
 }
