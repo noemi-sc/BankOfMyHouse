@@ -61,7 +61,8 @@ public class GetUserDetailsEndpoint : Endpoint<GetUserDetailsRequestDto, GetUser
 				Id = ba.Id,
 				IBAN = ba.IBAN.Value,
 				Balance = ba.Balance,
-				CreationDate = ba.CreationDate
+				CreationDate = ba.CreationDate,
+				Description = ba.Description
 			}).ToList()
 		};
 

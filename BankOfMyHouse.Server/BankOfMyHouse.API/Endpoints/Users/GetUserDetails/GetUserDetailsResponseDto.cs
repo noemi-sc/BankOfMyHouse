@@ -20,4 +20,5 @@ public sealed record BankAccountDetailsDto
 	public string IBAN { get; set; } = string.Empty;
 	public decimal Balance { get; set; }
 	public DateTimeOffset CreationDate { get; set; }
+	public string? Description { get; set; } = string.Empty;
 }
