@@ -4,11 +4,13 @@ namespace BankOfMyHouse.API.Endpoints.Transactions.GetTransactions
 {
 	public sealed record GetTransactionsRequestDto
 	{
-		[FromQuery]
-		public DateTimeOffset StartDate { get; set; } = DateTimeOffset.UtcNow.AddDays(-7);
-		[FromQuery]
-		public DateTimeOffset EndDate { get; set; } = DateTimeOffset.UtcNow;
-		[FromQuery]
-		public string Iban { get; set; }
+		[FromClaim]
+		public required string UserId { get; set; }
+
+		public DateTimeOffset? StartDate { get; set; }
+
+		public DateTimeOffset? EndDate { get; set; }
+
+		public required string Iban { get; set; }
 	}
 }
