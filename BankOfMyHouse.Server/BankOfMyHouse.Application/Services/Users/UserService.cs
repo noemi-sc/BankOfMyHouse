@@ -27,7 +27,7 @@ public class UserService : IUserService
 			var user = await _context.Users
 				.Include(u => u.UserRoles)
 				.ThenInclude(u => u.Role)
-				.FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
+				.SingleOrDefaultAsync(u => u.Username == username && u.IsActive);
 
 			if (user == null)
 			{
@@ -83,59 +83,74 @@ public class UserService : IUserService
 
 	private async Task<bool> IsUsernameAvailableAsync(string username)
 	{
-		return !await _context.Users.AnyAsync(u => u.Username == username);
+		try
+		{
+			return !await _context.Users.AnyAsync(u => u.Username == username);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error registering user: {Username}", username);
+			throw;
+		}
 	}
 
 	private async Task<bool> IsEmailAvailableAsync(string email)
 	{
-		return !await _context.Users.AnyAsync(u => u.Email == email);
+		try
+		{
+			return !await _context.Users.AnyAsync(u => u.Email == email);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error registering user: {email}", email);
+			throw;
+		}
 	}
 
 	public async Task<User> RegisterUserAsync(User userToRegister, string password)
 	{
-		using var transaction = await _context.Database.BeginTransactionAsync();
+		// Check if username is available
+		if (!await IsUsernameAvailableAsync(userToRegister.Username))
+		{
+			throw new InvalidOperationException("Username is already taken");
+		}
+
+		// Check if email is available
+		if (!await IsEmailAvailableAsync(userToRegister.Email))
+		{
+			throw new InvalidOperationException("Email is already registered");
+		}
+
+		// Create new user
+		var user = new User(
+			userToRegister.Username,
+			userToRegister.Email,
+			password,
+			userToRegister.FirstName,
+			userToRegister.LastName
+		);
 
 		try
 		{
-			// Check if username is available
-			if (!await IsUsernameAvailableAsync(userToRegister.Username))
-			{
-				throw new InvalidOperationException("Username is already taken");
-			}
-
-			// Check if email is available
-			if (!await IsEmailAvailableAsync(userToRegister.Email))
-			{
-				throw new InvalidOperationException("Email is already registered");
-			}
-
-			// Create new user
-			var user = new User(
-				userToRegister.Username,
-				userToRegister.Email,
-				password,
-				userToRegister.FirstName,
-				userToRegister.LastName
-			);
-
-			_context.Users.Add(user);
+			await _context.Users.AddAsync(user);
 			await _context.SaveChangesAsync();
 
 			// Assign default role
 			await AssignDefaultRoleAsync(user);
 
-			await transaction.CommitAsync();
-
 			_logger.LogInformation("User {Username} registered successfully", user.Username);
-
-			return user;
 		}
 		catch (Exception ex)
 		{
-			await transaction.RollbackAsync();
+			_context.Remove(user);
+			_context.Remove(user.UserRoles);
+
+			await _context.SaveChangesAsync();
+
 			_logger.LogError(ex, "Error registering user: {Username}", userToRegister.Username);
-			throw;
 		}
+
+		return user;
 	}
 
 	public async Task<bool> AssignDefaultRoleAsync(User user)
@@ -158,7 +173,7 @@ public class UserService : IUserService
 				AssignedAt = DateTimeOffset.UtcNow
 			};
 
-			_context.UserRoles.Add(userRole);
+			await _context.UserRoles.AddAsync(userRole);
 			await _context.SaveChangesAsync();
 
 			return true;

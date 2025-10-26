@@ -12,9 +12,18 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 		{
 			var users = new List<User>
 		{
-			new User("username1", "user1@gmail.com", "Password1!", "FirstUserName", "FirstUserSurname"),
-			new User("username2", "user2@gmail.com", "Password1!", "SecondUserName", "SecondUserSurname"),
-			new User("username3", "user3@gmail.com", "Password1!", "ThirdUserName", "ThirdUserSurname"),
+			new User("username1", "user1@gmail.com", "Password1!", "FirstUserName", "FirstUserSurname")
+			{
+				Id = 1
+			},
+			new User("username2", "user2@gmail.com", "Password1!", "SecondUserName", "SecondUserSurname")
+			{
+				Id = 2
+			},
+			new User("username3", "user3@gmail.com", "Password1!", "ThirdUserName", "ThirdUserSurname")
+			{
+				Id = 3
+			},
 		};
 
 			//Assign the user the basic BankAccount role
@@ -33,7 +42,7 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 					};
 
 				var existingUser = await context.Set<User>()
-					.FirstOrDefaultAsync(r => r.Id == user.Id, ct);
+					.FirstOrDefaultAsync(r => r.Username == user.Username && r.Email == user.Email && r.Id == user.Id, ct);
 
 				if (existingUser == null)
 				{
@@ -53,7 +62,7 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 			var roles = new List<Role>
 		{
 			new Role(1, "Admin", "System Administrator with full access"),
-			new Role(2,"BankUser", "Standard user with basic access")
+			new Role(2, "BankUser", "Standard user with basic access")
 		};
 
 			foreach (var role in roles)

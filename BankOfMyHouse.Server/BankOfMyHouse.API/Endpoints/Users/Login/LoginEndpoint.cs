@@ -42,21 +42,10 @@ namespace BankOfMyHouse.API.Endpoints.Users.Login
 				var user = await _userService.ValidateCredentialsAsync(req.Username, req.Password);
 				if (user == null)
 				{
-					// Option 1: Use built-in method
 					await Send.UnauthorizedAsync(ct);
 					return;
-
-					// Option 2: Send custom error response
-					// var errorResponse = new ErrorResponse
-					// {
-					//     Success = false,
-					//     Message = "Invalid username or password"
-					// };
-					// await SendAsync(errorResponse, 401, ct);
-					// return;
 				}
 
-				// Generate both tokens
 				var accessToken = _jwtService.GenerateAccessToken(user);
 				var refreshToken = _jwtService.GenerateRefreshToken(user);
 
