@@ -4,7 +4,6 @@ import { RegisterComponent } from './auth/register/register.component';
 import { GuestGuard } from './auth/guards/guest.guard';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { DashboardComponent } from './dashboard/finance_dashboard/dashboard.component';
-import { ListAccountComponent } from './account/list/list.component';
 import { InvestmentComponent } from './investment/investment.component';
 
 export const routes: Routes = [
