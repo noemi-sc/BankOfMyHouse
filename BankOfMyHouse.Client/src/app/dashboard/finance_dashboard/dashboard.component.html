@@ -1,25 +1,25 @@
 <div class="dashboard">
   <header class="dashboard-header">
 
-    @if (currentUser();) {
+    @if (currentUser()) {
     <div class="user-dropdown">
       <div class="user-info">
-        <h1>Salve {{ this.currentUser()?.firstName }} {{ this.currentUser()?.lastName }}</h1>
+        <h1>Salve {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h1>
       </div>
     </div>
     }
   </header>
   <mat-grid-list cols="2" rowHeight="100px">
 
-    <mat-grid-tile> <button mat-button (click)="openBankAccountPopup() " class="open-popup-btn">Crea nuovo IBAN</button>
+    <mat-grid-tile> <button mat-button (click)="openBankAccountPopup()" class="open-popup-btn">Crea nuovo IBAN</button>
       @if (isBankAccountPopupOpen()) {
-      <app-create-bank-account [initialValue]="inputValue()" (confirmed)="onBankAccountPopupConfirmed($event)"
+      <app-create-bank-account (confirmed)="onBankAccountPopupConfirmed()"
         (cancelled)="onBankAccountPopupCancelled()" />
       }</mat-grid-tile>
-    <mat-grid-tile> <button mat-button (click)="openTransactionPopup() " class="open-popup-btn">Fai un
+    <mat-grid-tile> <button mat-button (click)="openTransactionPopup()" class="open-popup-btn">Fai un
         pagamento</button>
       @if (isTransactionPopupOpen()) {
-      <app-create-transaction [initialValue]="inputValue()" (confirmed)="onTransactionPopupConfirmed($event)"
+      <app-create-transaction (confirmed)="onTransactionPopupConfirmed()"
         (cancelled)="onTransactionPopupCancelled()" />
       }</mat-grid-tile>
   </mat-grid-list>
@@ -30,10 +30,10 @@
       <div class="accounts-grid">
         @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
         <div class="bank-account-card">
+          <h4>{{ bankAccount.description }}</h4>          
           <h3>{{ bankAccount.iban }}</h3>
           <p class="balance">{{ bankAccount.balance | currency:'EUR':'symbol':'1.2-2' }}</p>
-          <p class="creation-date">Creato il: {{ bankAccount.creationDate | date:'short' }}</p>
-        </div>
+          <p class="creation-date">Creato il: {{ bankAccount.creationDate | date:'short' }}</p>        </div>
         } @empty {
         <div class="empty-state">Nessun conto bancario trovato</div>
         }
