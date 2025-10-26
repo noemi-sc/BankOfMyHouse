@@ -52,7 +52,7 @@ public class CreateBankAccountEndpoint : Endpoint<CreateBankAccountRequestDto, C
 			return;
 		}
 
-		var newBankAccountForUser = await this._bankAccountService.GenerateBankAccount(user.Id, req.Description);
+		var newBankAccountForUser = await this._bankAccountService.GenerateBankAccount(user.Id, req.Description, ct);
 
 		var response = new CreateBankAccountResponseDto
 		{

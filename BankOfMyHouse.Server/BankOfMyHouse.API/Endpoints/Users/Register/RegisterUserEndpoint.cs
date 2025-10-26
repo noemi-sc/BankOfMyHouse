@@ -43,7 +43,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 		try
 		{
 			// Register the user
-			var user = await _userService.RegisterUserAsync(req.Adapt<User>(), req.Password);
+			var user = await _userService.RegisterUserAsync(req.Adapt<User>(), req.Password, ct);
 
 			// Load user with roles for token generation
 			var userWithRoles = await _userService.GetUserWithRolesAsync(user.Id, ct);
@@ -77,10 +77,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequestDto, RegisterUse
 
 			_logger.LogInformation("User {Username} registered and logged in successfully", user.Username);
 
-			await Send.CreatedAtAsync<GetCurrentUserEndpoint>(
-				routeValues: new { },
-				responseBody: response,
-				cancellation: ct);
+			await Send.CreatedAtAsync<GetCurrentUserEndpoint>(responseBody: response, cancellation: ct);
 		}
 		catch (InvalidOperationException ex)
 		{

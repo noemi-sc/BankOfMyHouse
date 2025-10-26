@@ -98,26 +98,26 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			return transaction;
 		}
 
-		public async Task<BankAccount> GenerateBankAccount(int userId, string? description)
+		public async Task<BankAccount> GenerateBankAccount(int userId, string? description, CancellationToken cancellationToken)
 		{
 			var iban = this._ibanGenerator.GenerateItalianIban();
 
-			var ibanExistsAlready = await _bankAccountRepository.IbanExistsAsync(iban);
+			var ibanExistsAlready = await _bankAccountRepository.IbanExistsAsync(iban, cancellationToken);
 
 			if (ibanExistsAlready)
 			{
 				_logger.LogWarning("IBAN {Iban} already exists. Generating a new one for user {UserId}.", iban, userId);
-				return await GenerateBankAccount(userId, description); // Recursive call to generate a new IBAN
+				return await GenerateBankAccount(userId, description, cancellationToken); // Recursive call to generate a new IBAN
 			}
 
 			var newBankAccount = BankAccount.CreateNew(userId, iban, description);
 
-			return await _bankAccountRepository.AddAsync(newBankAccount);			
+			return await _bankAccountRepository.AddAsync(newBankAccount, cancellationToken);			
 		}
 
-		public async Task<ICollection<BankAccount>> GetBankAccounts(int id, CancellationToken ct)
+		public async Task<IEnumerable<BankAccount>> GetBankAccounts(int id, CancellationToken ct)
 		{
-			return (await _bankAccountRepository.GetByUserIdAsync(id, ct)).ToList();
+			return await _bankAccountRepository.GetByUserIdAsync(id, ct);
 		}
 
 		public async Task<IEnumerable<Transaction>> GetTransactions(int userId, string iban, CancellationToken ct, DateTimeOffset? startDate = null, DateTimeOffset? endDate = null)

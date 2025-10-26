@@ -30,17 +30,12 @@ namespace BankOfMyHouse.Application.Services.Investments
 
 			var bankAccount = user.BankAccounts.First(x => x.Id == bankAccountId);
 
-			this._context.BankAccounts.Update(bankAccount);
-			this._context.SaveChanges();
-
 			if (bankAccount.Balance < investmentAmount)
 			{
 				throw new InvalidOperationException("Insufficient funds in the bank account.");
 			}
 
 			bankAccount.Balance -= investmentAmount;
-
-			this._context.Users.Update(user);
 
 			var company = await this._context.Companies
 				.Include(c => c.StockPriceHistory.OrderByDescending(h => h.TimeOfPriceChange)
@@ -58,10 +53,18 @@ namespace BankOfMyHouse.Application.Services.Investments
 
 			var investment = Investment.Create(sharesAmount, company, bankAccount);
 
-			await this._context.Investments.AddAsync(investment);
-
-			await this._context.SaveChangesAsync();
-
+			try
+			{
+				this._context.Users.Update(user);
+				this._context.BankAccounts.Update(bankAccount);
+				await this._context.Investments.AddAsync(investment, ct);
+				await this._context.SaveChangesAsync(ct);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("Error occured while creating a new investment {Exception}", ex);
+				throw new InvalidOperationException("Error occured while creating a new investment", ex);
+			}
 			return investment;
 		}
 

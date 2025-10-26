@@ -78,14 +78,14 @@ public class UserService : IUserService
 		return await _context.Users
 			.Include(u => u.UserRoles)
 			.ThenInclude(u => u.Role)
-			.FirstOrDefaultAsync(u => u.Id == userId);
+			.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 	}
 
-	private async Task<bool> IsUsernameAvailableAsync(string username)
+	private async Task<bool> IsUsernameAvailableAsync(string username, CancellationToken cancellationToken)
 	{
 		try
 		{
-			return !await _context.Users.AnyAsync(u => u.Username == username);
+			return !await _context.Users.AnyAsync(u => u.Username == username, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -94,11 +94,11 @@ public class UserService : IUserService
 		}
 	}
 
-	private async Task<bool> IsEmailAvailableAsync(string email)
+	private async Task<bool> IsEmailAvailableAsync(string email, CancellationToken cancellationToken)
 	{
 		try
 		{
-			return !await _context.Users.AnyAsync(u => u.Email == email);
+			return !await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -107,16 +107,16 @@ public class UserService : IUserService
 		}
 	}
 
-	public async Task<User> RegisterUserAsync(User userToRegister, string password)
+	public async Task<User> RegisterUserAsync(User userToRegister, string password, CancellationToken cancellationToken)
 	{
 		// Check if username is available
-		if (!await IsUsernameAvailableAsync(userToRegister.Username))
+		if (!await IsUsernameAvailableAsync(userToRegister.Username, cancellationToken))
 		{
 			throw new InvalidOperationException("Username is already taken");
 		}
 
 		// Check if email is available
-		if (!await IsEmailAvailableAsync(userToRegister.Email))
+		if (!await IsEmailAvailableAsync(userToRegister.Email, cancellationToken))
 		{
 			throw new InvalidOperationException("Email is already registered");
 		}
@@ -133,10 +133,10 @@ public class UserService : IUserService
 		try
 		{
 			await _context.Users.AddAsync(user);
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync(cancellationToken);
 
 			// Assign default role
-			await AssignDefaultRoleAsync(user);
+			await AssignDefaultRoleAsync(user, cancellationToken);
 
 			_logger.LogInformation("User {Username} registered successfully", user.Username);
 		}
@@ -145,7 +145,7 @@ public class UserService : IUserService
 			_context.Remove(user);
 			_context.Remove(user.UserRoles);
 
-			await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync(cancellationToken);
 
 			_logger.LogError(ex, "Error registering user: {Username}", userToRegister.Username);
 		}
@@ -153,12 +153,12 @@ public class UserService : IUserService
 		return user;
 	}
 
-	public async Task<bool> AssignDefaultRoleAsync(User user)
+	public async Task<bool> AssignDefaultRoleAsync(User user, CancellationToken cancellationToken)
 	{
 		try
 		{
 			var defaultRole = await _context.Roles
-				.FirstOrDefaultAsync(r => r.Name == "BankUser");
+				.FirstOrDefaultAsync(r => r.Name == "BankUser", cancellationToken);
 
 			if (defaultRole == null)
 			{
@@ -173,8 +173,8 @@ public class UserService : IUserService
 				AssignedAt = DateTimeOffset.UtcNow
 			};
 
-			await _context.UserRoles.AddAsync(userRole);
-			await _context.SaveChangesAsync();
+			await _context.UserRoles.AddAsync(userRole, cancellationToken);
+			await _context.SaveChangesAsync(cancellationToken);
 
 			return true;
 		}
