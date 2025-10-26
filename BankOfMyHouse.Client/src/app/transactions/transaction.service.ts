@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CreateTransactionRequestDto } from './models/createTransactionRequestDto';
 import { CreateTransactionResponseDto } from './models/createTransactionResponseDto';
-import { map, catchError, throwError, Observable } from 'rxjs';
+import { map, catchError, throwError } from 'rxjs';
 import { GetTransactionsResponseDto } from './models/getTransactionsResponseDto';
 import { GetTransactionsRequestDto } from './models/getTransactionsRequestDto';
 
@@ -20,7 +20,8 @@ export class TransactionService {
   private loadingSignal =
     signal<boolean>(false);
   private errorSignal = signal<any>(null);
-  private refreshTriggerSignal = signal<number>(0);
+  private transactionCreatedSignal = signal<boolean>(false);
+
   private httpClient = inject(HttpClient);
 
   public readonly getTransactions =
@@ -29,31 +30,41 @@ export class TransactionService {
     this.loadingSignal.asReadonly();
   public readonly error =
     this.errorSignal.asReadonly();
-  public readonly refreshTrigger =
-    this.refreshTriggerSignal.asReadonly();
+  public readonly transactionCreated =
+    this.transactionCreatedSignal.asReadonly();
 
-  public createTransaction(body: CreateTransactionRequestDto): Observable<CreateTransactionResponseDto> {
+  public createTransaction(body: CreateTransactionRequestDto): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
+    this.transactionCreatedSignal.set(false);
 
-    return this.httpClient
+    this.httpClient
       .post<CreateTransactionResponseDto>(`${this.apiUrl}`, body)
       .pipe(
         map((response) => {
-          this.transactionDetailsSignal.set(response);
-          this.loadingSignal.set(false);
-          // Delay refresh to allow backend to process the transaction
-          setTimeout(() => {
-            this.triggerRefresh();
-          }, 500);
           return response;
         }),
         catchError((error) => {
           this.errorSignal.set(error);
           this.loadingSignal.set(false);
+          this.transactionCreatedSignal.set(false);
           return throwError(() => error);
         })
-      );
+      )
+      .subscribe({
+        next: (response) => {
+          this.transactionDetailsSignal.set(response);
+          this.loadingSignal.set(false);
+          // Signal that transaction was created successfully
+          // Component will handle refreshing user details and transactions
+          this.transactionCreatedSignal.set(true);
+        },
+        error: (error) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+          this.transactionCreatedSignal.set(false);
+        }
+      });
   }
 
   public getTransactionsDetails(getTransactionsRequestDto: GetTransactionsRequestDto): void {
@@ -117,10 +128,6 @@ export class TransactionService {
           this.loadingSignal.set(false);
         }
       });
-  }
-
-  public triggerRefresh(): void {
-    this.refreshTriggerSignal.set(this.refreshTriggerSignal() + 1);
   }
 
   public clearTransactions(): void {
