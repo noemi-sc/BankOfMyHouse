@@ -65,9 +65,23 @@ namespace BankOfMyHouse.Application.Services.Investments
 			return investment;
 		}
 
+		public async Task<List<Company>> GetCompanies(CancellationToken ct)
+		{
+			return await this._context.Companies.ToListAsync(ct);
+		}
+
 		public Task<Investment> WithdrawInvestment(int userId, int companyId, CancellationToken ct)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task<List<Investment>> GetInvestments(int userId, CancellationToken ct)
+		{
+			return await this._context.Investments
+				.Include(i => i.Company)
+				.Include(i => i.BankAccount)
+				.Where(i => i.BankAccount.UserId == userId)
+				.ToListAsync(ct);
 		}
 	}
 }
