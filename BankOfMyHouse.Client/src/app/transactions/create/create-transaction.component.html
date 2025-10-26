@@ -9,7 +9,11 @@
                 <mat-label>Scegli il tuo IBAN</mat-label>
                 <mat-select [(ngModel)]="selectedSenderIban">
                     @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
-                        <mat-option [value]="bankAccount">{{ bankAccount.iban }}</mat-option>
+                    @if (bankAccount.description && bankAccount.description !== '') {
+                    <mat-option [value]="bankAccount">{{ bankAccount.description }} - {{ bankAccount.iban }}</mat-option>
+                    } @else {
+                    <mat-option [value]="bankAccount">{{ bankAccount.iban }}</mat-option>
+                    }
                     } @empty {
                     <div class="empty-state">Nessun IBAN trovato</div>
                     }
@@ -17,7 +21,7 @@
             </mat-form-field>
 
             <!--Inserire IBAN del destinatario-->
-           <p>
+            <p>
                 <label for="popup-input">Inserisci IBAN del destinatario:</label>
                 <input id="popup-input" type="text" [(ngModel)]="receiverIban" class="popup-input"
                     placeholder="IBAN del destinatario" (keydown.enter)="onConfirm()" (keydown.escape)="onCancel()" />
@@ -28,24 +32,25 @@
             <div class="amount-currency-row">
                 <mat-form-field class="amount-field">
                     <mat-label>Importo</mat-label>
-                    <input matInput type = "number" [(ngModel)]="amount" class="amount-right-align"  min="0" placeholder="0,00"/>
+                    <input matInput type="number" [(ngModel)]="amount" class="amount-right-align" min="0"
+                        placeholder="0,00" />
                 </mat-form-field>
 
                 <mat-form-field class="currency-field">
                     <mat-label>Seleziona valuta</mat-label>
                     <mat-select [(ngModel)]="selectedCurrency">
                         @for (currency of currencies; track currency.code) {
-                            <mat-option [value]="currency">{{ currency.name }} ({{ currency.symbol }})</mat-option>
+                        <mat-option [value]="currency">{{ currency.name }} ({{ currency.symbol }})</mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
             </div>
-<!--Causale-->
-            
-                <label for="popup-input">Causale:</label>
-                <input id="popup-input" type="text" [(ngModel)]="currentValue" class="popup-input"
-                    placeholder="Causale" (keydown.enter)="onConfirm()" (keydown.escape)="onCancel()" />
-         
+            <!--Causale-->
+
+            <label for="popup-input">Causale:</label>
+            <input id="popup-input" type="text" [(ngModel)]="currentValue" class="popup-input" placeholder="Causale"
+                (keydown.enter)="onConfirm()" (keydown.escape)="onCancel()" />
+
 
         </div>
 
@@ -54,7 +59,7 @@
                 Annulla
             </button>
 
-            <button type="button" (click)="onConfirm()" class="btn btn-primary">
+            <button type="button" (click)="onConfirm()" class="btn btn-primary" [disabled]="!isFormValid()">
                 Manda bonifico
             </button>
         </div>

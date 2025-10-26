@@ -79,12 +79,20 @@
 }
 
 .btn-primary {
-    background-color: #f79e34b0 !important;
+    background-color: #90ee90;
     color: white;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.btn-primary:hover:not(:disabled) {
+    background-color: #7ada7a;
+}
+
+.btn-primary:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .amount-right-align {

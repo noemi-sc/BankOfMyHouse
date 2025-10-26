@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BankAccountService } from '../../account/bank-account.service';
 import { CreateTransactionRequestDto, IbanCodeDto } from '../models/createTransactionRequestDto';
@@ -16,13 +16,9 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrls: ['./create-transaction.component.css', './create-transaction-custom-style.scss']
 })
 export class CreateTransactionComponent {
-  // Inputs
-  readonly initialValue = input<string>('');
-
   // Outputs
-  readonly confirmed = output<string>();
+  readonly confirmed = output<void>();
   readonly cancelled = output<void>();
-
 
   // Local state
   protected readonly currentValue = signal('');
@@ -39,21 +35,26 @@ export class CreateTransactionComponent {
   private transactionService = inject(TransactionService);
   private usersService = inject(UserService);
 
-
   // State signals from service
-  currentUser = this.usersService.userDetails;
-  loading = this.transactionService.loading;
-  error = this.transactionService.error;
+  protected currentUser = this.usersService.userDetails;
+  protected loading = this.transactionService.loading;
+  protected error = this.transactionService.error;
 
-  constructor() {
-    // Initialize current value with initial value
-    this.currentValue.set(this.initialValue());
-  }
+  // Computed signal for form validation
+  protected readonly isFormValid = computed(() => {
+    return !!(
+      this.selectedSenderIban() &&
+      this.receiverIban() &&
+      this.receiverIban().trim() !== '' &&
+      this.amount() !== null &&
+      this.amount() !== undefined &&
+      this.amount()! > 0 &&
+      this.selectedCurrency()
+    );
+  });
 
   protected onConfirm(): void {
-    this.confirmed.emit(this.currentValue());
-
-    var requestBody: CreateTransactionRequestDto = new CreateTransactionRequestDto();
+    const requestBody: CreateTransactionRequestDto = new CreateTransactionRequestDto();
 
     // Set sender IBAN from selected bank account
     if (this.selectedSenderIban()) {
@@ -72,15 +73,8 @@ export class CreateTransactionComponent {
     // Set description (causale)
     requestBody.description = this.currentValue();
 
-    this.transactionService.createTransaction(requestBody).subscribe({
-      next: (response) => {
-        // Transaction created successfully, emit success event
-        this.cancelled.emit(); // Close the popup
-      },
-      error: (error) => {
-        console.error('Transaction creation failed:', error);
-      }
-    });
+    this.transactionService.createTransaction(requestBody);
+    this.confirmed.emit();
   }
 
   protected onCancel(): void {
