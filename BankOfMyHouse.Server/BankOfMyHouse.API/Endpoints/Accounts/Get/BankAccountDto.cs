@@ -6,4 +6,5 @@ public sealed record BankAccountDto
 	public string IBAN { get; set; } = string.Empty;
 	public decimal Balance { get; set; }
 	public DateTimeOffset CreatedAt { get; set; }
+	public string? Description { get; set; }
 }

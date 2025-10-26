@@ -23,6 +23,8 @@ internal class BankAccountConfiguration : IEntityTypeConfiguration<BankAccount>
 
 		builder.Property(b => b.Balance)
 			.IsRequired();
+		
+		builder.Property(b => b.Description);
 
 		// Configure the IBAN property
 		builder.OwnsOne(b => b.IBAN, iban =>

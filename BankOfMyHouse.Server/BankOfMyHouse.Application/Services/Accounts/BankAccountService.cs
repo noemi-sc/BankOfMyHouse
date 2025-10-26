@@ -39,7 +39,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 		{
 			var categoryCode = paymentCategoryCode ?? PaymentCategoryCode.Other;
 			var paymentCategory = await _paymentCategoryRepository.GetByCodeAsync(categoryCode, ct);
-			
+
 			if (paymentCategory == null)
 			{
 				_logger.LogError("PaymentCategory '{CategoryCode}' not found in database.", categoryCode);
@@ -89,7 +89,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 				_logger.LogInformation("External transfer to IBAN {Iban} - amount sent out of system.", receiver);
 			}
 
-			var transaction = receiverAccount != null 
+			var transaction = receiverAccount != null
 			? Transaction.Create(amount, currency, senderAccount, receiverAccount, paymentCategory, description)
 			: Transaction.CreateExternal(amount, currency, senderAccount, receiver, paymentCategory, description);
 
@@ -98,7 +98,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			return transaction;
 		}
 
-		public async Task<BankAccount> GenerateBankAccount(int userId)
+		public async Task<BankAccount> GenerateBankAccount(int userId, string? description)
 		{
 			var iban = this._ibanGenerator.GenerateItalianIban();
 
@@ -107,12 +107,12 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			if (ibanExistsAlready)
 			{
 				_logger.LogWarning("IBAN {Iban} already exists. Generating a new one for user {UserId}.", iban, userId);
-				return await GenerateBankAccount(userId); // Recursive call to generate a new IBAN
+				return await GenerateBankAccount(userId, description); // Recursive call to generate a new IBAN
 			}
 
-			var newBankAccount = BankAccount.CreateNew(userId, iban);
+			var newBankAccount = BankAccount.CreateNew(userId, iban, description);
 
-			return await _bankAccountRepository.AddAsync(newBankAccount);
+			return await _bankAccountRepository.AddAsync(newBankAccount);			
 		}
 
 		public async Task<ICollection<BankAccount>> GetBankAccounts(int id, CancellationToken ct)
@@ -125,7 +125,7 @@ namespace BankOfMyHouse.Application.Services.Accounts
 			var user = await _userRepository.GetWithBankAccountsAsync(userId, ct);
 
 			if (user == null)
-			{	
+			{
 				return null;
 			}
 
