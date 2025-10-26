@@ -91,7 +91,7 @@ export class UserService {
     }
   }
 
-  login(userLoginRequest: UserLoginRequestDto): Observable<any> {
+  login(userLoginRequest: UserLoginRequestDto): Observable<UserLoginResponseDto> {
     this.loadingSignal.set(true);
 
     return this.httpClient
@@ -110,7 +110,7 @@ export class UserService {
       );
   }
 
-  register(registerUserRequestDto: RegisterUserRequestDto): Observable<any> {
+  register(registerUserRequestDto: RegisterUserRequestDto): Observable<RegisterUserResponseDto> {
     this.loadingSignal.set(true);
 
     return this.httpClient
