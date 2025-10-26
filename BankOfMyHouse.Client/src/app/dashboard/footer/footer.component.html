@@ -1,52 +1,26 @@
 <footer class="bank-footer">
-  <div class="footer-main">
-    <div class="footer-container">
-      <mat-grid-list cols="2" rowHeight="100px">
-        <!-- Logo -->
-        <mat-grid-tile colspan="1">
-          <div class="footer-logo logo-img">
-            <img ngSrc="assets/BoHLogo.png" alt="BankOfMyHouse" width="150" height="150" priority>
-          </div>
-        </mat-grid-tile>
+  <div class="footer-container">
+    <div class="footer-left">
+      <div class="footer-logo">
+        <img ngSrc="assets/BoHLogo.png" alt="BankOfMyHouse" width="40" height="40" priority>
+      </div>
+      <span class="copyright">&copy; {{ currentYear() }} BankOfMyHouse</span>
+    </div>
 
-        <!-- Contatti -->
-        <mat-grid-tile colspan="1">
-          <div class="contact-info">
-            <div class="contact-item">
-              <i class="icon-phone" aria-hidden="true"></i>
-              <div>
-                <span class="contact-label">Servizio clienti</span>
-                <a href="tel:+1-800-123-4567" class="contact-link">1-800-123-BANK</a>
-              </div>
-            </div>
+    <div class="footer-center">
+      <a href="tel:+1-800-123-4567" class="contact-link">
+        <fa-icon [icon]="faPhone" class="footer-icon"></fa-icon>
+        1-800-123-BANK
+      </a>
+      <span class="footer-divider">|</span>
+      <span class="availability">24/7 Assistenza</span>
+    </div>
 
-            <div class="contact-item">
-              <i class="icon-clock" aria-hidden="true"></i>
-              <div>
-                <span class="contact-label">Disponibilità</span>
-                <span class="contact-text">24/7 Assistenza</span>
-              </div>
-            </div>
-          </div>
-        </mat-grid-tile>
-
-        <!-- Info security -->
-        <mat-grid-tile colspan="2">
-          <div class="security-notice">
-            <i class="icon-shield-check" aria-hidden="true"></i>
-            <div>
-              <strong>Avviso di sicurezza:</strong> BankOfMyHouse non chiederà mai le sue credenziali di accesso tramite e-mail o telefono.
-            </div>
-          </div>
-        </mat-grid-tile>
-        <mat-grid-tile colspan="2">
-          <div class="footer-bottom-content">
-            <div class="copyright">
-              <p>&copy; {{ currentYear() }} BankOfMyHouse. All rights reserved.</p>
-            </div>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
+    <div class="footer-right">
+      <div class="security-badge">
+        <fa-icon [icon]="faShieldHalved" class="security-icon"></fa-icon>
+        <span>Connessione sicura</span>
+      </div>
     </div>
   </div>
 

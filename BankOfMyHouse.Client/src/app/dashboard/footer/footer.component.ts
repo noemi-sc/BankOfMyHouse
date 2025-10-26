@@ -2,9 +2,8 @@ import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronUp, faPhone, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 interface FooterLink {
   label: string;
@@ -20,7 +19,7 @@ interface FooterSection {
 @Component({
   selector: 'app-bank-footer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NgOptimizedImage, MatGridListModule, FontAwesomeModule],
+  imports: [CommonModule, RouterModule, NgOptimizedImage, FontAwesomeModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css'],
   standalone: true,
@@ -32,6 +31,8 @@ interface FooterSection {
 export class BankFooterComponent {
 
   protected readonly faChevronUp = faChevronUp;
+  protected readonly faPhone = faPhone;
+  protected readonly faShieldHalved = faShieldHalved;
 
   // State signals
   showBackToTop = signal(false);
