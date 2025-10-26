@@ -16,4 +16,5 @@ export class BankAccountDetailsDto {
     iban: string = '';
     balance: number = 0;
     creationDate: Date = new Date();
+    description: string = '';
 }

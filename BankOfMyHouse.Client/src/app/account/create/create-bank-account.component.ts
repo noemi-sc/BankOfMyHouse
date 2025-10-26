@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BankAccountService } from '../bank-account.service';
 import { UserService } from '../../services/users/users.service';
@@ -13,35 +13,32 @@ import { CreateBankAccountRequestDto } from '../models/create/CreateBankAccountR
   styleUrl: './create-bank-account.component.css'
 })
 export class CreateBankAccountComponent {
-  // Inputs
-  readonly initialValue = input<string>('');
-  
   // Outputs
-  readonly confirmed = output<string>();
+  readonly confirmed = output<void>();
   readonly cancelled = output<void>();
-
 
   // Local state
   protected readonly currentValue = signal('');
 
-    private bankAccountService = inject(BankAccountService);
-    private usersService = inject(UserService);
+  private bankAccountService = inject(BankAccountService);
+  private usersService = inject(UserService);
 
   // State signals from service
-  currentUser = this.usersService.userDetails;
-  loading = this.bankAccountService.loading;
-  error = this.bankAccountService.error;
+  protected currentUser = this.usersService.userDetails;
+  protected loading = this.bankAccountService.loading;
+  protected error = this.bankAccountService.error;
 
-constructor() {
-    // Initialize current value with initial value
-    this.currentValue.set(this.initialValue());
+  constructor() {
+    // Watch for account creation completion
+    effect(() => {
+      if (this.bankAccountService.accountCreated()) {
+        this.confirmed.emit();
+      }
+    });
   }
 
   protected onConfirm(): void {
-    this.confirmed.emit(this.currentValue());
-
-    var requestBody: CreateBankAccountRequestDto = new CreateBankAccountRequestDto;
-
+    const requestBody: CreateBankAccountRequestDto = new CreateBankAccountRequestDto();
     requestBody.description = this.currentValue();
 
     this.bankAccountService.createBankAccount(requestBody);
