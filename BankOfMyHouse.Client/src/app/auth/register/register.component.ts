@@ -94,11 +94,10 @@ export class RegisterComponent implements OnInit {
         this.loading = false;
         this.success = true;
 
-        // Optional: Auto-login after registration
-        // Or redirect to login page
-        setTimeout(() => {
+        if (response.user !== null) {
           this.router.navigate(['/login']);
-        }, 2000);
+        }
+
       },
       error: (error) => {
         this.loading = false;
