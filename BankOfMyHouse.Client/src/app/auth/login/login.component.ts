@@ -8,7 +8,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../../services/users/users.service';
 
 @Component({
-  selector: 'app-login',  
+  selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, FontAwesomeModule],
   templateUrl: './login.component.html',
@@ -19,17 +19,17 @@ export class LoginComponent implements OnInit {
 
   protected readonly faEye = faEye;
   protected readonly faEyeSlash = faEyeSlash;
-  protected error = signal<string>('');
 
   private formBuilder: FormBuilder = inject(FormBuilder);
   private userService: UserService = inject(UserService);
   private router: Router = inject(Router);
 
   protected loginForm!: FormGroup;
-  protected submitted = signal<boolean>(false);
   loading = this.userService.loading;
 
-  protected showPassword: boolean = false;
+  protected showPassword = signal<boolean>(false);
+  protected submitted = signal<boolean>(false);
+  protected error = signal<string>('');
   private success = signal<boolean>(false);
 
   get f() {
@@ -45,7 +45,6 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted.set(true);
-    this.error.set('');
 
     // Stop if form is invalid
     if (this.loginForm.invalid) {
@@ -61,21 +60,18 @@ export class LoginComponent implements OnInit {
     this.userService.login(userData).subscribe({
 
       next: (response) => {
-        this.success.set(true);
-
-        // Optional: Auto-login after registration
-        // Or redirect to login page
-        setTimeout(() => {
+        if (response.user !== null) {
+          this.success.set(true);
           this.router.navigate(['/home']);
-        }, 2000);
+        }
       },
       error: (error) => {
-        this.error = error.error?.message || 'Login failed. Please try again.';
+        this.error.set(error.error?.message || 'Login failed. Please try again.');
       },
     });
   }
 
   togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+    this.showPassword.set(!this.showPassword());
   }
 }

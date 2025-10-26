@@ -35,14 +35,14 @@
       <div class="form-group">
         <label for="password">Password</label>
         <div class="password-input-container">
-          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+          <input [type]="showPassword() ? 'text' : 'password'" id="password" formControlName="password"
             class="form-control password-input" [class.is-invalid]="submitted() && f['password'].errors"
             placeholder="Inserire la password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
-            @if(!showPassword){
+            @if(!showPassword()){
             <fa-icon [icon]="faEye" />
             }
-            @if(showPassword){
+            @if(showPassword()){
             <fa-icon [icon]="faEyeSlash" />
             }
           </button>
