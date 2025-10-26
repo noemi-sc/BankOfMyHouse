@@ -5,8 +5,8 @@ import { CreateTransactionComponent } from '../../transactions/create/create-tra
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 import { GetTransactionComponent } from "../../transactions/list/get-transaction.component";
-import { MatGridListModule } from '@angular/material/grid-list';
 import { CreateBankAccountComponent } from '../../account/create/create-bank-account.component';
 import { ListBankAccountsComponent } from '../../account/list-bank-accounts/list-bank-accounts.component';
 
@@ -22,10 +22,10 @@ import { ListBankAccountsComponent } from '../../account/list-bank-accounts/list
     ListBankAccountsComponent,
     MatFormFieldModule,
     MatSelectModule,
+    MatButtonModule,
     FormsModule,
     ReactiveFormsModule,
-    GetTransactionComponent,
-    MatGridListModule
+    GetTransactionComponent
   ],
 })
 export class DashboardComponent implements OnInit {

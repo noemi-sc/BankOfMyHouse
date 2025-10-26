@@ -9,20 +9,26 @@
     </div>
     }
   </header>
-  <mat-grid-list cols="2" rowHeight="100px">
 
-    <mat-grid-tile> <button mat-button (click)="openBankAccountPopup()" class="open-popup-btn">Crea nuovo IBAN</button>
-      @if (isBankAccountPopupOpen()) {
-      <app-create-bank-account (confirmed)="onBankAccountPopupConfirmed()"
-        (cancelled)="onBankAccountPopupCancelled()" />
-      }</mat-grid-tile>
-    <mat-grid-tile> <button mat-button (click)="openTransactionPopup()" class="open-popup-btn">Fai un
-        pagamento</button>
-      @if (isTransactionPopupOpen()) {
-      <app-create-transaction (confirmed)="onTransactionPopupConfirmed()"
-        (cancelled)="onTransactionPopupCancelled()" />
-      }</mat-grid-tile>
-  </mat-grid-list>
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button mat-raised-button (click)="openBankAccountPopup()" class="action-btn">
+      Crea nuovo IBAN
+    </button>
+    <button mat-raised-button (click)="openTransactionPopup()" class="action-btn">
+      Fai un pagamento
+    </button>
+  </div>
+
+  <!-- Popups -->
+  @if (isBankAccountPopupOpen()) {
+    <app-create-bank-account (confirmed)="onBankAccountPopupConfirmed()"
+      (cancelled)="onBankAccountPopupCancelled()" />
+  }
+  @if (isTransactionPopupOpen()) {
+    <app-create-transaction (confirmed)="onTransactionPopupConfirmed()"
+      (cancelled)="onTransactionPopupCancelled()" />
+  }
 
   <div class="overview-cards">
     <div class="overview-card bank-accounts-card">
