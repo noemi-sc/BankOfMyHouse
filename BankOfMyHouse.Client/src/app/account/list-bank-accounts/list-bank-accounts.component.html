@@ -1,0 +1,62 @@
+<h2>Conti bancari</h2>
+
+<div class="summary-section">
+  <div class="summary-item">
+    <span class="summary-label">Totale conti:</span>
+    <span class="summary-value">{{ totalAccounts() }}</span>
+  </div>
+  <div class="summary-divider"></div>
+  <div class="summary-item">
+    <span class="summary-label">Somma totale:</span>
+    <span class="summary-value">{{ totalBalance() | currency:'EUR':'symbol':'1.2-2' }}</span>
+  </div>
+</div>
+
+<div class="mat-elevation-z8">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- IBAN Column -->
+      <ng-container matColumnDef="iban">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN</th>
+        <td mat-cell *matCellDef="let account">{{ account.iban }}</td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Descrizione</th>
+        <td mat-cell *matCellDef="let account">{{ account.description || '-' }}</td>
+      </ng-container>
+
+      <!-- Balance Column -->
+      <ng-container matColumnDef="balance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Saldo</th>
+        <td mat-cell *matCellDef="let account" class="balance-cell">
+          {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Creation Date Column -->
+      <ng-container matColumnDef="creationDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Creato il</th>
+        <td mat-cell *matCellDef="let account">{{ account.creationDate | date:'short' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">Nessun conto bancario trovato</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25]"
+    showFirstLastButtons
+    aria-label="Seleziona pagina dei conti bancari">
+  </mat-paginator>
+</div>

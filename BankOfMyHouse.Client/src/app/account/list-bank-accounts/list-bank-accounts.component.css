@@ -1,0 +1,111 @@
+/* Component adapts to parent container - no extra padding/margins */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.summary-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.summary-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.summary-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.mat-elevation-z8 {
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-wrapper {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  font-weight: bold;
+  font-size: 12px;
+  color: #424242;
+}
+
+td.mat-cell {
+  font-size: 12px;
+}
+
+.balance-cell {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+tr.mat-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+::ng-deep .mat-mdc-paginator {
+  background: white;
+  flex-shrink: 0;
+}

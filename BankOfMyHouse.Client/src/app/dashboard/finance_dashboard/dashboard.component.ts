@@ -1,6 +1,5 @@
 // components/dashboard/dashboard.component.ts
-import { Component, computed, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { UserService } from '../../services/users/users.service';
 import { CreateTransactionComponent } from '../../transactions/create/create-transaction.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { GetTransactionComponent } from "../../transactions/list/get-transaction.component";
 import { MatGridListModule } from '@angular/material/grid-list';
 import { CreateBankAccountComponent } from '../../account/create/create-bank-account.component';
+import { ListBankAccountsComponent } from '../../account/list-bank-accounts/list-bank-accounts.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,10 +17,9 @@ import { CreateBankAccountComponent } from '../../account/create/create-bank-acc
   styleUrl: './dashboard.component.css',
   standalone: true,
   imports: [
-    CurrencyPipe,
-    DatePipe,
     CreateBankAccountComponent,
     CreateTransactionComponent,
+    ListBankAccountsComponent,
     MatFormFieldModule,
     MatSelectModule,
     FormsModule,
@@ -40,17 +39,6 @@ export class DashboardComponent implements OnInit {
   protected currentUser = this.usersService.userDetails;
   protected loading = this.usersService.loading;
   protected error = this.usersService.error;
-
-  // Computed signal for total balance of all accounts
-  totalBalance = computed(() => {
-    if (!this.currentUser()?.bankAccounts) return 0;
-    return this.currentUser()?.bankAccounts.reduce((sum, account) => sum + account.balance, 0);
-  });
-
-  protected totalAccounts = computed(() => {
-    if (!this.currentUser()?.bankAccounts) return 0;
-    return this.currentUser()?.bankAccounts.length;
-  });
 
   ngOnInit(): void {
     this.usersService.getUserDetails();

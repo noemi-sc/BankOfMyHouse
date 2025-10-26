@@ -25,28 +25,8 @@
   </mat-grid-list>
 
   <div class="overview-cards">
-    <div class="overview-card">
-      <h2>Conti bancari</h2>
-      <div class="accounts-grid">
-        @for (bankAccount of currentUser()?.bankAccounts; track bankAccount.id) {
-        <div class="bank-account-card">
-          <h4>{{ bankAccount.description }}</h4>          
-          <h3>{{ bankAccount.iban }}</h3>
-          <p class="balance">{{ bankAccount.balance | currency:'EUR':'symbol':'1.2-2' }}</p>
-          <p class="creation-date">Creato il: {{ bankAccount.creationDate | date:'short' }}</p>        </div>
-        } @empty {
-        <div class="empty-state">Nessun conto bancario trovato</div>
-        }
-        <br>
-      </div>
-    </div>
-    <div class="overview-card">
-      <div class="overview-amount">
-        <h3>Totale conti bancari:</h3>
-        {{ totalAccounts() }}
-        <h3>Somma del valore dei conti bancari:</h3>
-        {{ totalBalance() | currency:'EUR':'symbol':'1.2-2' }}
-      </div>
+    <div class="overview-card bank-accounts-card">
+      <app-list-bank-accounts></app-list-bank-accounts>
     </div>
   </div>
 
