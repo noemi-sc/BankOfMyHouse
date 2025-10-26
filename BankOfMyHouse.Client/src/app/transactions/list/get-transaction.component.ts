@@ -126,12 +126,16 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
       const transactions = this.currentTransactions();
       console.log('Transactions changed:', transactions);
       if (transactions?.transactions) {
-        console.log('Setting dataSource with', transactions.transactions.length, 'transactions');
+                
+        // Create sorted copy (ascending by creation date - oldest first)
+        const sortedTransactions = [...transactions.transactions].sort((a, b) =>
+          new Date(a.transactionCreation).getTime() - new Date(b.transactionCreation).getTime()
+        );
 
         // Store current page index before updating data
         const currentPageIndex = this.paginator?.pageIndex ?? 0;
 
-        this.dataSource.data = transactions.transactions;
+        this.dataSource.data = sortedTransactions;
 
         // Force table and paginator to refresh without resetting page
         if (this.paginatorInitialized && this.paginator) {
