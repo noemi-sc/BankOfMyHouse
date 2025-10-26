@@ -1,16 +1,56 @@
-<h2>Movimenti</h2>
-<div class=" transaction-grid">
-  @for (transaction of currentTransactions()?.transactions; track transaction.id) {
-  <div>
-    <p>{{ transaction.transactionCreation | date:'short' }}</p>
-    <p><i>Importo: </i>{{ transaction.amount | currency:'EUR':'symbol':'1.2-2' }}</p>
-    <p><i>Causale: </i>{{ transaction.description }}</p>
-    <p><i>IBAN mittente: </i>{{ transaction.senderIban }}</p>
-    <p><i>IBAN destinatario: </i>{{ transaction.receiverIban }}</p>
-    <hr>
+<div class="transaction-container">
+  <h2>Movimenti</h2>
+
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="transactionCreation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Data</th>
+        <td mat-cell *matCellDef="let transaction">{{ transaction.transactionCreation | date:'short' }}</td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Causale</th>
+        <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
+      </ng-container>
+
+      <!-- Amount Column -->
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Importo</th>
+        <td mat-cell *matCellDef="let transaction">
+          {{ transaction.amount | currency:transaction.currencyCode:'symbol':'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Sender IBAN Column -->
+      <ng-container matColumnDef="senderIban">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Mittente</th>
+        <td mat-cell *matCellDef="let transaction">{{ transaction.senderIban }}</td>
+      </ng-container>
+
+      <!-- Receiver IBAN Column -->
+      <ng-container matColumnDef="receiverIban">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Destinatario</th>
+        <td mat-cell *matCellDef="let transaction">{{ transaction.receiverIban }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- No data row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">Nessuna transazione trovata</div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      showFirstLastButtons
+      aria-label="Seleziona pagina delle transazioni">
+    </mat-paginator>
   </div>
-  } @empty {
-  <div class="empty-state">Nessuna transazione trovata</div>
-  }
-  <br>
 </div>

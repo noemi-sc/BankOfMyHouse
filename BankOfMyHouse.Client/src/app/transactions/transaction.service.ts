@@ -60,8 +60,19 @@ export class TransactionService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
+    // Build query parameters
+    let queryParams = `iban=${getTransactionsRequestDto.iban}`;
+
+    // Add optional date parameters if provided
+    if (getTransactionsRequestDto.startDate) {
+      queryParams += `&startDate=${getTransactionsRequestDto.startDate.toISOString()}`;
+    }
+    if (getTransactionsRequestDto.endDate) {
+      queryParams += `&endDate=${getTransactionsRequestDto.endDate.toISOString()}`;
+    }
+
     this.httpClient
-      .get<GetTransactionsResponseDto>(`${this.apiUrl}?iban=${getTransactionsRequestDto.iban}`)//&startDate=${getTransactionsRequestDto.startDate}`)
+      .get<GetTransactionsResponseDto>(`${this.apiUrl}?${queryParams}`)
       .pipe(
         map((response) => {
           return response;

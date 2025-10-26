@@ -1,35 +1,58 @@
-import { Component, inject, OnInit, Signal, effect } from '@angular/core';
+import { Component, inject, OnInit, Signal, effect, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { UserService } from '../../services/users/users.service';
 import { TransactionService } from '../transaction.service';
 import { GetUserDetailsResponseDto } from '../../auth/models/getUserDetails/getUserDetailsResponseDto';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { GetTransactionsResponseDto } from '../models/getTransactionsResponseDto';
 import { GetTransactionsRequestDto } from '../models/getTransactionsRequestDto';
+import { TransactionDto } from '../models/transactionDto';
 
 @Component({
   selector: 'app-get-transaction',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe,
+  imports: [
+    CurrencyPipe,
     DatePipe,
     MatPaginatorModule,
+    MatTableModule,
+    MatSortModule
   ],
   templateUrl: './get-transaction.component.html',
   styleUrl: './get-transaction.component.css',
   standalone: true,
 })
-export class GetTransactionComponent implements OnInit {
+export class GetTransactionComponent implements OnInit, AfterViewInit {
 
   private usersService = inject(UserService);
   private transactionService = inject(TransactionService);
+  private cdr = inject(ChangeDetectorRef);
+
+  // ViewChild references for paginator and sort
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   // State signals from service
   protected currentUser: Signal<GetUserDetailsResponseDto | null>;
   protected currentTransactions: Signal<GetTransactionsResponseDto | null>;
 
+  // MatTableDataSource for table
+  protected dataSource = new MatTableDataSource<TransactionDto>([]);
+
+  // Columns to display in the table
+  protected displayedColumns: string[] = [
+    'transactionCreation',
+    'description',
+    'amount',
+    'senderIban',
+    'receiverIban'
+  ];
 
   loading = this.usersService.loading;
   error = this.usersService.error;
+
+  private paginatorInitialized = false;
 
   constructor() {
     this.currentUser = this.usersService.userDetails;
@@ -46,9 +69,42 @@ export class GetTransactionComponent implements OnInit {
         });
       }
     });
+
+    // Effect to update dataSource when transactions change
+    effect(() => {
+      const transactions = this.currentTransactions();
+      console.log('Transactions changed:', transactions);
+      if (transactions?.transactions) {
+        console.log('Setting dataSource with', transactions.transactions.length, 'transactions');
+        this.dataSource.data = transactions.transactions;
+
+        // Force table and paginator to refresh
+        if (this.paginatorInitialized && this.paginator) {
+          // Reassign paginator to trigger refresh
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        }
+      }
+    });
   }
 
   ngOnInit() {
     this.usersService.getUserDetails();
+  }
+
+  ngAfterViewInit() {
+    // Connect paginator and sort to data source
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.paginatorInitialized = true;
+
+    console.log('Paginator connected:', this.paginator);
+    console.log('Current data length:', this.dataSource.data.length);
+
+    // Trigger initial update if data already exists
+    if (this.dataSource.data.length > 0) {
+      this.paginator._changePageSize(this.paginator.pageSize);
+      this.cdr.detectChanges();
+    }
   }
 }

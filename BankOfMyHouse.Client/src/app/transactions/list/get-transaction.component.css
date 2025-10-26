@@ -1,6 +1,41 @@
-.transaction-grid {
-  display: grid;
-  gap: 16px;
-  height: 630px;
-  overflow-y: scroll;
+.transaction-container {
+  width: 100%;
+  padding: 1rem;
+}
+
+.transaction-container h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.mat-elevation-z8 {
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  font-weight: bold;
+  font-size: 14px;
+  color: #424242;
+}
+
+td.mat-cell {
+  font-size: 13px;
+}
+
+tr.mat-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
 }
