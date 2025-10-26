@@ -8,6 +8,25 @@
   color: #333;
 }
 
+.date-filter-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.date-range-field {
+  flex: 1;
+  max-width: 400px;
+}
+
+.filter-button {
+  height: 40px;
+}
+
 .mat-elevation-z8 {
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
               0 8px 10px 1px rgba(0, 0, 0, 0.14),

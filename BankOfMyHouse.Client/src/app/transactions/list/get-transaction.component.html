@@ -1,6 +1,24 @@
 <div class="transaction-container">
   <h2>Movimenti</h2>
 
+  <!-- Date Range Filter -->
+  <div class="date-filter-container">
+    <mat-form-field class="date-range-field">
+      <mat-label>Filtra per periodo</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate placeholder="Data inizio" [(ngModel)]="startDate">
+        <input matEndDate placeholder="Data fine" [(ngModel)]="endDate">
+      </mat-date-range-input>
+      <mat-hint>GG/MM/AAAA – GG/MM/AAAA</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <button mat-raised-button (click)="clearDateFilter()" class="filter-button">
+      Pulisci Filtro
+    </button>
+  </div>
+
   <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort>
 
