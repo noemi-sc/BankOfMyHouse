@@ -113,17 +113,29 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
       }
     });
 
+    // Effect to refresh transactions when a transaction is created
+    effect(() => {
+      const transactionCreated = this.transactionService.transactionCreated();
+      if (transactionCreated) {
+        this.fetchTransactions();
+      }
+    });
+
     // Effect to update dataSource when transactions change
     effect(() => {
       const transactions = this.currentTransactions();
       console.log('Transactions changed:', transactions);
       if (transactions?.transactions) {
         console.log('Setting dataSource with', transactions.transactions.length, 'transactions');
+
+        // Store current page index before updating data
+        const currentPageIndex = this.paginator?.pageIndex ?? 0;
+
         this.dataSource.data = transactions.transactions;
 
-        // Force table and paginator to refresh
+        // Force table and paginator to refresh without resetting page
         if (this.paginatorInitialized && this.paginator) {
-          // Reassign paginator to trigger refresh
+          // Temporarily disconnect and reconnect
           const tempPaginator = this.paginator;
           const tempSort = this.sort;
           this.dataSource.paginator = null;
@@ -132,6 +144,11 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
           setTimeout(() => {
             this.dataSource.paginator = tempPaginator;
             this.dataSource.sort = tempSort;
+
+            // Restore the page index if it's still valid
+            if (tempPaginator && currentPageIndex < tempPaginator.getNumberOfPages()) {
+              tempPaginator.pageIndex = currentPageIndex;
+            }
           }, 0);
         }
       }
