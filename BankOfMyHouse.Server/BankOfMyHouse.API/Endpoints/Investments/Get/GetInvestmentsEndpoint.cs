@@ -1,6 +1,7 @@
 using BankOfMyHouse.Application.Services.Investments.Interfaces;
 using BankOfMyHouse.Application.Services.Users.Interfaces;
 using FastEndpoints;
+using Mapster;
 
 namespace BankOfMyHouse.API.Endpoints.Investments.Get
 {
@@ -54,7 +55,7 @@ namespace BankOfMyHouse.API.Endpoints.Investments.Get
 
 			var response = new GetInvestmentsResponseDto
 			{
-				Investments = investments
+				Investments = investments.Adapt<List<InvestmentDto>>()
 			};
 
 			await Send.CreatedAtAsync<GetInvestmentsEndpoint>(responseBody: response, cancellation: ct);

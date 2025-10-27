@@ -1,9 +1,7 @@
-﻿using BankOfMyHouse.Domain.Investments;
-
-namespace BankOfMyHouse.API.Endpoints.Investments.Get
+﻿namespace BankOfMyHouse.API.Endpoints.Investments.Get
 {
 	public class GetInvestmentsResponseDto
 	{
-		public List<Investment> Investments { get; set; }
+		public List<InvestmentDto> Investments { get; set; }
 	}
 }

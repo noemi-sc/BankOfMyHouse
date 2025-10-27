@@ -87,17 +87,30 @@ namespace BankOfMyHouse.Application.Services.Investments
 				.ToListAsync(ct);
 		}
 
-		public async Task<Dictionary<int, List<CompanyStockPrice>>> GetHistoricalStockPrices(DateTime startDate, CancellationToken ct)
+		public async Task<Dictionary<int, List<CompanyStockPrice>>> GetHistoricalStockPrices(DateTime startDate, int? companyId, CancellationToken ct)
 		{
-			var companies = await this._context.Companies
-				.Include(c => c.StockPriceHistory.Where(sp => sp.TimeOfPriceChange >= startDate).OrderBy(sp => sp.TimeOfPriceChange))
+			// Fetch stock prices directly with optimized query
+			var query = this._context.CompanyStockPrices
+				.Where(sp => sp.TimeOfPriceChange >= startDate);
+
+			// Filter by company if provided
+			if (companyId.HasValue)
+			{
+				query = query.Where(sp => sp.CompanyId == companyId.Value);
+			}
+
+			var stockPrices = await query
+				.OrderBy(sp => sp.CompanyId)
+				.ThenBy(sp => sp.TimeOfPriceChange)
 				.ToListAsync(ct);
 
-			var result = new Dictionary<int, List<CompanyStockPrice>>();
-			foreach (var company in companies)
-			{
-				result[company.Id] = company.StockPriceHistory.ToList();
-			}
+			// Group by company ID in memory (more efficient than grouping in SQL)
+			var result = stockPrices
+				.GroupBy(sp => sp.CompanyId)
+				.ToDictionary(
+					group => group.Key,
+					group => group.ToList()
+				);
 
 			return result;
 		}

@@ -51,7 +51,16 @@ namespace BankOfMyHouse.API.Endpoints.Investments.GetHistoricalPrices
 				return;
 			}
 
-			var startDate = DateTime.UtcNow.AddHours(-req.Hours);
+			DateTime startDate;
+			if (req.StartDate.HasValue)
+			{
+				startDate = req.StartDate.Value.ToUniversalTime();
+			}
+			else
+			{
+				startDate = DateTime.UtcNow.AddHours(-req.Hours);
+			}
+
 			var historicalPrices = await this._investmentService.GetHistoricalStockPrices(startDate, req.CompanyId, ct);
 
 			var response = new GetHistoricalPricesResponseDto
