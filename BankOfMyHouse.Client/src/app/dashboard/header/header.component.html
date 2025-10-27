@@ -14,6 +14,7 @@
     </div>
 
     <!-- Navigation -->
+    @if (currentUser()) {
     <nav class="main-nav" [class.mobile-open]="mobileMenuOpen()">
       <ul class="nav-list">
         @for (item of navItems(); track item.path) {
@@ -27,6 +28,7 @@
         }
       </ul>
     </nav>
+    }
 
     <!-- User Actions -->
     <div class="user-actions">
