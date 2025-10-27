@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+namespace BankOfMyHouse.Application.BackgroundTasks;
+
 public class StockPriceGenerator : BackgroundService
 {
 	private readonly IServiceScopeFactory _serviceScopeFactory;
