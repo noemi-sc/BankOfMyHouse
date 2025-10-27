@@ -30,7 +30,7 @@ public class StockPriceGenerator : BackgroundService
 			try
 			{
 				await UpdateStockPrices(stoppingToken);
-				await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+				await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 			}
 			catch (OperationCanceledException)
 			{
@@ -41,7 +41,7 @@ public class StockPriceGenerator : BackgroundService
 			{
 				_logger.LogError(ex, "Error occurred while updating stock prices");
 				// Continue running even if there's an error
-				await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+				await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 			}
 		}
 
@@ -53,10 +53,7 @@ public class StockPriceGenerator : BackgroundService
 		using var scope = _serviceScopeFactory.CreateScope();
 		var dbContext = scope.ServiceProvider.GetRequiredService<BankOfMyHouseDbContext>();
 
-		var companies = await dbContext.Companies
-			.Include(c => c.StockPriceHistory.OrderByDescending(h => h.TimeOfPriceChange)
-			.Take(1))
-			.ToListAsync(cancellationToken);
+		var companies = await dbContext.Companies.ToListAsync(cancellationToken);
 
 		if (companies.Count <= 0)
 		{
@@ -64,34 +61,61 @@ public class StockPriceGenerator : BackgroundService
 			return;
 		}
 
+		// Fetch all latest prices in ONE query for efficiency
+		var latestPrices = await dbContext.CompanyStockPrices
+			.GroupBy(sp => sp.CompanyId)
+			.Select(g => new
+			{
+				CompanyId = g.Key,
+				LatestPrice = g.OrderByDescending(sp => sp.TimeOfPriceChange).First()
+			})
+			.ToListAsync(cancellationToken);
+
+		var latestPriceDict = latestPrices.ToDictionary(lp => lp.CompanyId, lp => lp.LatestPrice.StockPrice);
+
+		var newPrices = new List<CompanyStockPrice>();
+
 		foreach (var company in companies)
 		{
 			decimal oldPrice = 0.0m;
 
-			var percentageChange = (decimal)(_random.NextDouble() * 20 - 10); // Random between -10 and +10
-
-			if (company.StockPriceHistory.Count <= 0)
+			// Get the latest price from dictionary
+			if (latestPriceDict.TryGetValue(company.Id, out var lastPrice))
 			{
-				oldPrice = Random.Shared.Next(1000, 200001) / 1000.0m;
+				oldPrice = lastPrice;
 			}
 			else
 			{
-				oldPrice = company.StockPriceHistory.First().StockPrice;
+				// No price history exists, generate initial price
+				oldPrice = Random.Shared.Next(1000, 200001) / 1000.0m;
 			}
 
+			var percentageChange = (decimal)(_random.NextDouble() * 20 - 10); // Random between -10 and +10
 			var newPrice = oldPrice * (1 + percentageChange / 100);
 
+			// Ensure price stays within reasonable bounds
+			if (newPrice < 1) newPrice = 1;
+			if (newPrice > 1000) newPrice = 1000;
+
 			var companyPrice = new CompanyStockPrice(newPrice, company.Id);
-
-			await dbContext.AddAsync(companyPrice, cancellationToken);
-
-			await _hubContext.Clients.All.SendAsync("TransferChartData", companyPrice, cancellationToken);
+			newPrices.Add(companyPrice);
 
 			_logger.LogDebug("Updated {CompanyName} stock price from {OldPrice:C} to {NewPrice:C} ({Change:+0.00;-0.00}%)",
 				company.Name, oldPrice, newPrice, percentageChange);
 		}
 
+		// Add all prices at once
+		await dbContext.CompanyStockPrices.AddRangeAsync(newPrices, cancellationToken);
 		await dbContext.SaveChangesAsync(cancellationToken);
-		_logger.LogInformation("Updated stock prices for {CompanyCount} companies", companies.Count);
+
+		// Send ALL prices in a single SignalR message as a dictionary
+		var pricesDictionary = newPrices.ToDictionary(
+			cp => cp.CompanyId,
+			cp => new { cp.StockPrice, cp.TimeOfPriceChange, cp.CompanyId }
+		);
+
+		await _hubContext.Clients.All.SendAsync("TransferAllPrices", pricesDictionary, cancellationToken);
+
+		_logger.LogInformation("Updated and broadcast stock prices for {CompanyCount} companies", companies.Count);
 	}
 }
