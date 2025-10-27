@@ -1,4 +1,3 @@
-// components/dashboard/dashboard.component.ts
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { UserService } from '../../services/users/users.service';
 import { CreateTransactionComponent } from '../../transactions/create/create-transaction.component';
@@ -13,8 +12,8 @@ import { ListBankAccountsComponent } from '../../bankAccounts/list-bank-accounts
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  templateUrl: './finance-dashboard.component.html',
+  styleUrl: './finance-dashboard.component.css',
   standalone: true,
   imports: [
     CreateBankAccountComponent,
@@ -28,7 +27,7 @@ import { ListBankAccountsComponent } from '../../bankAccounts/list-bank-accounts
     GetTransactionComponent
   ],
 })
-export class DashboardComponent implements OnInit {
+export class FinanceDashboardComponent implements OnInit {
 
   private usersService = inject(UserService);
 
