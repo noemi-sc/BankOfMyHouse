@@ -73,9 +73,13 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
   protected currentUser: Signal<GetUserDetailsResponseDto | null>;
   protected currentTransactions: Signal<GetTransactionsResponseDto | null>;
 
-  // Date range filter signals with automatic triggering - prefilled with current month
-  protected startDate = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  protected endDate = signal<Date | null>(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+  // Date range filter values - prefilled with current month
+  protected startDateValue: Date | null = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  protected endDateValue: Date | null = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+  // Signals to track date changes for effects
+  protected startDate = signal<Date | null>(this.startDateValue);
+  protected endDate = signal<Date | null>(this.endDateValue);
 
   // MatTableDataSource for table
   protected dataSource = new MatTableDataSource<TransactionDto>([]);
@@ -178,8 +182,21 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
   protected clearDateFilter(): void {
     // Reset to current month range
     const now = new Date();
-    this.startDate.set(new Date(now.getFullYear(), now.getMonth(), 1));
-    this.endDate.set(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    this.startDateValue = new Date(now.getFullYear(), now.getMonth(), 1);
+    this.endDateValue = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // Update signals to trigger effects
+    this.startDate.set(this.startDateValue);
+    this.endDate.set(this.endDateValue);
+
+    // Trigger change detection to clear validation state
+    this.cdr.markForCheck();
+  }
+
+  // Method to sync ngModel values with signals when dates change
+  protected onDateChange(): void {
+    this.startDate.set(this.startDateValue);
+    this.endDate.set(this.endDateValue);
   }
 
   ngOnInit() {

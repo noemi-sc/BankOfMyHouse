@@ -7,8 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { GetTransactionComponent } from "../../transactions/list/get-transaction.component";
-import { CreateBankAccountComponent } from '../../account/create/create-bank-account.component';
-import { ListBankAccountsComponent } from '../../account/list-bank-accounts/list-bank-accounts.component';
+import { CreateBankAccountComponent } from '../../bankAccounts/create/create-bank-account.component';
+import { ListBankAccountsComponent } from '../../bankAccounts/list-bank-accounts/list-bank-accounts.component';
 
 @Component({
   selector: 'app-dashboard',

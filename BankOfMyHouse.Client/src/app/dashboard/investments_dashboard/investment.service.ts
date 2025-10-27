@@ -1,9 +1,9 @@
-import { Inject, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
-import { createInvestmentRequestDto } from '../../investment/models/create/createInvestmentRequestDto';
-import { createInvestmentResponseDto } from '../../investment/models/create/createInvestmentResponseDto';
+import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { createInvestmentRequestDto } from '../../investments/models/create/createInvestmentRequestDto';
+import { createInvestmentResponseDto } from '../../investments/models/create/createInvestmentResponseDto';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
-import { listCompanyResponseDto } from '../../investment/models/create/listCompany/listCompanyResponseDto';
+import { listCompanyResponseDto } from '../../investments/models/listCompany/listCompanyResponseDto';
 
 @Injectable({
   providedIn: 'root'
@@ -16,22 +16,18 @@ export class InvestmentService {
     signal<createInvestmentRequestDto | null>(null);
   private createInvestmentDetailsSignal =
     signal<createInvestmentResponseDto | null>(null);
-    private listCompanyDetailsSignal =
-    signal<listCompanyResponseDto | null>(null);
   private loadingSignal =
     signal<boolean>(false);
   private errorSignal = signal<any>(null);
 
-    public readonly companyDetails =
+  public readonly companyDetails =
     this.createInvestmentDetailsSignal.asReadonly();
   public readonly loading =
     this.loadingSignal.asReadonly();
   public readonly error =
     this.errorSignal.asReadonly();
 
-  constructor(private httpClient: HttpClient,
-    @Inject(PLATFORM_ID) private platformId:
-      Object) { }
+  private httpClient: HttpClient = inject(HttpClient);
 
   public createInvestment(body: createInvestmentRequestDto): Observable<createInvestmentResponseDto> {
     this.loadingSignal.set(true);
@@ -57,11 +53,15 @@ export class InvestmentService {
     return this.httpClient.get(`${this.apiUrl}`);
   }
 
-    listCompanies(): Observable<any> {
+  listCompanies(): Observable<any> {
     return this.httpClient.get(`${this.apiUrl}/companies`);
   }
-/*   listCompanies(): Observable<listCompanyResponseDto> {
-    return this.httpClient.get<listCompanyResponseDto>(`${this.apiUrl}/companies`);
+
+  getHistoricalPrices(hours: number): Observable<any> {
+    return this.httpClient.get(`${this.apiUrl}/historical-prices?hours=${hours}`);
   }
-*/
+  /*   listCompanies(): Observable<listCompanyResponseDto> {
+      return this.httpClient.get<listCompanyResponseDto>(`${this.apiUrl}/companies`);
+    }
+  */
 }

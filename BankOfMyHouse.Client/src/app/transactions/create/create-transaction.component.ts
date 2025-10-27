@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BankAccountService } from '../../account/bank-account.service';
 import { CreateTransactionRequestDto, IbanCodeDto } from '../models/createTransactionRequestDto';
 import { TransactionService } from '../transaction.service';
 import { UserService } from '../../services/users/users.service';
