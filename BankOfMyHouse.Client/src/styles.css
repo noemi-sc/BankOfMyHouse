@@ -18,11 +18,51 @@
   --primary-800: #1E3A8A;
   --primary-900: #1E293B;
 
+  /* Secondary - Emerald Green (Growth, Prosperity) */
+  --secondary-50: #ECFDF5;
+  --secondary-100: #D1FAE5;
+  --secondary-200: #A7F3D0;
+  --secondary-300: #6EE7B7;
+  --secondary-400: #34D399;
+  --secondary-500: #10B981;
+  --secondary-600: #059669;
+  --secondary-700: #047857;
+  --secondary-800: #065F46;
+  --secondary-900: #064E3B;
+
+  /* Accent - Rose Red (Call to Action) */
+  --accent-50: #FFF1F2;
+  --accent-100: #FFE4E6;
+  --accent-200: #FECDD3;
+  --accent-300: #FDA4AF;
+  --accent-400: #FB7185;
+  --accent-500: #F43F5E;
+  --accent-600: #E11D48;
+  --accent-700: #BE123C;
+  --accent-800: #9F1239;
+  --accent-900: #881337;
+
+  /* Gray - Neutral Slate (Base, Text, Backgrounds) */
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+
   /* Semantic Colors */
   --success: var(--secondary-600);
+  --success-light: var(--secondary-100);
   --warning: var(--accent-500);
+  --warning-light: var(--accent-100);
   --error: #DC2626;
+  --error-light: #FEE2E2;
   --info: var(--primary-500);
+  --info-light: var(--primary-100);
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
