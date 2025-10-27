@@ -228,6 +228,7 @@ export class UserService {
     }
 
     this.currentUserSignal.set(null);
+    this.userDetailsSignal.set(null);
     this.isAuthenticatedSignal.set(false);
   }
 }
