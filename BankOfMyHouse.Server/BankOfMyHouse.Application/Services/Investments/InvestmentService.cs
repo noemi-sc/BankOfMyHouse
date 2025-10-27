@@ -86,5 +86,20 @@ namespace BankOfMyHouse.Application.Services.Investments
 				.Where(i => i.BankAccount.UserId == userId)
 				.ToListAsync(ct);
 		}
+
+		public async Task<Dictionary<int, List<CompanyStockPrice>>> GetHistoricalStockPrices(DateTime startDate, CancellationToken ct)
+		{
+			var companies = await this._context.Companies
+				.Include(c => c.StockPriceHistory.Where(sp => sp.TimeOfPriceChange >= startDate).OrderBy(sp => sp.TimeOfPriceChange))
+				.ToListAsync(ct);
+
+			var result = new Dictionary<int, List<CompanyStockPrice>>();
+			foreach (var company in companies)
+			{
+				result[company.Id] = company.StockPriceHistory.ToList();
+			}
+
+			return result;
+		}
 	}
 }

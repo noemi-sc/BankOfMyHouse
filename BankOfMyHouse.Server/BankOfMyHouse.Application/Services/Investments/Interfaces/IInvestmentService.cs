@@ -8,5 +8,6 @@ namespace BankOfMyHouse.Application.Services.Investments.Interfaces
 		Task<List<Company>> GetCompanies(CancellationToken ct);
 		Task<List<Investment>> GetInvestments(int userId, CancellationToken ct);
 		Task<Investment> WithdrawInvestment(int userId, int companyId, CancellationToken ct);
+		Task<Dictionary<int, List<CompanyStockPrice>>> GetHistoricalStockPrices(DateTime startDate, CancellationToken ct);
 	}
 }
