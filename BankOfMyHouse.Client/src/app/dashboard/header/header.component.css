@@ -85,106 +85,14 @@
         margin-right: 0;
     }
 
-
-    /* User Menu */
     .user-menu-wrapper {
-        position: relative;
         margin-right: 50px;
-    }
-
-    .user-menu-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 24px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .user-menu-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    .user-avatar {
-        border-radius: 50%;
-    }
-
-    .user-avatar-placeholder {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-    }
-
-    .user-dropdown {
-        position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        background: white;
-        color: #1f2937;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
-        z-index: 1000;
-        overflow: hidden;
-    }
-
-    .user-info {
-        padding: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .user-info strong {
-        display: block;
-        margin-bottom: 0.25rem;
-    }
-
-    .user-info span {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    .dropdown-link {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
-        color: #374151;
-        text-decoration: none;
-        font-size: 0.875rem;
-        background: none;
-        border: none;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    .dropdown-link:hover {
-        background: #f3f4f6;
-    }
-
-    .dropdown-link.logout {
-        color: var(--error);
-        border-top: 1px solid var(--gray-200);
-    }
-
-    .dropdown-link.logout:hover {
-        background: #fef2f2;
     }
 
     hr {
         margin: 0;
         border: none;
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid var(--gray-200);
     }
 
     .fa {

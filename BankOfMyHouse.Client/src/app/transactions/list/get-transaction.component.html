@@ -1,13 +1,13 @@
 <div class="transaction-container">
-  <h2>Movimenti</h2>
+  <h2 class="card-header">Movimenti</h2>
 
   <!-- Date Range Filter -->
-  <div class="date-filter-container">
-    <mat-form-field class="date-range-field">
+  <div class="card-info-section date-filter-container">
+    <mat-form-field class="date-range-field" #dateRangeField>
       <mat-label>Filtra per periodo</mat-label>
       <mat-date-range-input [rangePicker]="picker">
-        <input matStartDate placeholder="Data inizio" [(ngModel)]="startDate">
-        <input matEndDate placeholder="Data fine" [(ngModel)]="endDate">
+        <input matStartDate placeholder="Data inizio" [(ngModel)]="startDateValue" (ngModelChange)="onDateChange()" #startDateInput="ngModel">
+        <input matEndDate placeholder="Data fine" [(ngModel)]="endDateValue" (ngModelChange)="onDateChange()" #endDateInput="ngModel">
       </mat-date-range-input>
       <mat-hint>GG/MM/AAAA – GG/MM/AAAA</mat-hint>
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -19,51 +19,53 @@
     </button>
   </div>
 
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource" matSort>
+  <div class="card-content-white mat-elevation-z8">
+    <div class="card-table-wrapper table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort>
 
-      <!-- Date Column -->
-      <ng-container matColumnDef="transactionCreation">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Data</th>
-        <td mat-cell *matCellDef="let transaction">{{ transaction.transactionCreation | date:'short' }}</td>
-      </ng-container>
+        <!-- Date Column -->
+        <ng-container matColumnDef="transactionCreation">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Data</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.transactionCreation | date:'short' }}</td>
+        </ng-container>
 
-      <!-- Description Column -->
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Causale</th>
-        <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
-      </ng-container>
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Causale</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
+        </ng-container>
 
-      <!-- Amount Column -->
-      <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Importo</th>
-        <td mat-cell *matCellDef="let transaction">
-          {{ transaction.amount | currency:transaction.currencyCode:'symbol':'1.2-2' }}
-        </td>
-      </ng-container>
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Importo</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.amount | currency:transaction.currencyCode:'symbol':'1.2-2' }}
+          </td>
+        </ng-container>
 
-      <!-- Sender IBAN Column -->
-      <ng-container matColumnDef="senderIban">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Mittente</th>
-        <td mat-cell *matCellDef="let transaction">{{ transaction.senderIban }}</td>
-      </ng-container>
+        <!-- Sender IBAN Column -->
+        <ng-container matColumnDef="senderIban">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Mittente</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.senderIban }}</td>
+        </ng-container>
 
-      <!-- Receiver IBAN Column -->
-      <ng-container matColumnDef="receiverIban">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Destinatario</th>
-        <td mat-cell *matCellDef="let transaction">{{ transaction.receiverIban }}</td>
-      </ng-container>
+        <!-- Receiver IBAN Column -->
+        <ng-container matColumnDef="receiverIban">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN Destinatario</th>
+          <td mat-cell *matCellDef="let transaction">{{ transaction.receiverIban }}</td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-      <!-- No data row -->
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-          <div class="empty-state">Nessuna transazione trovata</div>
-        </td>
-      </tr>
-    </table>
+        <!-- No data row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="empty-state">Nessuna transazione trovata</div>
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <mat-paginator
       [pageSizeOptions]="[5, 10, 25, 50]"

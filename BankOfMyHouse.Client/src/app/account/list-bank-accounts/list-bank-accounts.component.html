@@ -1,6 +1,6 @@
-<h2>Conti bancari</h2>
+<h2 class="card-header">Conti bancari</h2>
 
-<div class="summary-section">
+<div class="card-info-section summary-section">
   <div class="summary-item">
     <span class="summary-label">Totale conti:</span>
     <span class="summary-value">{{ totalAccounts() }}</span>
@@ -12,8 +12,8 @@
   </div>
 </div>
 
-<div class="mat-elevation-z8">
-  <div class="table-wrapper">
+<div class="card-content-white mat-elevation-z8">
+  <div class="card-table-wrapper table-wrapper">
     <table mat-table [dataSource]="dataSource" matSort>
 
       <!-- IBAN Column -->

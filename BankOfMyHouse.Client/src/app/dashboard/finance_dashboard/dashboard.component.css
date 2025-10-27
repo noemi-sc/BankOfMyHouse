@@ -17,35 +17,6 @@
   margin: 0 0 8px 0;
 }
 
-/* Action Buttons Section */
-.action-buttons {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  padding: 12px 24px !important;
-  background-color: var(--accent-500) !important;
-  color: white !important;
-  font-weight: 500 !important;
-  font-size: 0.95rem !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-md) !important;
-  transition: all 0.3s ease !important;
-}
-
-.action-btn:hover {
-  background-color: var(--accent-600) !important;
-  box-shadow: var(--shadow-lg) !important;
-  transform: translateY(-2px);
-}
-
-.action-btn:active {
-  transform: translateY(0);
-}
-
 .welcome-message {
   color: #6b7280;
   font-size: 1.125rem;
@@ -119,13 +90,21 @@
   overflow-y: scroll;
 }
 
-.investments-container,
-.transactions-container {
+.investments-container {
   background: white;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--gray-200);
   overflow: hidden;
+}
+
+.transactions-container {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 24px;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  height: 450px;
 }
 
 .empty-state {
