@@ -52,7 +52,7 @@ namespace BankOfMyHouse.API.Endpoints.Investments.GetHistoricalPrices
 			}
 
 			var startDate = DateTime.UtcNow.AddHours(-req.Hours);
-			var historicalPrices = await this._investmentService.GetHistoricalStockPrices(startDate, ct);
+			var historicalPrices = await this._investmentService.GetHistoricalStockPrices(startDate, req.CompanyId, ct);
 
 			var response = new GetHistoricalPricesResponseDto
 			{

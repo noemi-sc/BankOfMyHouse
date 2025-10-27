@@ -19,6 +19,7 @@ public class BankOfMyHouseDbContext : DbContext
 	public virtual DbSet<PaymentCategory> PaymentCategories { get; init; }
 	public virtual DbSet<Company> Companies { get; init; }
 	public virtual DbSet<Investment> Investments { get; init; }
+	public virtual DbSet<CompanyStockPrice> CompanyStockPrices { get; init; }
 
 	public BankOfMyHouseDbContext(DbContextOptions<BankOfMyHouseDbContext> options) : base(options) { }
 
