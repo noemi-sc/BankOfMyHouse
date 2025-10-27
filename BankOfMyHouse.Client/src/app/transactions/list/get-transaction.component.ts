@@ -129,36 +129,37 @@ export class GetTransactionComponent implements OnInit, AfterViewInit {
     effect(() => {
       const transactions = this.currentTransactions();
       console.log('Transactions changed:', transactions);
-      if (transactions?.transactions) {
-                
-        // Create sorted copy (ascending by creation date - oldest first)
-        const sortedTransactions = [...transactions.transactions].sort((a, b) =>
-          new Date(a.transactionCreation).getTime() - new Date(b.transactionCreation).getTime()
-        );
 
-        // Store current page index before updating data
-        const currentPageIndex = this.paginator?.pageIndex ?? 0;
+      // Handle both null (cleared) and actual transaction data
+      const transactionData = transactions?.transactions ?? [];
 
-        this.dataSource.data = sortedTransactions;
+      // Create sorted copy (ascending by creation date - oldest first)
+      const sortedTransactions = [...transactionData].sort((a, b) =>
+        new Date(a.transactionCreation).getTime() - new Date(b.transactionCreation).getTime()
+      );
 
-        // Force table and paginator to refresh without resetting page
-        if (this.paginatorInitialized && this.paginator) {
-          // Temporarily disconnect and reconnect
-          const tempPaginator = this.paginator;
-          const tempSort = this.sort;
-          this.dataSource.paginator = null;
-          this.dataSource.sort = null;
+      // Store current page index before updating data
+      const currentPageIndex = this.paginator?.pageIndex ?? 0;
 
-          setTimeout(() => {
-            this.dataSource.paginator = tempPaginator;
-            this.dataSource.sort = tempSort;
+      this.dataSource.data = sortedTransactions;
 
-            // Restore the page index if it's still valid
-            if (tempPaginator && currentPageIndex < tempPaginator.getNumberOfPages()) {
-              tempPaginator.pageIndex = currentPageIndex;
-            }
-          }, 0);
-        }
+      // Force table and paginator to refresh without resetting page
+      if (this.paginatorInitialized && this.paginator) {
+        // Temporarily disconnect and reconnect
+        const tempPaginator = this.paginator;
+        const tempSort = this.sort;
+        this.dataSource.paginator = null;
+        this.dataSource.sort = null;
+
+        setTimeout(() => {
+          this.dataSource.paginator = tempPaginator;
+          this.dataSource.sort = tempSort;
+
+          // Restore the page index if it's still valid
+          if (tempPaginator && currentPageIndex < tempPaginator.getNumberOfPages()) {
+            tempPaginator.pageIndex = currentPageIndex;
+          }
+        }, 0);
       }
     });
   }
