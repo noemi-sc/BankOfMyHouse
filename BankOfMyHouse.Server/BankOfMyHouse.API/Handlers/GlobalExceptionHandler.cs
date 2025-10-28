@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 
 		var (statusCode, title, detail) = GetErrorResponse(exception);
 
-		var problemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails
+		var problemDetails = new ProblemDetails
 		{
 			Status = (int)statusCode,
 			Title = title,
@@ -44,47 +45,47 @@ public class GlobalExceptionHandler : IExceptionHandler
 		return exception switch
 		{
 			// Business logic exceptions that should return 400 Bad Request
-			InvalidOperationException ex when ex.Message.Contains("Sender and receiver IBANs cannot be the same") 
-				=> (HttpStatusCode.BadRequest, "Invalid Transaction", "Sender and receiver IBANs cannot be the same"),
-			
-			InvalidOperationException ex when ex.Message.Contains("Insufficient funds") 
-				=> (HttpStatusCode.BadRequest, "Insufficient Funds", "The account does not have sufficient funds for this transaction"),
-			
-			InvalidOperationException ex when ex.Message.Contains("Currency") && ex.Message.Contains("not found") 
-				=> (HttpStatusCode.BadRequest, "Invalid Currency", "The specified currency code is not valid"),
-			
-			InvalidOperationException ex when ex.Message.Contains("Username is already taken") 
-				=> (HttpStatusCode.BadRequest, "Username Unavailable", "The username is already taken"),
-			
-			InvalidOperationException ex when ex.Message.Contains("Email is already registered") 
-				=> (HttpStatusCode.BadRequest, "Email Already Registered", "An account with this email already exists"),
+			InvalidOperationException ex when ex.Message.Contains("Sender and receiver IBANs cannot be the same")
+				=> (HttpStatusCode.BadRequest, "Transazione Non Valida", "IBAN del mandante e destinatario non possono essere uguali"),
+
+			InvalidOperationException ex when ex.Message.Contains("Insufficient funds")
+				=> (HttpStatusCode.BadRequest, "Fondi Insufficienti", "Il conto non dispone di fondi sufficienti per questa transazione"),
+
+			InvalidOperationException ex when ex.Message.Contains("Currency") && ex.Message.Contains("not found")
+				=> (HttpStatusCode.BadRequest, "Valuta Non Valida", "La valuta specificata non e' valida"),
+
+			InvalidOperationException ex when ex.Message.Contains("Username is already taken")
+				=> (HttpStatusCode.BadRequest, "Username Non Disponibile", "Questo username e' gia' stato utilizzato"),
+
+			InvalidOperationException ex when ex.Message.Contains("Email is already registered")
+				=> (HttpStatusCode.BadRequest, "Email Gia' Registrata", "Un account con questa email e' gia' stato utilizzato"),
 
 			// Entity not found exceptions that should return 404 Not Found
-			InvalidOperationException ex when ex.Message.Contains("Sender account") && ex.Message.Contains("not found") 
-				=> (HttpStatusCode.NotFound, "Account Not Found", "The sender account was not found"),
-			
-			InvalidOperationException ex when ex.Message.Contains("User") && ex.Message.Contains("not found") 
-				=> (HttpStatusCode.NotFound, "User Not Found", "The specified user was not found"),
-			
-			InvalidOperationException ex when ex.Message.Contains("Company not found") 
-				=> (HttpStatusCode.NotFound, "Company Not Found", "The specified company was not found"),
+			InvalidOperationException ex when ex.Message.Contains("Sender account") && ex.Message.Contains("not found")
+				=> (HttpStatusCode.NotFound, "Account Non Trovato", "L'account del destinatario non e' stato trovato"),
 
-			InvalidOperationException ex when ex.Message.Contains("bankAccount") && ex.Message.Contains("not found") 
-				=> (HttpStatusCode.NotFound, "Bank Account Not Found", "The specified bank account was not found"),
+			InvalidOperationException ex when ex.Message.Contains("User") && ex.Message.Contains("not found")
+				=> (HttpStatusCode.NotFound, "Utente Non Trovato", "L'utente specificato non e' stato trovato"),
+
+			InvalidOperationException ex when ex.Message.Contains("Company not found")
+				=> (HttpStatusCode.NotFound, "Azienda Non Trovata", "L'azienda specificata non e' stata trovata"),
+
+			InvalidOperationException ex when ex.Message.Contains("bankAccount") && ex.Message.Contains("not found")
+				=> (HttpStatusCode.NotFound, "Conto Bancario Non Trovato", "Il conto bancario specificato non e' stato trovato"),
 
 			// Authentication/Authorization exceptions
-			SecurityTokenException => (HttpStatusCode.Unauthorized, "Authentication Failed", "Invalid or expired token"),
-			UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Access Denied", "You do not have permission to access this resource"),
+			SecurityTokenException => (HttpStatusCode.Unauthorized, "Autenticazione Fallita", "Token non valido o scaduto"),
+			UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Accesso Negato", "Non hai i permessi per accedere a questa risorsa"),
 
 			// Not implemented features
-			NotImplementedException => (HttpStatusCode.NotImplemented, "Feature Not Implemented", "This feature is not yet implemented"),
+			NotImplementedException => (HttpStatusCode.NotImplemented, "Funzionalita' Non Implementata", "Questa funzionalita' non e' ancora stata implementata"),
 
 			// Validation exceptions
-			ArgumentNullException ex => (HttpStatusCode.BadRequest, "Missing Required Data", $"Required parameter '{ex.ParamName}' is missing"),
-			ArgumentException ex => (HttpStatusCode.BadRequest, "Invalid Request", ex.Message),
+			ArgumentNullException ex => (HttpStatusCode.BadRequest, "Dati Obbligatori Mancanti", $"Il parametro obbligatorio '{ex.ParamName}' e' mancante"),
+			ArgumentException ex => (HttpStatusCode.BadRequest, "Richiesta Non Valida", ex.Message),
 
 			// Default case for unhandled exceptions
-			_ => (HttpStatusCode.InternalServerError, "Internal Server Error", "An unexpected error occurred")
+			_ => (HttpStatusCode.InternalServerError, "Errore Interno del Server", "Si e' verificato un errore imprevisto")
 		};
 	}
 }
