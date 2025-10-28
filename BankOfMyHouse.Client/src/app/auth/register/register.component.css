@@ -102,24 +102,6 @@ label {
   to { transform: rotate(360deg); }
 }
 
-.alert {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: var(--radius-md);
-}
-
-.alert-success {
-  background-color: var(--success-light);
-  color: var(--success-dark);
-  border: 1px solid var(--success);
-}
-
-.alert-error {
-  background-color: var(--error-light);
-  color: var(--error-dark);
-  border: 1px solid var(--error);
-}
-
 .login-link {
   text-align: center;
   margin-top: 1.5rem;

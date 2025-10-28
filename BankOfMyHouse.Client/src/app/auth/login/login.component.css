@@ -96,24 +96,6 @@ label {
   to { transform: rotate(360deg); }
 }
 
-.alert {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: var(--radius-md);
-}
-
-.alert-success {
-  background-color: var(--secondary-100);
-  color: var(--secondary-900);
-  border: 1px solid var(--secondary-300);
-}
-
-.alert-error {
-  background-color: #fef2f2;
-  color: var(--error);
-  border: 1px solid #fecaca;
-}
-
 .login-link {
   text-align: center;
   margin-top: 1.5rem;
