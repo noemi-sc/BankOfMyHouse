@@ -32,6 +32,190 @@
     margin-bottom: 32px;
 }
 
+/* Companies grid layout */
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    padding: 16px 0;
+}
+
+.company-card-wrapper {
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 300px;
+}
+
+.company-card-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Company Header (inside gradient card) */
+.company-header {
+    margin-bottom: 16px;
+}
+
+.company-header .company-name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+.company-header .company-symbol {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    margin-left: 8px;
+}
+
+/* Price Display Section */
+.price-display {
+    padding: 20px;
+    margin-bottom: 12px;
+}
+
+.price-section {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 16px;
+}
+
+.price-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.price-value-large {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-600);
+    line-height: 1;
+}
+
+.price-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.price-trend mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.price-trend.trend-up {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.price-trend.trend-down {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Investment Badge */
+.investment-badge {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.invested-chip {
+    background-color: var(--secondary-100) !important;
+    color: var(--secondary-700) !important;
+    font-weight: 600 !important;
+}
+
+/* Investment Stats */
+.investment-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+}
+
+.stat-row.stat-total {
+    background: var(--primary-50);
+    border: 2px solid var(--primary-200);
+}
+
+.stat-row .stat-label {
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.stat-row .stat-value {
+    font-weight: 700;
+    color: var(--gray-900);
+    font-size: 1rem;
+}
+
+.stat-value-large {
+    font-weight: 800;
+    color: var(--primary-700);
+    font-size: 1.25rem;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.secondary-btn {
+    flex: 1;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.card-actions .action-btn {
+    flex: 1;
+}
+
+/* Chart Section */
+.chart-section {
+    margin-top: 12px;
+    padding: 16px;
+}
+
+.chart-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.chart-canvas-wrapper {
+    position: relative;
+    height: 250px;
+}
+
 .graph-grid {
     display: grid;
     gap: 24px;
@@ -261,6 +445,38 @@
     margin: 8px 0 0 0;
 }
 
+/* Search Container */
+.search-container {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-field {
+    width: 100%;
+    max-width: 600px;
+}
+
+.search-field .mat-mdc-form-field-icon-prefix {
+    color: var(--gray-500);
+}
+
+.search-field .mat-mdc-text-field-wrapper {
+    background-color: white;
+}
+
+.search-field .mdc-text-field--outlined .mdc-notched-outline__leading,
+.search-field .mdc-text-field--outlined .mdc-notched-outline__notch,
+.search-field .mdc-text-field--outlined .mdc-notched-outline__trailing {
+    border-color: var(--gray-300);
+}
+
+.search-field .mdc-text-field--outlined:hover .mdc-notched-outline__leading,
+.search-field .mdc-text-field--outlined:hover .mdc-notched-outline__notch,
+.search-field .mdc-text-field--outlined:hover .mdc-notched-outline__trailing {
+    border-color: var(--primary-500);
+}
+
 .companies-table-container {
     padding: 24px;
     border-radius: var(--radius-lg);
@@ -379,6 +595,100 @@
     margin: 16px 0 8px 0;
 }
 
+/* Expandable Row Styles */
+.detail-row {
+    height: 0;
+    overflow: hidden;
+}
+
+.detail-row.expanded {
+    height: auto;
+    overflow: visible;
+}
+
+.company-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.company-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.company-row.expanded-row {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.company-detail-container {
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.company-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.company-chart-wrapper h3 {
+    color: white;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.time-range-toggle-mini {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    height: 32px;
+}
+
+.time-range-toggle-mini .mat-button-toggle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}
+
+.time-range-toggle-mini .mat-button-toggle-checked {
+    background-color: var(--accent-500);
+    color: white;
+}
+
+.mini-chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 12px;
+}
+
+.mini-chart-container canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.action-buttons-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 @media (max-width: 768px) {
     .investment {
         padding: 16px;
@@ -409,6 +719,10 @@
         height: 250px;
     }
 
+    .mini-chart-container {
+        height: 200px;
+    }
+
     .companies-table-container {
         padding: 16px;
     }
@@ -417,5 +731,19 @@
     .companies-table .mat-mdc-header-cell {
         padding: 8px 4px;
         font-size: 0.85rem;
+    }
+
+    .action-buttons-cell {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .company-chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .time-range-toggle-mini {
+        width: 100%;
     }
 }

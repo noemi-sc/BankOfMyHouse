@@ -3,199 +3,32 @@
     <h1>Dashboard Investimenti</h1>
   </header>
 
-  <!-- Action Buttons -->
-  <div class="action-buttons">
-    <button mat-raised-button (click)="openInvestmentPopup()" class="action-btn">
-      <mat-icon>add</mat-icon>
-      Crea nuovo investimento
-    </button>
-  </div>
-
-  <!-- Popup -->
-  @if (isInvestmentPopupOpen()) {
-    <app-create-investment [initialValue]="inputValue()" (confirmed)="onInvestmentPopupConfirmed($event)"
-      (cancelled)="onInvestmentPopupCancelled()" />
-  }
-
   <!-- Tab Navigation -->
-  <mat-tab-group [selectedIndex]="activeTab()" (selectedIndexChange)="switchTab($event)" class="investment-tabs">
-    <mat-tab label="I miei investimenti">
+  <mat-tab-group [(selectedIndex)]="activeTab" class="investment-tabs">
+    <!-- Company Discovery Tab -->
+    <mat-tab label="Scopri nuove aziende">
       <div class="tab-content">
-
-        <!-- KPI Summary Cards -->
-        @if (investmentsWithKPI().length > 0) {
-          <section class="kpi-section">
-            <h2 class="section-title">Portfolio Summary</h2>
-            <div class="kpi-cards">
-              @for (investment of investmentsWithKPI(); track investment.id) {
-                <mat-card class="kpi-card card-container-gradient">
-                  <mat-card-header>
-                    <mat-card-title>{{ investment.company?.name || 'Company' }}</mat-card-title>
-                    <mat-card-subtitle>
-                      @if (investment.currentStockPrice) {
-                        Prezzo attuale: €{{ investment.currentStockPrice.toFixed(2) }}
-                      }
-                    </mat-card-subtitle>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <div class="kpi-grid">
-                      <div class="kpi-item">
-                        <span class="kpi-label">Azioni</span>
-                        <span class="kpi-value">{{ investment.sharesAmount }}</span>
-                      </div>
-                      <div class="kpi-item">
-                        <span class="kpi-label">Valore attuale</span>
-                        <span class="kpi-value">{{ investment.formattedCurrentValue }}</span>
-                      </div>
-                      <div class="kpi-item">
-                        <span class="kpi-label">Data investimento</span>
-                        <span class="kpi-value">{{ investment.creationTime | date:'short' }}</span>
-                      </div>
-                      <div class="kpi-item">
-                        <span class="kpi-label">Conto</span>
-                        <span class="kpi-value">{{ investment.bankAccount?.iban }}</span>
-                      </div>
-                    </div>
-                  </mat-card-content>
-                </mat-card>
-              }
-            </div>
-          </section>
-
-          <!-- Stock Price Chart for My Investments -->
-          <section class="card-container-gradient chart-section">
-            <div class="chart-header">
-              <h2 class="card-header">Andamento Prezzi - I miei investimenti</h2>
-              <!-- Time Range Filter -->
-              <mat-button-toggle-group [(value)]="selectedTimeRange" class="time-range-toggle">
-                @for (range of timeRanges; track range.hours) {
-                  <mat-button-toggle [value]="range.hours" (click)="onTimeRangeChange(range.hours)">
-                    {{ range.label }}
-                  </mat-button-toggle>
-                }
-              </mat-button-toggle-group>
-            </div>
-
-            @if (isLoadingHistorical()) {
-              <div class="loading-indicator">
-                <p>Caricamento dati storici...</p>
-              </div>
-            }
-
-            <div class="chart-container">
-              <canvas #chartCanvas width="400" height="300"></canvas>
-            </div>
-          </section>
-
-        } @else {
-          <div class="empty-state">
-            <mat-icon class="empty-icon">trending_up</mat-icon>
-            <h3>Nessun investimento trovato</h3>
-            <p class="empty-state-hint">Inizia il tuo percorso di investimento creando il primo investimento!</p>
-            <button mat-raised-button color="primary" (click)="openInvestmentPopup()">
-              Crea il tuo primo investimento
-            </button>
-          </div>
-        }
+        <app-company-discovery
+          [companies]="companiesBaseData()"
+          [searchQuery]="searchQuery()"
+          (searchQueryChange)="onSearchQueryChange($event)"
+          (viewCompanyChart)="onViewCompanyChart($event)"
+          (createInvestment)="onCreateInvestment()"
+        />
       </div>
     </mat-tab>
 
-    <mat-tab label="Scopri nuove aziende">
+    <!-- My Portfolio Tab -->
+    <mat-tab label="I miei investimenti">
       <div class="tab-content">
-
-        <!-- Market Discovery Section -->
-        <section class="market-discovery">
-          <div class="discovery-header">
-            <h2 class="section-title">Esplora il mercato</h2>
-            <p class="section-description">Scopri nuove opportunità di investimento analizzando tutte le aziende disponibili</p>
-          </div>
-
-          @if (isLoadingCompanies()) {
-            <div class="loading-indicator">
-              <p>Caricamento aziende...</p>
-            </div>
-          } @else {
-            <!-- Companies Table -->
-            <div class="companies-table-container card-container-gradient">
-              <table mat-table [dataSource]="companiesWithPrices()" class="companies-table">
-
-                <!-- Company Name Column -->
-                <ng-container matColumnDef="name">
-                  <th mat-header-cell *matHeaderCellDef>Azienda</th>
-                  <td mat-cell *matCellDef="let company">
-                    <div class="company-cell">
-                      <span class="company-name">{{ company.name }}</span>
-                      @if (company.symbol) {
-                        <span class="company-symbol">({{ company.symbol }})</span>
-                      }
-                    </div>
-                  </td>
-                </ng-container>
-
-                <!-- Current Price Column -->
-                <ng-container matColumnDef="price">
-                  <th mat-header-cell *matHeaderCellDef>Prezzo attuale</th>
-                  <td mat-cell *matCellDef="let company">
-                    <span class="price-value">{{ company.formattedPrice }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- Investment Status Column -->
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Stato</th>
-                  <td mat-cell *matCellDef="let company">
-                    @if (company.isInvested) {
-                      <mat-chip color="primary">
-                        <mat-icon>check</mat-icon>
-                        Investito
-                      </mat-chip>
-                    } @else {
-                      <mat-chip color="accent">
-                        <mat-icon>add</mat-icon>
-                        Disponibile
-                      </mat-chip>
-                    }
-                  </td>
-                </ng-container>
-
-                <!-- User Investment Details Column -->
-                <ng-container matColumnDef="investment">
-                  <th mat-header-cell *matHeaderCellDef>I miei investimenti</th>
-                  <td mat-cell *matCellDef="let company">
-                    @if (company.isInvested) {
-                      <div class="investment-details">
-                        <div class="detail-item">
-                          <span class="detail-label">Azioni:</span>
-                          <span class="detail-value">{{ company.userShares }}</span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="detail-label">Valore:</span>
-                          <span class="detail-value">€{{ company.userInvestmentValue.toFixed(2) }}</span>
-                        </div>
-                      </div>
-                    } @else {
-                      <span class="no-investment">-</span>
-                    }
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Azioni</th>
-                  <td mat-cell *matCellDef="let company">
-                    <button mat-icon-button color="primary" (click)="openInvestmentPopup()"
-                            [attr.aria-label]="'Investi in ' + company.name">
-                      <mat-icon>add_shopping_cart</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="['name', 'price', 'status', 'investment', 'actions']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['name', 'price', 'status', 'investment', 'actions']"></tr>
-              </table>
-            </div>
-          }
-        </section>
+        <app-my-portfolio
+          [investments]="investments()"
+          [currentPrices]="currentStockPrices()"
+          [selectedTimeRange]="selectedTimeRange()"
+          [timeRanges]="timeRanges"
+          (timeRangeChange)="onTimeRangeChange($event)"
+          (createInvestment)="onCreateInvestment()"
+        />
       </div>
     </mat-tab>
   </mat-tab-group>
