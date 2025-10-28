@@ -1,34 +1,22 @@
 <div class="investment">
-  <header class="investment-header">
-    <h1>Dashboard Investimenti</h1>
-  </header>
 
   <!-- Tab Navigation -->
   <mat-tab-group [(selectedIndex)]="activeTab" class="investment-tabs">
     <!-- Company Discovery Tab -->
     <mat-tab label="Scopri nuove aziende">
       <div class="tab-content">
-        <app-company-discovery
-          [companies]="companiesBaseData()"
-          [searchQuery]="searchQuery()"
-          (searchQueryChange)="onSearchQueryChange($event)"
-          (viewCompanyChart)="onViewCompanyChart($event)"
-          (investmentCreated)="onInvestmentCreated()"
-        />
+        <app-company-discovery [companies]="companiesBaseData()" [searchQuery]="searchQuery()"
+          (searchQueryChange)="onSearchQueryChange($event)" (viewCompanyChart)="onViewCompanyChart($event)"
+          (investmentCreated)="onInvestmentCreated()" />
       </div>
     </mat-tab>
 
     <!-- My Portfolio Tab -->
     <mat-tab label="I miei investimenti">
       <div class="tab-content">
-        <app-my-portfolio
-          [investments]="enrichedInvestments()"
-          [currentPrices]="currentStockPrices()"
-          [selectedTimeRange]="selectedTimeRange()"
-          [timeRanges]="timeRanges"
-          (timeRangeChange)="onTimeRangeChange($event)"
-          (investmentCreated)="onInvestmentCreated()"
-        />
+        <app-my-portfolio [investments]="enrichedInvestments()" [currentPrices]="currentStockPrices()"
+          [selectedTimeRange]="selectedTimeRange()" [timeRanges]="timeRanges"
+          (timeRangeChange)="onTimeRangeChange($event)" (investmentCreated)="onInvestmentCreated()" />
       </div>
     </mat-tab>
   </mat-tab-group>
