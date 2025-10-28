@@ -7,6 +7,9 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialog } from "@angular/material/dialog";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
+import { MatPaginatorModule } from "@angular/material/paginator";
 import { InvestmentService } from '../investment.service';
 import { StockPriceDto } from '../../../investments/models/dtos/stock-price.dto';
 import { CreateInvestmentComponent } from "../../../investments/create-investment/create-investment.component";
@@ -15,12 +18,13 @@ Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Too
 
 @Component({
   selector: 'app-my-portfolio',
-  imports: [CommonModule, MatGridListModule, MatButtonModule, MatButtonToggleModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatGridListModule, MatButtonModule, MatButtonToggleModule, MatCardModule, MatIconModule, MatTableModule, MatSortModule, MatPaginatorModule],
   templateUrl: './my-portfolio.component.html',
   styleUrl: './my-portfolio.component.css'
 })
 export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('investmentsSort', { static: false }) investmentsSort!: any;
 
   private dialog = inject(MatDialog);
 
@@ -41,7 +45,54 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   private investmentService = inject(InvestmentService);
   private chart: Chart | null = null;
 
-  // Computed signals for enhanced KPIs
+  // Table configuration
+  protected readonly displayedColumns: string[] = ['createdAt', 'company', 'shares', 'purchasePrice', 'currentPrice', 'totalValue', 'profitLoss'];
+
+  // Computed signal for table data with individual investments (sorted by date, newest first)
+  protected readonly tableDataSource = computed(() => {
+    const investments = this.investments();
+    const currentPrices = this.currentPrices();
+
+    const mappedData = investments.map(investment => {
+      const companyName = investment.company?.name || 'N/A';
+      const companySymbol = investment.company?.symbol || '';
+      const shares = investment.sharesAmount || 0;
+      const purchasePrice = investment.purchasePrice || 0;
+      const companyId = investment.company?.id;
+      const currentPrice = companyId ? currentPrices.get(companyId) : null;
+
+      const purchaseValue = purchasePrice * shares;
+      const currentValue = currentPrice ? currentPrice * shares : null;
+      const profitLoss = currentValue !== null ? currentValue - purchaseValue : null;
+      const profitLossPercentage = purchaseValue > 0 && profitLoss !== null
+        ? (profitLoss / purchaseValue) * 100
+        : null;
+
+      return {
+        id: investment.id,
+        createdAt: investment.createdAt,
+        companyName,
+        companySymbol,
+        shares,
+        purchasePrice,
+        currentPrice: currentPrice || null,
+        purchaseValue,
+        currentValue,
+        profitLoss,
+        profitLossPercentage,
+        isProfitable: profitLoss !== null ? profitLoss >= 0 : null
+      };
+    });
+
+    // Sort by createdAt date, newest first (descending order)
+    return mappedData.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+  });
+
+  // Computed signals for enhanced KPIs - Groups investments by company
   protected readonly investmentsWithKPI = computed(() => {
     const investments = this.investments();
     const currentPrices = this.currentPrices();
@@ -53,25 +104,85 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       currentPrices: Array.from(currentPrices.entries())
     });
 
-    return investments.map(investment => {
-      const companyId = investment.company?.id;
-      const companyName = investment.company?.name;
-      const currentPrice = companyId ? currentPrices.get(companyId) : null;
-      const sharesAmount = investment.sharesAmount || 0;
-      const currentValue = currentPrice ? currentPrice * sharesAmount : null;
+    // Group investments by companyId
+    const groupedByCompany = new Map<number, any[]>();
 
-      console.log(`💼 Investment KPI - Company: ${companyName} (ID: ${companyId})`, {
+    investments.forEach(investment => {
+      const companyId = investment.company?.id;
+      if (!companyId) return;
+
+      if (!groupedByCompany.has(companyId)) {
+        groupedByCompany.set(companyId, []);
+      }
+      groupedByCompany.get(companyId)!.push(investment);
+    });
+
+    console.log('🏢 Grouped by company:', {
+      companiesCount: groupedByCompany.size,
+      groups: Array.from(groupedByCompany.entries()).map(([id, invs]) => ({ companyId: id, count: invs.length }))
+    });
+
+    // Create aggregated cards for each company
+    return Array.from(groupedByCompany.entries()).map(([companyId, companyInvestments]) => {
+      const company = companyInvestments[0]?.company;
+      const companyName = company?.name;
+      const companySymbol = company?.symbol;
+      const currentPrice = currentPrices.get(companyId);
+
+      // Aggregate all shares and calculate weighted average purchase price
+      let totalShares = 0;
+      let totalPurchaseValue = 0;
+
+      companyInvestments.forEach(investment => {
+        const shares = investment.sharesAmount || 0;
+        const purchasePrice = investment.purchasePrice || 0;
+
+        totalShares += shares;
+        totalPurchaseValue += purchasePrice * shares;
+      });
+
+      // Weighted average purchase price
+      const avgPurchasePrice = totalShares > 0 ? totalPurchaseValue / totalShares : 0;
+
+      // Calculate aggregated values
+      const currentValue = currentPrice ? currentPrice * totalShares : null;
+      const profitLoss = currentValue !== null ? currentValue - totalPurchaseValue : null;
+      const profitLossPercentage = totalPurchaseValue > 0 && profitLoss !== null
+        ? (profitLoss / totalPurchaseValue) * 100
+        : null;
+
+      console.log(`💼 Aggregated KPI - Company: ${companyName} (ID: ${companyId})`, {
+        investmentsCount: companyInvestments.length,
+        avgPurchasePrice,
         currentPrice,
-        sharesAmount,
+        totalShares,
+        totalPurchaseValue,
         currentValue,
-        formattedValue: currentValue ? `€${currentValue.toFixed(2)}` : 'N/A'
+        profitLoss,
+        profitLossPercentage,
+        warning: avgPurchasePrice === 0 ? '⚠️ Contains old investments with no purchase price' : null
       });
 
       return {
-        ...investment,
+        company: company,
+        companyId: companyId,
+        sharesAmount: totalShares,
+        purchasePrice: avgPurchasePrice,
         currentStockPrice: currentPrice,
+        purchaseValue: totalPurchaseValue,
         currentValue: currentValue,
-        formattedCurrentValue: currentValue ? `€${currentValue.toFixed(2)}` : 'N/A'
+        profitLoss: profitLoss,
+        profitLossPercentage: profitLossPercentage,
+        formattedPurchaseValue: `€${totalPurchaseValue.toFixed(2)}`,
+        formattedCurrentValue: currentValue ? `€${currentValue.toFixed(2)}` : 'N/A',
+        formattedProfitLoss: profitLoss !== null
+          ? `${profitLoss >= 0 ? '+' : ''}€${profitLoss.toFixed(2)}`
+          : 'N/A',
+        formattedProfitLossPercentage: profitLossPercentage !== null
+          ? `${profitLossPercentage >= 0 ? '+' : ''}${profitLossPercentage.toFixed(2)}%`
+          : 'N/A',
+        isProfitable: profitLoss !== null ? profitLoss >= 0 : null,
+        investmentsCount: companyInvestments.length // Track how many investments were merged
       };
     });
   });

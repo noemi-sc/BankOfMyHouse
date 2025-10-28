@@ -1,84 +1,173 @@
 <div class="portfolio-container">
   <!-- KPI Summary Cards Section -->
   @if (investmentsWithKPI().length > 0) {
-    <section class="kpi-summary">
-      <h3 class="section-title">I tuoi investimenti</h3>
-      <div class="investment-cards-grid">
-        @for (investment of investmentsWithKPI(); track investment.id) {
-          <div class="card-container-gradient investment-kpi-card">
-            <!-- Company Header (on gradient background) -->
-            <div class="kpi-header">
-              <h4 class="company-name">{{ investment.company?.name || 'N/A' }}</h4>
-              @if (investment.company?.symbol) {
-                <span class="company-symbol-badge">{{ investment.company.symbol }}</span>
-              }
+  <section class="kpi-summary">
+    <h3 class="card-header">I tuoi investimenti</h3>
+    <div class="investment-cards-grid">
+      @for (investment of investmentsWithKPI(); track investment.companyId) {
+      <div class="card-container-gradient investment-kpi-card">
+        <!-- Company Header (on gradient background) -->
+        <h3 class="card-header">
+          {{ investment.company?.name || 'N/A' }}
+          @if (investment.company?.symbol) {
+          <span class="company-symbol-badge">{{ investment.company.symbol }}</span>
+          }
+        </h3>
+
+        <!-- White content card inside -->
+        <div class="card-content-white">
+          <div class="kpi-grid">
+            <div class="kpi-item">
+              <span class="kpi-label">Azioni</span>
+              <span class="kpi-value">{{ investment.sharesAmount }}</span>
             </div>
 
-            <!-- White content card inside -->
-            <div class="card-content-white">
-              <div class="kpi-grid">
-                <div class="kpi-item">
-                  <span class="kpi-label">Azioni</span>
-                  <span class="kpi-value">{{ investment.sharesAmount }}</span>
-                </div>
+            <div class="kpi-item">
+              <span class="kpi-label">Media Prezzo Acquisto</span>
+              <span class="kpi-value">€{{ investment.purchasePrice.toFixed(2) }}</span>
+            </div>
 
-                <div class="kpi-item">
-                  <span class="kpi-label">Prezzo Attuale</span>
-                  <span class="kpi-value">
-                    @if (investment.currentStockPrice) {
-                      €{{ investment.currentStockPrice.toFixed(2) }}
-                    } @else {
-                      N/A
-                    }
-                  </span>
-                </div>
+            <div class="kpi-item">
+              <span class="kpi-label">Prezzo Attuale</span>
+              <span class="kpi-value">
+                @if (investment.currentStockPrice) {
+                €{{ investment.currentStockPrice.toFixed(2) }}
+                } @else {
+                N/A
+                }
+              </span>
+            </div>
 
-                <div class="kpi-item">
-                  <span class="kpi-label">Valore Attuale</span>
-                  <span class="kpi-value-large">{{ investment.formattedCurrentValue }}</span>
-                </div>
-              </div>
+            <div class="kpi-item">
+              <span class="kpi-label">Somma investimenti</span>
+              <span class="kpi-value">{{ investment.formattedPurchaseValue }}</span>
+            </div>
+
+            <div class="kpi-item">
+              <span class="kpi-label">Valore Attuale</span>
+              <span class="kpi-value-large">{{ investment.formattedCurrentValue }}</span>
+            </div>
+
+            <div class="kpi-item profit-loss-item">
+              <span class="kpi-label">Profitto/Perdita</span>
+              <span class="kpi-value-large" [class.profit]="investment.isProfitable === true"
+                [class.loss]="investment.isProfitable === false">
+                {{ investment.formattedProfitLoss }}
+                <span class="percentage">({{ investment.formattedProfitLossPercentage }})</span>
+              </span>
             </div>
           </div>
-        }
-      </div>
-    </section>
-
-    <!-- Stock Price Chart Section -->
-    <section class="card-container-gradient portfolio-chart-section">
-      <div class="chart-header">
-        <h3 class="section-title">Andamento del portafoglio</h3>
-
-        <div class="time-range-controls">
-          <mat-button-toggle-group [value]="selectedTimeRange()" class="time-range-toggle">
-            @for (range of timeRanges(); track range.hours) {
-              <mat-button-toggle [value]="range.hours" (click)="onTimeRangeChange(range.hours)">
-                {{ range.label }}
-              </mat-button-toggle>
-            }
-          </mat-button-toggle-group>
         </div>
       </div>
-
-      <div class="card-content-white chart-container" [class.loading]="isLoadingHistorical()">
-        <canvas #chartCanvas></canvas>
-        @if (isLoadingHistorical()) {
-          <div class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-        }
-      </div>
-    </section>
-  } @else {
-    <!-- Empty State -->
-    <div class="empty-state">
-      <mat-icon class="empty-icon">account_balance_wallet</mat-icon>
-      <h3>Nessun investimento</h3>
-      <p>Non hai ancora effettuato investimenti. Inizia a costruire il tuo portafoglio!</p>
-      <button mat-raised-button color="primary" (click)="onCreateInvestment()">
-        <mat-icon>add</mat-icon>
-        Crea il tuo primo investimento
-      </button>
+      }
     </div>
+  </section>
+
+  <!-- Investments Table Section -->
+  <section class="card-container-gradient investments-table-section">
+    <h3 class="card-header">Dettaglio investimenti</h3>
+
+    <div class="card-content-white">
+      <div class="card-table-wrapper">
+        <table mat-table [dataSource]="tableDataSource()" matSort #investmentsSort="matSort">
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Data Acquisto</th>
+            <td mat-cell *matCellDef="let investment">{{ investment.createdAt | date:'short' }}</td>
+          </ng-container>
+
+          <!-- Company Column -->
+          <ng-container matColumnDef="company">
+            <th mat-header-cell *matHeaderCellDef>Azienda</th>
+            <td mat-cell *matCellDef="let investment">
+              <div class="company-cell">
+                <span class="company-name">{{ investment.companyName }}</span>
+                @if (investment.companySymbol) {
+                <span class="company-symbol">{{ investment.companySymbol }}</span>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Shares Column -->
+          <ng-container matColumnDef="shares">
+            <th mat-header-cell *matHeaderCellDef>Azioni</th>
+            <td mat-cell *matCellDef="let investment">{{ investment.shares }}</td>
+          </ng-container>
+
+          <!-- Purchase Price Column -->
+          <ng-container matColumnDef="purchasePrice">
+            <th mat-header-cell *matHeaderCellDef>Prezzo Acquisto</th>
+            <td mat-cell *matCellDef="let investment">€{{ investment.purchasePrice.toFixed(2) }}</td>
+          </ng-container>
+
+          <!-- Current Price Column -->
+          <ng-container matColumnDef="currentPrice">
+            <th mat-header-cell *matHeaderCellDef>Prezzo Attuale</th>
+            <td mat-cell *matCellDef="let investment">
+              @if (investment.currentPrice !== null) {
+              €{{ investment.currentPrice.toFixed(2) }}
+              } @else {
+              N/A
+              }
+            </td>
+          </ng-container>
+
+          <!-- Total Value Column -->
+          <ng-container matColumnDef="totalValue">
+            <th mat-header-cell *matHeaderCellDef>Valore Totale</th>
+            <td mat-cell *matCellDef="let investment">
+              @if (investment.currentValue !== null) {
+              <span class="value-cell">€{{ investment.currentValue.toFixed(2) }}</span>
+              } @else {
+              N/A
+              }
+            </td>
+          </ng-container>
+
+          <!-- Profit/Loss Column -->
+          <ng-container matColumnDef="profitLoss">
+            <th mat-header-cell *matHeaderCellDef>Profitto/Perdita</th>
+            <td mat-cell *matCellDef="let investment">
+              @if (investment.profitLoss !== null) {
+              <span class="profit-loss-cell" [class.profit]="investment.isProfitable === true"
+                [class.loss]="investment.isProfitable === false">
+                {{ investment.profitLoss >= 0 ? '+' : '' }}€{{ investment.profitLoss.toFixed(2) }}
+                <span class="percentage-small">
+                  ({{ investment.profitLossPercentage >= 0 ? '+' : '' }}{{ investment.profitLossPercentage.toFixed(2)
+                  }}%)
+                </span>
+              </span>
+              } @else {
+              N/A
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- No data row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              <div class="empty-state">Nessun investimento trovato</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+  } @else {
+  <!-- Empty State -->
+  <div class="empty-state">
+    <mat-icon class="empty-icon">account_balance_wallet</mat-icon>
+    <h3>Nessun investimento</h3>
+    <p>Non hai ancora effettuato investimenti. Inizia a costruire il tuo portafoglio!</p>
+    <button mat-raised-button color="primary" (click)="onCreateInvestment()">
+      <mat-icon>add</mat-icon>
+      Crea il tuo primo investimento
+    </button>
+  </div>
   }
 </div>
