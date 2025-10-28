@@ -1,0 +1,95 @@
+<div class="discovery-container">
+  <!-- Header Section -->
+  <div class="discovery-header">
+    <div class="header-content">
+      <h3 class="section-title">Scopri nuove aziende</h3>
+      <p class="section-subtitle">Esplora e investi nelle migliori aziende disponibili</p>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Cerca azienda</mat-label>
+      <input
+        matInput
+        type="text"
+        [ngModel]="localSearchQuery()"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Nome o simbolo dell'azienda..."
+      />
+      <mat-icon matPrefix>search</mat-icon>
+      @if (localSearchQuery()) {
+        <button mat-icon-button matSuffix (click)="onSearchChange('')" aria-label="Clear">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- Companies Grid -->
+  @if (companies().length > 0) {
+    <div class="companies-grid">
+      @for (company of companies(); track company.id) {
+        <div class="card-container-gradient company-card">
+          <!-- Company Header (on gradient background) -->
+          <div class="company-header">
+            <div class="company-identity">
+              <h4 class="company-name">{{ company.name }}</h4>
+              @if (company.symbol) {
+                <span class="company-symbol">{{ company.symbol }}</span>
+              }
+            </div>
+
+            @if (company.hasInvestment) {
+              <div class="invested-badge">
+                <mat-icon>check_circle</mat-icon>
+                <span>Investito</span>
+              </div>
+            }
+          </div>
+
+          <!-- White content card inside -->
+          <div class="card-content-white">
+            <!-- Price Section -->
+            <div class="price-section">
+              <div class="price-label">Prezzo attuale</div>
+              <div class="price-value-large">{{ company.formattedPrice }}</div>
+
+              @if (company.trend !== 'neutral') {
+                <div class="price-trend" [class.trend-up]="company.trend === 'up'" [class.trend-down]="company.trend === 'down'">
+                  <mat-icon>{{ company.trend === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
+                  <span>{{ company.percentageChange > 0 ? '+' : '' }}{{ company.percentageChange.toFixed(2) }}% vs 24h</span>
+                </div>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <button mat-stroked-button (click)="onViewChart(company)" class="view-chart-btn">
+                <mat-icon>show_chart</mat-icon>
+                Visualizza grafico
+              </button>
+              <button mat-raised-button color="primary" (click)="onCreateInvestment()" class="invest-btn">
+                <mat-icon>add_shopping_cart</mat-icon>
+                Investi
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <h3>Nessuna azienda trovata</h3>
+      <p>Prova a modificare i criteri di ricerca</p>
+      @if (localSearchQuery()) {
+        <button mat-raised-button color="primary" (click)="onSearchChange('')">
+          Mostra tutte le aziende
+        </button>
+      }
+    </div>
+  }
+</div>
