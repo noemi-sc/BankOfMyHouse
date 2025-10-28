@@ -25,18 +25,14 @@
 }
 
 .investment-kpi-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .investment-kpi-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
 }
 
-.investment-kpi-card mat-card-content {
+.investment-kpi-card .card-content-white {
   padding: 1.5rem;
 }
 
@@ -44,15 +40,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--gray-200);
+  margin-bottom: 1rem;
 }
 
 .company-name {
   font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--gray-900);
+  font-weight: 700;
+  color: white;
   margin: 0;
   flex: 1;
 }
@@ -60,12 +54,13 @@
 .company-symbol-badge {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--primary-700);
-  background: var(--primary-100);
+  color: white;
+  background: rgba(255, 255, 255, 0.25);
   padding: 4px 10px;
   border-radius: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
 }
 
 .kpi-grid {
@@ -139,10 +134,7 @@
   position: relative;
   height: 450px;
   width: 100%;
-  background: white;
-  border-radius: var(--radius-lg);
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
   transition: opacity 0.2s ease;
 }
 

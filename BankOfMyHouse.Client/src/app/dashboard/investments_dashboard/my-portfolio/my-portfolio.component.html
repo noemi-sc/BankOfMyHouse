@@ -5,15 +5,17 @@
       <h3 class="section-title">I tuoi investimenti</h3>
       <div class="investment-cards-grid">
         @for (investment of investmentsWithKPI(); track investment.id) {
-          <mat-card class="investment-kpi-card">
-            <mat-card-content>
-              <div class="kpi-header">
-                <h4 class="company-name">{{ investment.company?.name || 'N/A' }}</h4>
-                @if (investment.company?.symbol) {
-                  <span class="company-symbol-badge">{{ investment.company.symbol }}</span>
-                }
-              </div>
+          <div class="card-container-gradient investment-kpi-card">
+            <!-- Company Header (on gradient background) -->
+            <div class="kpi-header">
+              <h4 class="company-name">{{ investment.company?.name || 'N/A' }}</h4>
+              @if (investment.company?.symbol) {
+                <span class="company-symbol-badge">{{ investment.company.symbol }}</span>
+              }
+            </div>
 
+            <!-- White content card inside -->
+            <div class="card-content-white">
               <div class="kpi-grid">
                 <div class="kpi-item">
                   <span class="kpi-label">Azioni</span>
@@ -36,14 +38,14 @@
                   <span class="kpi-value-large">{{ investment.formattedCurrentValue }}</span>
                 </div>
               </div>
-            </mat-card-content>
-          </mat-card>
+            </div>
+          </div>
         }
       </div>
     </section>
 
     <!-- Stock Price Chart Section -->
-    <section class="portfolio-chart-section">
+    <section class="card-container-gradient portfolio-chart-section">
       <div class="chart-header">
         <h3 class="section-title">Andamento del portafoglio</h3>
 
@@ -58,7 +60,7 @@
         </div>
       </div>
 
-      <div class="chart-container" [class.loading]="isLoadingHistorical()">
+      <div class="card-content-white chart-container" [class.loading]="isLoadingHistorical()">
         <canvas #chartCanvas></canvas>
         @if (isLoadingHistorical()) {
           <div class="loading-overlay">
