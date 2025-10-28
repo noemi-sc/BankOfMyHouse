@@ -51,7 +51,12 @@ namespace BankOfMyHouse.Application.Services.Investments
 
 			var sharesAmount = Math.Round(investmentAmount / currentStockPrice.StockPrice * 1000 / 1000, 3);
 
-			var investment = Investment.Create(sharesAmount, company, bankAccount);
+			_logger.LogInformation("Creating investment - PurchasePrice: {PurchasePrice}, SharesAmount: {SharesAmount}, InvestmentAmount: {InvestmentAmount}",
+				currentStockPrice.StockPrice, sharesAmount, investmentAmount);
+
+			var investment = Investment.Create(sharesAmount, company, bankAccount, currentStockPrice.StockPrice);
+
+			_logger.LogInformation("Investment object created - PurchasePrice: {PurchasePrice}, Id: {Id}", investment.PurchasePrice, investment.Id);
 
 			try
 			{

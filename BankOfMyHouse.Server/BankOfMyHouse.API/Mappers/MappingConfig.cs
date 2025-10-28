@@ -1,5 +1,6 @@
 using BankOfMyHouse.API.Endpoints.Accounts.Get;
 using BankOfMyHouse.API.Endpoints.Currencies.GetCurrencies;
+using BankOfMyHouse.API.Endpoints.Investments.Get;
 using BankOfMyHouse.API.Endpoints.PaymentCategories.GetPaymentCategories;
 using BankOfMyHouse.API.Endpoints.Transactions.DTOs;
 using BankOfMyHouse.API.Endpoints.Users.DTOs;
@@ -7,6 +8,7 @@ using BankOfMyHouse.API.Endpoints.Users.Login;
 using BankOfMyHouse.API.Endpoints.Users.Register;
 using BankOfMyHouse.Domain.BankAccounts;
 using BankOfMyHouse.Domain.Iban;
+using BankOfMyHouse.Domain.Investments;
 using BankOfMyHouse.Domain.Users;
 using Mapster;
 
@@ -89,6 +91,15 @@ namespace BankOfMyHouse.API.Mappers
 				.Map(dest => dest.IBAN, src => src.IBAN.Value)
 				.Map(dest => dest.Balance, src => src.Balance)
 				.Map(dest => dest.CreatedAt, src => src.CreationDate);
+
+			// Investment to InvestmentDto mapping
+			config.NewConfig<Investment, InvestmentDto>()
+				.Map(dest => dest.Id, src => src.Id)
+				.Map(dest => dest.SharesAmount, src => src.SharesAmount)
+				.Map(dest => dest.PurchasePrice, src => src.PurchasePrice)
+				.Map(dest => dest.CreatedAt, src => src.CreatedAt)
+				.Map(dest => dest.CompanyId, src => src.CompanyId)
+				.Map(dest => dest.BankAccountId, src => src.BankAccountId);
 		}
 	}
 }

@@ -21,6 +21,12 @@ internal class InvestmentConfiguration : IEntityTypeConfiguration<Investment>
 		 .HasColumnType("numeric(18,2)")
 		 .HasComment("Amount of shares invested in the company");
 
+		// PurchasePrice
+		builder.Property(i => i.PurchasePrice)
+		 .IsRequired()
+		 .HasColumnType("numeric(18,2)")
+		 .HasComment("Stock price per share at the time of purchase");
+
 		builder.Property(x => x.CreatedAt)
 			.IsRequired();
 

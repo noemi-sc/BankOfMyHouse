@@ -1,12 +1,14 @@
 export class InvestmentDto {
     id: number;
     sharesAmount: number;
+    purchasePrice: number;
     createdAt: Date;
     companyId: number;
     bankAccountId: number;
 
     private constructor(
         sharesAmount: number,
+        purchasePrice: number,
         companyId: number,
         bankAccountId: number,
         createdAt: Date,
@@ -14,6 +16,7 @@ export class InvestmentDto {
     ) {
         this.id = id;
         this.sharesAmount = sharesAmount;
+        this.purchasePrice = purchasePrice;
         this.companyId = companyId;
         this.bankAccountId = bankAccountId;
         this.createdAt = createdAt;
