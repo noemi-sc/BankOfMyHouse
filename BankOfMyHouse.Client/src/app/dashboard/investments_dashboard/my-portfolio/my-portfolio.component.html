@@ -1,0 +1,82 @@
+<div class="portfolio-container">
+  <!-- KPI Summary Cards Section -->
+  @if (investmentsWithKPI().length > 0) {
+    <section class="kpi-summary">
+      <h3 class="section-title">I tuoi investimenti</h3>
+      <div class="investment-cards-grid">
+        @for (investment of investmentsWithKPI(); track investment.id) {
+          <mat-card class="investment-kpi-card">
+            <mat-card-content>
+              <div class="kpi-header">
+                <h4 class="company-name">{{ investment.company?.name || 'N/A' }}</h4>
+                @if (investment.company?.symbol) {
+                  <span class="company-symbol-badge">{{ investment.company.symbol }}</span>
+                }
+              </div>
+
+              <div class="kpi-grid">
+                <div class="kpi-item">
+                  <span class="kpi-label">Azioni</span>
+                  <span class="kpi-value">{{ investment.sharesAmount }}</span>
+                </div>
+
+                <div class="kpi-item">
+                  <span class="kpi-label">Prezzo Attuale</span>
+                  <span class="kpi-value">
+                    @if (investment.currentStockPrice) {
+                      €{{ investment.currentStockPrice.toFixed(2) }}
+                    } @else {
+                      N/A
+                    }
+                  </span>
+                </div>
+
+                <div class="kpi-item">
+                  <span class="kpi-label">Valore Attuale</span>
+                  <span class="kpi-value-large">{{ investment.formattedCurrentValue }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </section>
+
+    <!-- Stock Price Chart Section -->
+    <section class="portfolio-chart-section">
+      <div class="chart-header">
+        <h3 class="section-title">Andamento del portafoglio</h3>
+
+        <div class="time-range-controls">
+          <mat-button-toggle-group [value]="selectedTimeRange()" class="time-range-toggle">
+            @for (range of timeRanges(); track range.hours) {
+              <mat-button-toggle [value]="range.hours" (click)="onTimeRangeChange(range.hours)">
+                {{ range.label }}
+              </mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        </div>
+      </div>
+
+      <div class="chart-container" [class.loading]="isLoadingHistorical()">
+        <canvas #chartCanvas></canvas>
+        @if (isLoadingHistorical()) {
+          <div class="loading-overlay">
+            <div class="spinner"></div>
+          </div>
+        }
+      </div>
+    </section>
+  } @else {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <mat-icon class="empty-icon">account_balance_wallet</mat-icon>
+      <h3>Nessun investimento</h3>
+      <p>Non hai ancora effettuato investimenti. Inizia a costruire il tuo portafoglio!</p>
+      <button mat-raised-button color="primary" (click)="onCreateInvestment()">
+        <mat-icon>add</mat-icon>
+        Crea il tuo primo investimento
+      </button>
+    </div>
+  }
+</div>
