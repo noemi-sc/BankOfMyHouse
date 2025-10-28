@@ -1,15 +1,4 @@
 <div class="dashboard">
-  <header class="dashboard-header">
-
-    @if (currentUser()) {
-    <div class="user-dropdown">
-      <div class="user-info">
-        <h1>Salve {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}</h1>
-      </div>
-    </div>
-    }
-  </header>
-
   <!-- Action Buttons -->
   <div class="action-buttons">
     <button mat-raised-button (click)="openBankAccountPopup()" class="action-btn">
