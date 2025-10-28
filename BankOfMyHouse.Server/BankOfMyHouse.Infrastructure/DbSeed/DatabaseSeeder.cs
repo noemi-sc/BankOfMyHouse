@@ -168,5 +168,70 @@ namespace BankOfMyHouse.Infrastructure.DbSeed
 
 			await context.SaveChangesAsync(ct);
 		}
+
+		//Adds a whole month of data points for each company
+		public static async Task SeedHistoricalStockPrices(DbContext context, CancellationToken ct)
+		{
+			// Skip if data already exists
+			if (await context.Set<CompanyStockPrice>().AnyAsync(ct))
+				return;
+
+			var companies = await context.Set<Company>().ToListAsync(ct);
+			if (companies.Count == 0)
+				return;
+
+			var random = new Random(42);
+
+			var now = DateTimeOffset.UtcNow;
+			var startOfMonth = new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero);
+			var endDate = now.Date.AddDays(-1).AddHours(23).AddMinutes(59);
+
+			const int batchSize = 50_000;
+			var stockPrices = new List<CompanyStockPrice>(batchSize);
+
+			foreach (var company in companies)
+			{
+				// Start with an initial random price
+				decimal currentPrice = (decimal)(random.NextDouble() * 190 + 10);
+				var currentDate = startOfMonth;
+
+				while (currentDate <= endDate)
+				{
+					// Random minute-to-minute volatility: -0.5% to +0.5%					
+					var percentageChange = (decimal)(random.NextDouble() * 1.0 - 0.5);
+					currentPrice *= (1 + percentageChange / 100);
+
+					// Clamp prices between 5 and 500 EUR
+					if (currentPrice < 5) currentPrice = 5;
+					if (currentPrice > 500) currentPrice = 500;
+
+					var stockPrice = new CompanyStockPrice(Math.Round(currentPrice, 2), company.Id)
+					{
+						TimeOfPriceChange = currentDate
+					};
+
+					stockPrices.Add(stockPrice);
+
+					// Save in batches
+					if (stockPrices.Count >= batchSize)
+					{
+
+						await context.Set<CompanyStockPrice>().AddRangeAsync(stockPrices, ct);
+						await context.SaveChangesAsync(ct);
+						stockPrices.Clear();
+					}
+
+					// Move forward one minute
+					currentDate = currentDate.AddMinutes(1);
+				}
+			}
+
+			// Save remaining items
+			if (stockPrices.Count > 0)
+			{
+				await context.Set<CompanyStockPrice>().AddRangeAsync(stockPrices, ct);
+				await context.SaveChangesAsync(ct);
+			}
+		}
 	}
 }
