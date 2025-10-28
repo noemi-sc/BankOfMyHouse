@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using BankOfMyHouse.Application.BackgroundTasks;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -43,6 +44,7 @@ builder.Services.AddDbContext<BankOfMyHouseDbContext>(options =>
 		await DatabaseSeeder.SeedPaymentCategories(context, ct);
 		await DatabaseSeeder.SeedCurrencies(context, ct);
 		await DatabaseSeeder.SeedCompanies(context, ct);
+		await DatabaseSeeder.SeedHistoricalStockPrices(context, ct);
 	})
 	.UseSeeding((context, ct) =>
 	{
