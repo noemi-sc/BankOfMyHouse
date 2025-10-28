@@ -11,12 +11,6 @@
   gap: 1.5rem;
 }
 
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-}
 
 .investment-cards-grid {
   display: grid;
@@ -36,19 +30,13 @@
   padding: 1.5rem;
 }
 
-.kpi-header {
+/* Removed .kpi-header and .company-name - using global .card-header style */
+
+.investment-kpi-card .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.company-name {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .company-symbol-badge {
@@ -93,7 +81,26 @@
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--primary-600);
+}
+
+/* Profit/Loss Styling */
+.profit-loss-item {
   grid-column: span 2;
+}
+
+.kpi-value-large.profit {
+  color: #10b981; /* Green for profit */
+}
+
+.kpi-value-large.loss {
+  color: #ef4444; /* Red for loss */
+}
+
+.kpi-value-large .percentage {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  opacity: 0.9;
 }
 
 /* Portfolio Chart Section */
@@ -218,6 +225,67 @@
   padding: 0.75rem 1.5rem;
 }
 
+/* Investments Table Section */
+.investments-table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.investments-table-section .card-content-white {
+  padding: 0;
+  overflow: hidden;
+}
+
+.investments-table-section .card-table-wrapper {
+  max-height: 500px;
+}
+
+/* Table-specific styling */
+.company-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.company-cell .company-name {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.company-symbol {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value-cell {
+  font-weight: 600;
+  color: var(--primary-600);
+}
+
+.profit-loss-cell {
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profit-loss-cell.profit {
+  color: #10b981; /* Green for profit */
+}
+
+.profit-loss-cell.loss {
+  color: #ef4444; /* Red for loss */
+}
+
+.percentage-small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .investment-cards-grid {
@@ -236,5 +304,10 @@
 
   .kpi-value-large {
     font-size: 1.25rem;
+  }
+
+  /* Make table scrollable on mobile */
+  .investments-table-section .card-table-wrapper {
+    overflow-x: auto;
   }
 }

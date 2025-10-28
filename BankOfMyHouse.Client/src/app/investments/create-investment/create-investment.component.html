@@ -1,6 +1,14 @@
 <div class="popup-overlay" (click)="onOverlayClick($event)">
     <div class="popup-content" (click)="$event.stopPropagation()">
         <h2>Crea un investimento</h2>
+
+        <!-- Error Message -->
+        @if(errorMessage()) {
+        <div class="alert alert-error">
+            {{ errorMessage() }}
+        </div>
+        }
+
         <!--Scegliere tuo IBAN-->
         <div class="input-group">
 

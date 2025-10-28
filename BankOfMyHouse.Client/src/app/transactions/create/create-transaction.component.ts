@@ -39,6 +39,22 @@ export class CreateTransactionComponent {
   protected loading = this.transactionService.loading;
   protected error = this.transactionService.error;
 
+  // Computed signal for error message
+  protected readonly errorMessage = computed(() => {
+    const err = this.error();
+    if (!err) return null;
+
+    // Extract error message from the API response
+    if (err?.error?.detail) {
+      return err.error.detail;
+    } else if (err?.error?.title) {
+      return err.error.title;
+    } else if (err?.message) {
+      return err.message;
+    }
+    return 'Si è verificato un errore durante la transazione';
+  });
+
   // Computed signal for form validation
   protected readonly isFormValid = computed(() => {
     return !!(

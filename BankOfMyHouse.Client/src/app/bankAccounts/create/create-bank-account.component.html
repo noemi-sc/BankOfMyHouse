@@ -2,6 +2,13 @@
   <div class="popup-content" (click)="$event.stopPropagation()">
     <h2>Crea un nuovo conto bancario</h2>
 
+    <!-- Error Message -->
+    @if(errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+    }
+
     <div class="input-group">
       <label for="popup-input">Nome del conto bancario:</label>
       <input id="popup-input" type="text" [(ngModel)]="currentValue" class="popup-input"

@@ -24,6 +24,7 @@ export class CreateInvestmentComponent {
   protected readonly amount = signal<number | null>(null);
   protected readonly selectedCompany = signal<any>(null);
   protected readonly companies = signal<any[]>([]);
+  protected readonly errorMessage = signal<string | null>(null);
 
   private investmentService = inject(InvestmentService);
   private usersService = inject(UserService);
@@ -71,6 +72,9 @@ export class CreateInvestmentComponent {
       return; // Don't proceed if validation fails
     }
 
+    // Clear previous error
+    this.errorMessage.set(null);
+
     var requestBody: createInvestmentRequestDto = new createInvestmentRequestDto();
 
     requestBody.companyId = this.selectedCompany().id;
@@ -84,6 +88,19 @@ export class CreateInvestmentComponent {
       },
       error: (error) => {
         console.error('Investment creation failed:', error);
+
+        // Extract error message from the API response
+        let errorMsg = 'Si è verificato un errore durante la creazione dell\'investimento';
+
+        if (error?.error?.detail) {
+          errorMsg = error.error.detail;
+        } else if (error?.error?.title) {
+          errorMsg = error.error.title;
+        } else if (error?.message) {
+          errorMsg = error.message;
+        }
+
+        this.errorMessage.set(errorMsg);
       }
     });
   }

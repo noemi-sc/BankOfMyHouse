@@ -95,6 +95,11 @@ body {
   color: var(--gray-900);
 }
 
+/* Universal font-family inheritance */
+* {
+  font-family: inherit;
+}
+
 /* ========================================
    Global Action Button Styles
    Consistent styling for all action buttons

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal, effect, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BankAccountService } from '../bank-account.service';
 import { UserService } from '../../services/users/users.service';
@@ -27,6 +27,22 @@ export class CreateBankAccountComponent {
   protected currentUser = this.usersService.userDetails;
   protected loading = this.bankAccountService.loading;
   protected error = this.bankAccountService.error;
+
+  // Computed signal for error message
+  protected readonly errorMessage = computed(() => {
+    const err = this.error();
+    if (!err) return null;
+
+    // Extract error message from the API response
+    if (err?.error?.detail) {
+      return err.error.detail;
+    } else if (err?.error?.title) {
+      return err.error.title;
+    } else if (err?.message) {
+      return err.message;
+    }
+    return 'Si è verificato un errore durante la creazione del conto bancario';
+  });
 
   constructor() {
     // Watch for account creation completion
