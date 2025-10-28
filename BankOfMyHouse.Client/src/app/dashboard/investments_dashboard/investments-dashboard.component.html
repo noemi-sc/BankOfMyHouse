@@ -13,7 +13,7 @@
           [searchQuery]="searchQuery()"
           (searchQueryChange)="onSearchQueryChange($event)"
           (viewCompanyChart)="onViewCompanyChart($event)"
-          (createInvestment)="onCreateInvestment()"
+          (investmentCreated)="onInvestmentCreated()"
         />
       </div>
     </mat-tab>
@@ -22,12 +22,12 @@
     <mat-tab label="I miei investimenti">
       <div class="tab-content">
         <app-my-portfolio
-          [investments]="investments()"
+          [investments]="enrichedInvestments()"
           [currentPrices]="currentStockPrices()"
           [selectedTimeRange]="selectedTimeRange()"
           [timeRanges]="timeRanges"
           (timeRangeChange)="onTimeRangeChange($event)"
-          (createInvestment)="onCreateInvestment()"
+          (investmentCreated)="onInvestmentCreated()"
         />
       </div>
     </mat-tab>

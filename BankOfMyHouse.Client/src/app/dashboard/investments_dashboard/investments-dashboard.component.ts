@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { StockPriceSignalRService } from './stock-price-signalr.service';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatDialog } from "@angular/material/dialog";
-import { CreateInvestmentComponent } from "../../investments/create-investment/create-investment.component";
 import { InvestmentService } from './investment.service';
 import { CompanyChartDialogComponent } from './company-chart-dialog/company-chart-dialog.component';
 import { MyPortfolioComponent } from './my-portfolio/my-portfolio.component';
@@ -44,6 +43,22 @@ export class InvestmentsDashboardComponent implements OnInit, OnDestroy {
     { label: '1y', hours: 24 * 365, type: 'year' as const }
   ];
 
+  // Computed: Investments enriched with full company details
+  protected readonly enrichedInvestments = computed(() => {
+    const investments = this.investments();
+    const companies = this.allCompanies();
+
+    return investments.map(investment => {
+      // Find the company by companyId
+      const company = companies.find(c => c.id === investment.companyId);
+
+      return {
+        ...investment,
+        company: company || null
+      };
+    });
+  });
+
   // Computed: Companies with enriched data (prices, trends, investment status)
   protected readonly companiesBaseData = computed(() => {
     const companies = this.allCompanies();
@@ -53,7 +68,7 @@ export class InvestmentsDashboardComponent implements OnInit, OnDestroy {
     const search = this.searchQuery().toLowerCase().trim();
 
     const enrichedCompanies = companies.map(company => {
-      const userInvestment = userInvestments.find(inv => inv.company?.id === company.id);
+      const userInvestment = userInvestments.find(inv => inv.companyId === company.id);
       const isInvested = !!userInvestment;
       const userShares = userInvestment?.sharesAmount || 0;
       const currentPrice = prices.get(company.id) || 0;
@@ -99,7 +114,7 @@ export class InvestmentsDashboardComponent implements OnInit, OnDestroy {
       const allPricesFromSignalR = this.stockPriceService.allPrices();
 
       if (allPricesFromSignalR && allPricesFromSignalR.size > 0) {
-        // Extract prices from CompanyStockPrice objects
+        // Extract prices from StockPriceDto objects
         const pricesMap = new Map<number, number>();
         for (const [companyId, priceData] of allPricesFromSignalR.entries()) {
           pricesMap.set(companyId, Number(priceData.stockPrice));
@@ -176,17 +191,8 @@ export class InvestmentsDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected onCreateInvestment(): void {
-    const dialogRef = this.dialog.open(CreateInvestmentComponent, {
-      width: '500px',
-      maxWidth: '95vw'
-    });
-
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result?.success) {
-        // Reload investments after creation
-        this.loadInvestments();
-      }
-    });
+  protected onInvestmentCreated(): void {
+    // Reload investments after creation
+    this.loadInvestments();
   }
 }
