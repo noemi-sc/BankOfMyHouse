@@ -1,17 +1,7 @@
-export class CompanyStockPriceDto {
-    stockPrice: number;
-    timeOfPriceChange: Date;
-    companyId: number;
-
-    constructor(stockPrice: number, timeOfPriceChange: Date, companyId: number) {
-        this.stockPrice = stockPrice;
-        this.timeOfPriceChange = timeOfPriceChange;
-        this.companyId = companyId;
-    }
-}
+import { StockPriceDto } from '../dtos/stock-price.dto';
 
 export class GetHistoricalPricesResponseDto {
-    companyPrices: Record<number, CompanyStockPriceDto[]>;
+    companyPrices: Record<number, StockPriceDto[]>;
 
     constructor() {
         this.companyPrices = {};

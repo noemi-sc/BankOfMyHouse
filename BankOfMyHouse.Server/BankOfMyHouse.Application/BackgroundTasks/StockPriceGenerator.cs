@@ -1,4 +1,5 @@
-﻿using BankOfMyHouse.Application.Hubs;
+﻿using BankOfMyHouse.Application.DTOs;
+using BankOfMyHouse.Application.Hubs;
 using BankOfMyHouse.Domain.Investments;
 using BankOfMyHouse.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
@@ -109,11 +110,15 @@ public class StockPriceGenerator : BackgroundService
 		// Add all prices at once
 		await dbContext.CompanyStockPrices.AddRangeAsync(newPrices, cancellationToken);
 		await dbContext.SaveChangesAsync(cancellationToken);
-
-		// Send ALL prices in a single SignalR message as a dictionary
+		
 		var pricesDictionary = newPrices.ToDictionary(
 			cp => cp.CompanyId,
-			cp => new { cp.StockPrice, cp.TimeOfPriceChange, cp.CompanyId }
+			cp => new StockPriceDto
+			{
+				StockPrice = cp.StockPrice,
+				TimeOfPriceChange = cp.TimeOfPriceChange,
+				CompanyId = cp.CompanyId
+			}
 		);
 
 		await _hubContext.Clients.All.SendAsync("TransferAllPrices", pricesDictionary, cancellationToken);
