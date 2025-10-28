@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Chart, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend, ChartConfiguration } from 'chart.js';
 import { InvestmentService } from '../investment.service';
-import { CompanyStockPrice } from '../../../investments/models/listCompany/listCompanyResponseDto';
+import { StockPriceDto } from '../../../investments/models/dtos/stock-price.dto';
 import { StockPriceSignalRService } from '../stock-price-signalr.service';
 
 Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
@@ -32,7 +32,7 @@ export class CompanyChartDialogComponent implements OnInit, AfterViewInit, OnDes
   private chart: Chart | null = null;
   protected readonly companyTimeRange = signal<number>(12);
   protected readonly isLoadingHistorical = signal(false);
-  private readonly companyChartData = signal<CompanyStockPrice[]>([]);
+  private readonly companyChartData = signal<StockPriceDto[]>([]);
   protected readonly averagePrice = signal<number | null>(null);
   protected readonly liveCurrentPrice = signal<number | null>(null);
 
@@ -86,7 +86,7 @@ export class CompanyChartDialogComponent implements OnInit, AfterViewInit, OnDes
     }
 
     // Group by appropriate time interval
-    const dataMap = new Map<number, CompanyStockPrice>();
+    const dataMap = new Map<number, StockPriceDto>();
     history.forEach(item => {
       const date = typeof item.timeOfPriceChange === 'string'
         ? new Date(item.timeOfPriceChange)
@@ -287,7 +287,7 @@ export class CompanyChartDialogComponent implements OnInit, AfterViewInit, OnDes
       dateRange.endDate
     ).subscribe({
       next: (response) => {
-        const allPrices: CompanyStockPrice[] = [];
+        const allPrices: StockPriceDto[] = [];
         for (const cId in response.companyPrices) {
           const prices = response.companyPrices[cId];
           allPrices.push(...prices);

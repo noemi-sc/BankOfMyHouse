@@ -1,13 +1,13 @@
 import { Injectable, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { CompanyStockPrice } from '../../investments/models/listCompany/listCompanyResponseDto';
+import { StockPriceDto } from '../../investments/models/dtos/stock-price.dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StockPriceSignalRService {
-  private chartDataSignal = signal<CompanyStockPrice | null>(null);
-  private allPricesSignal = signal<Map<number, CompanyStockPrice>>(new Map());
+  private chartDataSignal = signal<StockPriceDto | null>(null);
+  private allPricesSignal = signal<Map<number, StockPriceDto>>(new Map());
   public connectionStatus = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
   private hubConnection!: signalR.HubConnection;
 
@@ -34,23 +34,37 @@ export class StockPriceSignalRService {
     try {
       await this.hubConnection.start();
 
-      // Listen for all prices dictionary (NEW optimized method)
-      this.hubConnection.on('TransferAllPrices', (pricesDict: Record<number, CompanyStockPrice>) => {
+      // Listen for all prices dictionary
+      this.hubConnection.on('TransferAllPrices', (pricesDict: Record<number, StockPriceDto>) => {
         console.log('Received all prices from SignalR:', pricesDict);
 
-        // Convert object to Map
-        const pricesMap = new Map<number, CompanyStockPrice>();
+        // Convert object to Map with date conversion
+        const pricesMap = new Map<number, StockPriceDto>();
         for (const [companyIdStr, priceData] of Object.entries(pricesDict)) {
           const companyId = Number(companyIdStr);
-          pricesMap.set(companyId, priceData);
+
+          // Convert timeOfPriceChange string to Date if needed
+          const stockPrice: StockPriceDto = {
+            ...priceData,
+            timeOfPriceChange: new Date(priceData.timeOfPriceChange)
+          };
+
+          pricesMap.set(companyId, stockPrice);
         }
 
         this.allPricesSignal.set(pricesMap);
         console.log('Updated prices map with', pricesMap.size, 'companies');
       });
       
-      this.hubConnection.on('TransferChartData', (stockPrice: CompanyStockPrice) => {
-        console.log(`Single stock price received: ${stockPrice.companyId}`);
+      this.hubConnection.on('TransferChartData', (priceData: StockPriceDto) => {
+        console.log(`Single stock price received: ${priceData.companyId}`);
+
+        // Convert timeOfPriceChange string to Date if needed
+        const stockPrice: StockPriceDto = {
+          ...priceData,
+          timeOfPriceChange: new Date(priceData.timeOfPriceChange)
+        };
+
         this.chartDataSignal.set(stockPrice);
       });
 

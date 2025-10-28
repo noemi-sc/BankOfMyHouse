@@ -6,8 +6,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
+import { MatDialog } from "@angular/material/dialog";
 import { InvestmentService } from '../investment.service';
-import { CompanyStockPrice } from '../../../investments/models/listCompany/listCompanyResponseDto';
+import { StockPriceDto } from '../../../investments/models/dtos/stock-price.dto';
+import { CreateInvestmentComponent } from "../../../investments/create-investment/create-investment.component";
 
 Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
@@ -20,6 +22,8 @@ Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Too
 export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
 
+  private dialog = inject(MatDialog);
+
   // Inputs from parent
   readonly investments = input<any[]>([]);
   readonly currentPrices = input<Map<number, number>>(new Map());
@@ -28,11 +32,11 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Outputs to parent
   readonly timeRangeChange = output<number>();
-  readonly createInvestment = output<void>();
+  readonly investmentCreated = output<void>();
 
   // Internal state
   protected readonly isLoadingHistorical = signal(false);
-  private readonly stockPriceHistory = signal<CompanyStockPrice[]>([]);
+  private readonly stockPriceHistory = signal<StockPriceDto[]>([]);
 
   private investmentService = inject(InvestmentService);
   private chart: Chart | null = null;
@@ -42,11 +46,26 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     const investments = this.investments();
     const currentPrices = this.currentPrices();
 
+    console.log('📊 Computing KPIs:', {
+      investmentsCount: investments.length,
+      currentPricesSize: currentPrices.size,
+      investments: investments,
+      currentPrices: Array.from(currentPrices.entries())
+    });
+
     return investments.map(investment => {
       const companyId = investment.company?.id;
+      const companyName = investment.company?.name;
       const currentPrice = companyId ? currentPrices.get(companyId) : null;
       const sharesAmount = investment.sharesAmount || 0;
       const currentValue = currentPrice ? currentPrice * sharesAmount : null;
+
+      console.log(`💼 Investment KPI - Company: ${companyName} (ID: ${companyId})`, {
+        currentPrice,
+        sharesAmount,
+        currentValue,
+        formattedValue: currentValue ? `€${currentValue.toFixed(2)}` : 'N/A'
+      });
 
       return {
         ...investment,
@@ -66,7 +85,7 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     const investedCompanyIds = new Set(userInvestments.map(inv => inv.company?.id).filter(id => id != null));
 
     // Group data by company ID and round timestamps to minutes
-    const companiesData = new Map<number, Map<string, CompanyStockPrice>>();
+    const companiesData = new Map<number, Map<string, StockPriceDto>>();
     const minuteSet = new Set<string>();
 
     if (history.length > 0) {
@@ -237,7 +256,7 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     this.investmentService.getHistoricalPrices(dateRange.hours, undefined, dateRange.startDate, dateRange.endDate).subscribe({
       next: (response) => {
         // Flatten the dictionary of company prices into a single array
-        const allPrices: CompanyStockPrice[] = [];
+        const allPrices: StockPriceDto[] = [];
 
         for (const companyId in response.companyPrices) {
           const prices = response.companyPrices[companyId];
@@ -261,7 +280,17 @@ export class MyPortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected onCreateInvestment(): void {
-    this.createInvestment.emit();
+    const dialogRef = this.dialog.open(CreateInvestmentComponent, {
+      width: '500px',
+      maxWidth: '95vw'
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result?.success) {
+        // Notify parent to reload investments
+        this.investmentCreated.emit();
+      }
+    });
   }
 
   private calculateDateRange(type: 'hours' | 'day' | 'month' | 'year', hours: number): { startDate?: Date, endDate?: Date, hours?: number } {

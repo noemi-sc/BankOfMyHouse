@@ -1,8 +1,9 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserService } from '../../services/users/users.service';
 import { InvestmentService } from '../../dashboard/investments_dashboard/investment.service';
 import { createInvestmentRequestDto } from '../models/create/createInvestmentRequestDto';
@@ -14,13 +15,8 @@ import { createInvestmentRequestDto } from '../models/create/createInvestmentReq
   styleUrls: ['./create-investment.component.css', '../../transactions/create/create-transaction-custom-style.scss']
 })
 export class CreateInvestmentComponent {
-
-  // Inputs
-  readonly initialValue = input<string>('');
-
-  // Outputs
-  readonly confirmed = output<string>();
-  readonly cancelled = output<void>();
+  private dialogRef = inject(MatDialogRef<CreateInvestmentComponent>);
+  private data = inject(MAT_DIALOG_DATA, { optional: true });
 
   // Local state
   protected readonly currentValue = signal('');
@@ -41,9 +37,6 @@ export class CreateInvestmentComponent {
   error = this.investmentService.error;
 
   constructor() {
-    // Initialize current value with initial value
-    this.currentValue.set(this.initialValue());
-
     // Load companies from API
     this.investmentService.listCompanies().subscribe({
       next: (response) => {
@@ -51,12 +44,22 @@ export class CreateInvestmentComponent {
         // Handle server response structure
         if (response?.companies && Array.isArray(response.companies)) {
           this.companies.set(response.companies);
-        } else if (response?.Companies && Array.isArray(response.Companies)) {
-          this.companies.set(response.Companies);
+        } else if (response?.companies && Array.isArray(response.companies)) {
+          this.companies.set(response.companies);
         } else if (Array.isArray(response)) {
           this.companies.set(response);
         } else {
           this.companies.set([]);
+        }
+
+        // Pre-select company if provided via dialog data
+        const preSelectedId = this.data?.preSelectedCompanyId;
+        if (preSelectedId) {
+          const companyToSelect = response.companies?.find((c: any) => c.id === preSelectedId);
+          if (companyToSelect) {
+            this.selectedCompany.set(companyToSelect);
+            console.log('Pre-selected company:', companyToSelect);
+          }
         }
       }
     });
@@ -68,8 +71,6 @@ export class CreateInvestmentComponent {
       return; // Don't proceed if validation fails
     }
 
-    this.confirmed.emit(this.currentValue());
-
     var requestBody: createInvestmentRequestDto = new createInvestmentRequestDto();
 
     requestBody.companyId = this.selectedCompany().id;
@@ -78,8 +79,8 @@ export class CreateInvestmentComponent {
 
     this.investmentService.createInvestment(requestBody).subscribe({
       next: (response) => {
-        // Investment created successfully, emit success event
-        this.cancelled.emit(); // Close the popup
+        // Investment created successfully, close dialog with success
+        this.dialogRef.close({ success: true });
       },
       error: (error) => {
         console.error('Investment creation failed:', error);
@@ -93,7 +94,7 @@ export class CreateInvestmentComponent {
   }
 
   protected onCancel(): void {
-    this.cancelled.emit();
+    this.dialogRef.close({ success: false });
   }
 
   protected isFormValid(): boolean {
