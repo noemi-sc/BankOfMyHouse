@@ -1,0 +1,56 @@
+<div class="dialog-container card-container-gradient">
+  <div class="dialog-header">
+    <div class="company-info">
+      <h2 mat-dialog-title>{{ data.company.name }}</h2>
+      <div class="company-meta">
+        @if (data.company.symbol) {
+          <span class="company-symbol">{{ data.company.symbol }}</span>
+        }
+        <div class="prices-row">
+          @if (liveCurrentPrice()) {
+            <div class="price-item">
+              <span class="price-label">Prezzo Attuale</span>
+              <span class="current-price">€{{ liveCurrentPrice()!.toFixed(2) }}</span>
+            </div>
+          }
+          @if (computedAveragePrice()) {
+            <div class="price-item">
+              <span class="price-label">Prezzo Medio ({{ currentTimeRangeLabel() }})</span>
+              <span class="average-price">€{{ computedAveragePrice()!.toFixed(2) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()" aria-label="Chiudi" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="card-content-white chart-wrapper">
+      <div class="time-range-selector">
+        <mat-button-toggle-group [value]="companyTimeRange()" class="time-range-toggle" [disabled]="isLoadingHistorical()">
+          @for (range of timeRanges; track range.hours) {
+            <mat-button-toggle [value]="range.hours" (click)="onTimeRangeChange(range.hours)">
+              {{ range.label }}
+            </mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="chart-container" [class.loading]="isLoadingHistorical()">
+        <canvas #chartCanvas></canvas>
+        @if (isLoadingHistorical()) {
+          <div class="loading-overlay">
+            <div class="spinner"></div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="close()" class="secondary-btn">Chiudi</button>
+  </mat-dialog-actions>
+</div>
