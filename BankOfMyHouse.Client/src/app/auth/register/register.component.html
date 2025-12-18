@@ -1,11 +1,11 @@
 <div class="register-container">
   <div class="register-form-wrapper">
-    <h2>Create Account</h2>
+    <h2>Crea account</h2>
 
     <!-- Success Message -->
     @if(success) {
     <div class="alert alert-success">
-      Registration successful! Redirecting to login...
+      Registrazione completata con successo! Reindirizzamento alla pagina di accesso...
     </div>
     }
 
@@ -22,52 +22,52 @@
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" formControlName="username" class="form-control field-input"
-          [class.is-invalid]="submitted && f['username'].errors" placeholder="Enter your username">
+          [class.is-invalid]="submitted && f['username'].errors" placeholder="Inserisci il tuo username">
 
         @if (submitted && f['username'].errors) {
         <div class="invalid-feedback">
           @if (f['username'].errors['required']) {
-          <div>Username is required</div>
+          <div>È necessario inserire l'username</div>
           }
           @if (f['username'].errors['minlength']) {
-          <div>Username must be at least 3 characters</div>
+          <div>L'username deve avere un minimo di 3 caratteri</div>
           }
           @if (f['username'].errors['maxLength']) {
-          <div>Username must have maximum 50 characters</div>
+          <div>L'username deve avere un massimo di 50 caratteri</div>
           }
         </div>
         }
       </div>
 
       <div class="form-group">
-        <label for="firstname">First Name</label>
+        <label for="firstname">Nome</label>
         <input type="text" id="firstname" formControlName="firstname" class="form-control field-input"
-          [class.is-invalid]="submitted && f['firstname'].errors" placeholder="Enter your firstname">
+          [class.is-invalid]="submitted && f['firstname'].errors" placeholder="Inserisci il tuo nome">
 
         @if (submitted && f['firstname'].errors) {
         <div class="invalid-feedback">
           @if (f['firstname'].errors['required']) {
-          <div>First Name is required</div>
+          <div>È necessario inserire il tuo nome</div>
           }
           @if (f['firstname'].errors['maxLength']) {
-          <div>First Name must have maximum 50 characters</div>
+          <div>Il nome deve avere un massimo di 50 caratteri</div>
           }
         </div>
         }
       </div>
 
       <div class="form-group">
-        <label for="lastname">Last Name</label>
+        <label for="lastname">Cognome</label>
         <input type="text" id="lastname" formControlName="lastname" class="form-control field-input"
-          [class.is-invalid]="submitted && f['lastname'].errors" placeholder="Enter your lastname">
+          [class.is-invalid]="submitted && f['lastname'].errors" placeholder="Inserisci il tuo cognome">
 
         @if (submitted && f['lastname'].errors) {
         <div class="invalid-feedback">
           @if (f['lastname'].errors['required']) {
-          <div>Last Name is required</div>
+          <div>È necessario inserire il tuo cognome</div>
           }
           @if (f['lastname'].errors['maxLength']) {
-          <div>Last Name must have maximum 50 characters</div>
+          <div>Il cognome deve avere un massimo di 50 caratteri</div>
           }
         </div>
         }
@@ -77,15 +77,15 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" formControlName="email" class="form-control field-input"
-          [class.is-invalid]="submitted && f['email'].errors" placeholder="Enter your email">
+          [class.is-invalid]="submitted && f['email'].errors" placeholder="Inserisca la sua mail">
 
         @if (submitted && f['email'].errors) {
         <div class="invalid-feedback">
           @if (f['email'].errors['required']) {
-          <div>Email is required</div>
+          <div>È necessario inserire una mail</div>
           }
           @if (f['email'].errors['email']) {
-          <div>Please enter a valid email</div>
+          <div>Immettere un indirizzo e-mail valido</div>
           }
         </div>
         }
@@ -97,7 +97,7 @@
         <div class="password-input-container">
           <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
             class="form-control password-input" [class.is-invalid]="submitted && f['password'].errors"
-            placeholder="Enter your password" autocomplete="current-password">
+            placeholder="Inserisca la sua password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
             <fa-icon [icon]="faEye" />
@@ -109,10 +109,10 @@
           @if (submitted && f['password'].errors) {
           <div class="invalid-feedback">
             @if (f['password'].errors['required']) {
-            <div>Password is required</div>
+            <div>È necessario inserire una password</div>
             }
             @if (f['password'].errors['minlength']) {
-            <div>Password must be at least 6 characters</div>
+            <div>La password deve avere un minimo di 6 caratteri</div>
             }
           </div>
           }
@@ -121,12 +121,12 @@
 
       <!-- Confirm Password Field -->
       <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
+        <label for="confirmPassword">Conferma password</label>
         <div class="password-input-container">
 
           <input [type]="showPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword"
             class="form-control password-input" [class.is-invalid]="submitted && f['confirmPassword'].errors"
-            placeholder="Enter your password" autocomplete="current-password">
+            placeholder="Inserisca la sua password" autocomplete="current-password">
           <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
             @if(!showPassword){
             <i class="fa fa-eye"></i>
@@ -138,10 +138,10 @@
           @if (submitted && f['confirmPassword'].errors) {
           <div class="invalid-feedback">
             @if (f['confirmPassword'].errors['required']) {
-            <div>Password is required</div>
+            <div>È necessario inserire una password</div>
             }
             @if (f['confirmPassword'].errors['minlength']) {
-            <div>Password must be at least 6 characters</div>
+            <div>La password deve avere un minimo di 6 caratteri</div>
             }
           </div>
           }
@@ -154,13 +154,13 @@
         @if (loading) {
         <span class="spinner"></span>
         }
-        {{ loading ? 'Creating Account...' : 'Register' }}
+        {{ loading ? 'Creazione account in corso...' : 'Registra un nuovo account' }}
       </button>
 
       <!-- Login Link -->
       <p class="login-link">
-        Already have an account?
-        <a routerLink="/login">Login here</a>
+        Hai già un account?
+        <a routerLink="/login">Effettua il login qui</a>
       </p>
     </form>
   </div>

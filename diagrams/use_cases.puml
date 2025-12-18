@@ -1,0 +1,138 @@
+@startuml BankOfMyHouse Use Cases
+!theme plain
+title Diagramma dei Casi d'Uso - BankOfMyHouse
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Utente Guest" as Guest
+actor "Utente Autenticato" as User
+actor "Sistema SignalR" as SignalR
+actor "Background Service" as BgService
+
+rectangle "BankOfMyHouse System" {
+
+  package "Autenticazione" {
+    usecase (Registrazione) as UC1
+    usecase (Login) as UC2
+    usecase (Logout) as UC3
+    usecase (Refresh Token) as UC4
+  }
+
+  package "Gestione Conti Bancari" {
+    usecase (Crea Conto Bancario) as UC5
+    usecase (Visualizza Lista Conti) as UC6
+    usecase (Visualizza Dettaglio Conto) as UC7
+    usecase (Generazione IBAN) as UC8
+  }
+
+  package "Gestione Transazioni" {
+    usecase (Crea Transazione) as UC9
+    usecase (Visualizza Lista Transazioni) as UC10
+    usecase (Filtra Transazioni per Data) as UC11
+    usecase (Visualizza Dettaglio Transazione) as UC12
+    usecase (Aggiorna Saldo Conto) as UC13
+  }
+
+  package "Gestione Investimenti" {
+    usecase (Crea Investimento) as UC14
+    usecase (Visualizza Portfolio Investimenti) as UC15
+    usecase (Visualizza Aziende Disponibili) as UC16
+    usecase (Calcola Profitto/Perdita) as UC17
+  }
+
+  package "Real-time Updates" {
+    usecase (Aggiorna Prezzi Azioni) as UC18
+    usecase (Notifica Cambio Prezzo) as UC19
+    usecase (Connetti Hub SignalR) as UC20
+  }
+
+  package "Dashboard & Reporting" {
+    usecase (Visualizza Dashboard) as UC21
+    usecase (Visualizza Grafici Transazioni) as UC22
+    usecase (Visualizza Grafici Investimenti) as UC23
+  }
+
+  package "Gestione Dati Riferimento" {
+    usecase (Visualizza Valute) as UC24
+    usecase (Visualizza Categorie Pagamento) as UC25
+  }
+}
+
+' Guest relationships
+Guest --> UC1 : registra account
+Guest --> UC2 : effettua login
+
+' User relationships - Autenticazione
+User --> UC2 : effettua login
+User --> UC3 : effettua logout
+User --> UC4 : rinnova token
+
+' User relationships - Conti Bancari
+User --> UC5 : crea nuovo conto
+User --> UC6 : visualizza conti
+User --> UC7 : visualizza dettaglio
+UC5 ..> UC8 : <<include>>
+
+' User relationships - Transazioni
+User --> UC9 : crea transazione
+User --> UC10 : visualizza transazioni
+User --> UC11 : filtra per data
+User --> UC12 : visualizza dettaglio
+UC9 ..> UC13 : <<include>>
+
+' User relationships - Investimenti
+User --> UC14 : crea investimento
+User --> UC15 : visualizza portfolio
+User --> UC16 : visualizza aziende
+User --> UC17 : calcola profitto
+
+' User relationships - Dashboard
+User --> UC21 : visualizza dashboard
+User --> UC22 : visualizza grafici transazioni
+User --> UC23 : visualizza grafici investimenti
+
+' User relationships - Dati Riferimento
+User --> UC24 : consulta valute
+User --> UC25 : consulta categorie
+
+' User relationships - Real-time
+User --> UC20 : connette a hub
+
+' Background Service relationships
+BgService --> UC18 : genera prezzi ogni secondo
+UC18 ..> UC19 : <<include>>
+
+' SignalR relationships
+SignalR --> UC19 : broadcast a utenti connessi
+UC19 ..> UC20 : <<include>>
+
+' Extension relationships
+UC10 ..> UC11 : <<extend>>
+UC15 ..> UC17 : <<extend>>
+
+note right of UC8
+  Genera IBAN italiano valido
+  con check digit secondo
+  standard ISO 13616
+end note
+
+note right of UC13
+  Aggiorna atomicamente:
+  - Withdraw dal mittente
+  - Deposit al destinatario
+end note
+
+note right of UC18
+  Eseguito ogni secondo da
+  StockPriceGenerator
+  (Background Service)
+end note
+
+note bottom of UC19
+  Invia aggiornamenti real-time
+  via SignalR WebSocket al gruppo
+  dell'utente autenticato
+end note
+
+@enduml

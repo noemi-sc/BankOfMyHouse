@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError, throwError, Observable } from 'rxjs';
 import { CreateBankAccountResponseDto } from './models/create/CreateBankAccountResponseDto';
 import { CreateBankAccountRequestDto } from './models/create/CreateBankAccountRequestDto';
@@ -18,7 +18,7 @@ export class BankAccountService {
     signal<BankAccountDto[]>([]);
   private loadingSignal =
     signal<boolean>(false);
-  private errorSignal = signal<any>(null);
+  private errorSignal = signal<HttpErrorResponse | Error | null>(null);
   private bankAccountCreatedSignal =
     signal<boolean>(false);
 
@@ -117,8 +117,8 @@ export class BankAccountService {
       });
   }
 
-  listBankAccounts(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}`);
+  listBankAccounts(): Observable<GetBankAccountResponseDto> {
+    return this.httpClient.get<GetBankAccountResponseDto>(`${this.apiUrl}`);
   }
 }
 

@@ -1,0 +1,175 @@
+@startuml Component Diagram - Clean Architecture
+!theme plain
+skinparam componentStyle rectangle
+
+title BankOfMyHouse - Clean Architecture (4 Layer)
+
+' ==================== EXTERNAL SYSTEMS ====================
+
+cloud "External" {
+    [Angular Client] as client
+    database "PostgreSQL" as db
+}
+
+' ==================== API LAYER ====================
+
+package "BankOfMyHouse.API" <<Presentation Layer>> #LightBlue {
+
+    package "Endpoints" {
+        [LoginEndpoint] as login_ep
+        [RegisterEndpoint] as register_ep
+        [CreateAccountEndpoint] as create_acc_ep
+        [CreateTransactionEndpoint] as create_tx_ep
+        [GetInvestmentsEndpoint] as get_inv_ep
+    }
+
+    package "Handlers" {
+        [GlobalExceptionHandler] as exception_handler
+    }
+
+    package "Mappers" {
+        [MappingConfig\n(Mapster)] as mapper
+    }
+
+    [Middleware Pipeline] as middleware
+}
+
+' ==================== APPLICATION LAYER ====================
+
+package "BankOfMyHouse.Application" <<Business Logic Layer>> #LightGreen {
+
+    package "Services" {
+        [UserService] as user_svc
+        [BankAccountService] as account_svc
+        [TransactionService] as tx_svc
+        [InvestmentService] as inv_svc
+        [JwtService] as jwt_svc
+    }
+
+    package "Hubs" {
+        [InvestmentHub\n(SignalR)] as signalr_hub
+    }
+
+    package "BackgroundTasks" {
+        [StockPriceGenerator] as stock_generator
+    }
+
+    package "Configuration" {
+        [JwtSettings] as jwt_settings
+    }
+}
+
+' ==================== DOMAIN LAYER ====================
+
+package "BankOfMyHouse.Domain" <<Domain Model Layer>> #LightYellow {
+
+    package "Entities" {
+        [User] as user_entity
+        [BankAccount] as account_entity
+        [Transaction] as tx_entity
+        [Investment] as inv_entity
+        [Company] as company_entity
+    }
+
+    package "ValueObjects" {
+        [IbanCode] as iban_vo
+    }
+
+    package "Repositories" <<interfaces>> {
+        interface IUserRepository
+        interface IBankAccountRepository
+        interface ITransactionRepository
+        interface IInvestmentRepository
+        interface ICompanyRepository
+    }
+
+    package "Services" <<interfaces>> {
+        interface IIbanGenerator
+    }
+}
+
+' ==================== INFRASTRUCTURE LAYER ====================
+
+package "BankOfMyHouse.Infrastructure" <<Data Access Layer>> #LightCoral {
+
+    package "Persistence" {
+        [BankOfMyHouseDbContext] as db_context
+    }
+
+    package "Repositories" {
+        [UserRepository] as user_repo
+        [BankAccountRepository] as account_repo
+        [TransactionRepository] as tx_repo
+        [InvestmentRepository] as inv_repo
+        [CompanyRepository] as company_repo
+    }
+
+    package "EfCoreConfigs" {
+        [UserConfiguration] as user_config
+        [BankAccountConfiguration] as account_config
+        [TransactionConfiguration] as tx_config
+    }
+
+    package "Services" {
+        [ItalianIbanGenerator] as iban_generator
+    }
+
+    package "DbSeed" {
+        [DatabaseSeeder] as seeder
+    }
+}
+
+' ==================== DEPENDENCIES (Unidirectional) ====================
+
+' API -> Application
+login_ep --> user_svc
+login_ep --> jwt_svc
+register_ep --> user_svc
+create_acc_ep --> account_svc
+create_tx_ep --> tx_svc
+get_inv_ep --> inv_svc
+middleware --> exception_handler
+
+' Application -> Domain (interfaces)
+user_svc --> IUserRepository
+account_svc --> IBankAccountRepository
+account_svc --> IIbanGenerator
+tx_svc --> ITransactionRepository
+inv_svc --> IInvestmentRepository
+stock_generator --> ICompanyRepository
+stock_generator --> signalr_hub
+
+' Infrastructure implements Domain interfaces
+user_repo ..|> IUserRepository
+account_repo ..|> IBankAccountRepository
+tx_repo ..|> ITransactionRepository
+inv_repo ..|> IInvestmentRepository
+company_repo ..|> ICompanyRepository
+iban_generator ..|> IIbanGenerator
+
+' Infrastructure -> Database
+db_context --> db
+user_repo --> db_context
+account_repo --> db_context
+tx_repo --> db_context
+inv_repo --> db_context
+company_repo --> db_context
+
+' External connections
+client --> middleware : HTTP/REST
+client <--> signalr_hub : WebSocket
+
+' ==================== LEGEND ====================
+
+legend right
+    |= Layer |= Responsibility |
+    | API (Blue) | HTTP endpoints, validation, mapping |
+    | Application (Green) | Business logic, orchestration |
+    | Domain (Yellow) | Entities, value objects, interfaces |
+    | Infrastructure (Red) | Data access, external services |
+
+    **Dependency Rule:**
+    Dependencies point inward toward Domain
+endlegend
+
+@enduml

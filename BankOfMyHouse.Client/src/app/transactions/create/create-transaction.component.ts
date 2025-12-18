@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CreateTransactionRequestDto, IbanCodeDto } from '../models/createTransactionRequestDto';
 import { TransactionService } from '../transaction.service';
 import { UserService } from '../../services/users/users.service';
@@ -45,13 +46,20 @@ export class CreateTransactionComponent {
     if (!err) return null;
 
     // Extract error message from the API response
-    if (err?.error?.detail) {
-      return err.error.detail;
-    } else if (err?.error?.title) {
-      return err.error.title;
-    } else if (err?.message) {
+    // Type guard for HttpErrorResponse
+    if (err instanceof HttpErrorResponse) {
+      if (err.error?.detail) {
+        return err.error.detail;
+      } else if (err.error?.title) {
+        return err.error.title;
+      }
+    }
+
+    // Fallback to message property (available on both HttpErrorResponse and Error)
+    if (err.message) {
       return err.message;
     }
+
     return 'Si è verificato un errore durante la transazione';
   });
 

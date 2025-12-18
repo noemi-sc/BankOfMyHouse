@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { createInvestmentRequestDto } from '../../investments/models/create/createInvestmentRequestDto';
 import { createInvestmentResponseDto } from '../../investments/models/create/createInvestmentResponseDto';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { GetHistoricalPricesResponseDto } from '../../investments/models/list_stock_history_price/getHistoricalPricesResponseDto';
 import { listCompanyResponseDto } from '../../investments/models/listCompany/listCompanyResponseDto';
@@ -18,7 +18,7 @@ export class InvestmentService {
     signal<createInvestmentResponseDto | null>(null);
   private loadingSignal =
     signal<boolean>(false);
-  private errorSignal = signal<any>(null);
+  private errorSignal = signal<HttpErrorResponse | Error | null>(null);
 
   public readonly companyDetails =
     this.createInvestmentDetailsSignal.asReadonly();

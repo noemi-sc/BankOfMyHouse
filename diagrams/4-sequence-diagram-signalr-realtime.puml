@@ -1,0 +1,166 @@
+@startuml Sequence Diagram - Real-Time Stock Prices (SignalR)
+!theme plain
+
+title BankOfMyHouse - Real-Time Stock Price Updates via SignalR
+
+participant "StockPriceGenerator\n(BackgroundService)" as generator
+participant "IServiceScopeFactory" as scope_factory
+participant "BankOfMyHouseDbContext" as db_context
+database "PostgreSQL" as db
+participant "IHubContext\n<InvestmentHub>" as hub_context
+participant "InvestmentHub\n(SignalR)" as hub
+participant "StockPriceSignalRService\n(Angular)" as signalr_client
+participant "InvestmentsDashboard\nComponent" as dashboard
+
+== Application Startup ==
+
+[-> generator : Host starts BackgroundService
+activate generator
+
+generator -> generator : ExecuteAsync(stoppingToken)
+note right
+    while (!stoppingToken.IsCancellationRequested)
+    {
+        await UpdateStockPrices();
+        await Task.Delay(1 second);
+    }
+end note
+
+== Client Connection ==
+
+dashboard -> signalr_client : startConnection()
+activate signalr_client
+
+signalr_client -> signalr_client : connectionStatus.set('connecting')
+
+signalr_client -> hub : new HubConnectionBuilder()\n.withUrl('/personalInvestments')\n.withAutomaticReconnect()\n.build()
+
+signalr_client -> hub : hubConnection.start()
+activate hub
+
+hub --> signalr_client : Connected (WebSocket)
+deactivate hub
+
+signalr_client -> signalr_client : connectionStatus.set('connected')
+
+signalr_client -> signalr_client : Register listener:\nhubConnection.on('TransferAllPrices', callback)
+
+signalr_client --> dashboard : Connection ready
+deactivate signalr_client
+
+== Price Update Cycle (Every Second) ==
+
+loop Every 1 second
+
+    generator -> scope_factory : CreateScope()
+    activate scope_factory
+    scope_factory --> generator : IServiceScope
+    deactivate scope_factory
+
+    generator -> db_context : GetRequiredService<DbContext>()
+    activate db_context
+
+    generator -> db : SELECT CompanyId,\nMAX(TimeOfPriceChange)\nFROM CompanyStockPrices\nGROUP BY CompanyId
+    activate db
+    db --> generator : Latest prices per company
+    deactivate db
+
+    generator -> generator : Calculate new prices\n(Random Walk algorithm)
+    note right
+        foreach company:
+            percentageChange = random(-10%, +10%)
+            newPrice = oldPrice * (1 + percentageChange/100)
+            // Bounds: 1 < price < 1000
+    end note
+
+    generator -> db : INSERT INTO CompanyStockPrices\n(Price, CompanyId, TimeOfPriceChange)
+    activate db
+    db --> generator : Saved
+    deactivate db
+
+    generator -> db_context : Dispose scope
+    deactivate db_context
+
+    generator -> hub_context : Clients.All.SendAsync(\n"TransferAllPrices", pricesDictionary)
+    activate hub_context
+
+    hub_context -> hub : Broadcast to all clients
+    activate hub
+
+    hub -> signalr_client : TransferAllPrices(pricesDict)
+    activate signalr_client
+
+    signalr_client -> signalr_client : Convert Record<number, StockPriceDto>\nto Map<number, StockPriceDto>
+
+    signalr_client -> signalr_client : allPricesSignal.set(pricesMap)
+    note right
+        Signal update triggers
+        all dependent computed()
+        and effect() functions
+    end note
+
+    signalr_client --> hub : ACK
+    deactivate signalr_client
+
+    hub --> hub_context : Delivered
+    deactivate hub
+
+    hub_context --> generator : Broadcast complete
+    deactivate hub_context
+
+    == Angular Reactive Update ==
+
+    dashboard -> dashboard : effect() triggered
+    activate dashboard
+    note right
+        effect(() => {
+            const prices = stockPriceService.allPrices();
+            // Transform and update local state
+            this.currentStockPrices.set(pricesMap);
+        });
+    end note
+
+    dashboard -> dashboard : computed() recalculated
+    note right
+        investmentsWithKPI = computed(() => {
+            const investments = this.investments();
+            const currentPrices = this.currentPrices();
+            // Calculate profit/loss, percentages
+            return aggregatedKPIs;
+        });
+    end note
+
+    dashboard -> dashboard : Template re-renders\n(Change Detection OnPush)
+    deactivate dashboard
+
+end
+
+== Connection Recovery ==
+
+hub ->x signalr_client : Connection lost
+activate signalr_client
+
+signalr_client -> signalr_client : connectionStatus.set('disconnected')
+
+signalr_client -> signalr_client : withAutomaticReconnect()\nattempts reconnection
+
+signalr_client -> hub : Reconnect
+activate hub
+hub --> signalr_client : Connected
+deactivate hub
+
+signalr_client -> signalr_client : connectionStatus.set('connected')
+deactivate signalr_client
+
+== Application Shutdown ==
+
+[-> generator : stoppingToken.Cancel()
+
+generator -> generator : Exit while loop gracefully
+
+generator -> generator : Complete current operation
+
+[<-- generator : BackgroundService stopped
+deactivate generator
+
+@enduml

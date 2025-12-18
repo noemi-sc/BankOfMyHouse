@@ -1,0 +1,170 @@
+@startuml Class Diagram - Strategy Pattern (IBAN Generator)
+!theme plain
+skinparam linetype ortho
+
+title BankOfMyHouse - Strategy Pattern: IBAN Generation
+
+' ==================== DOMAIN LAYER ====================
+
+package "Domain Layer" #LightYellow {
+
+    interface IIbanGenerator <<interface>> {
+        +GenerateIban(): IbanCode
+    }
+
+    class IbanCode <<Value Object>> {
+        +Value: string
+        --
+        -IbanCode(value: string)
+        {static} +Create(iban: string): IbanCode
+    }
+
+    note right of IIbanGenerator
+        **Strategy Interface**
+        Defined in Domain Layer
+        (Dependency Inversion Principle)
+    end note
+}
+
+' ==================== INFRASTRUCTURE LAYER ====================
+
+package "Infrastructure Layer" #LightCoral {
+
+    class ItalianIbanGenerator <<Concrete Strategy>> {
+        -_random: Random
+        -ABI: string = "03069"
+        -CAB: string = "09606"
+        --
+        +GenerateIban(): IbanCode
+        -CalculateCin(abi, cab): char
+        -CalculateCheckDigits(bban): string
+        -Mod97(numericString): int
+    }
+
+    class GermanIbanGenerator <<Concrete Strategy>> {
+        -_random: Random
+        -BLZ: string
+        --
+        +GenerateIban(): IbanCode
+        -CalculateCheckDigits(bban): string
+    }
+
+    class FrenchIbanGenerator <<Concrete Strategy>> {
+        -_random: Random
+        -BankCode: string
+        -BranchCode: string
+        --
+        +GenerateIban(): IbanCode
+        -CalculateRibKey(): string
+    }
+
+    note bottom of ItalianIbanGenerator
+        **Italian IBAN Structure**
+        IT + CheckDigits(2) + CIN(1) + ABI(5) + CAB(5) + Account(12)
+        Total: 27 characters
+
+        Uses ISO 7064 Mod97 algorithm
+        for check digit calculation
+    end note
+
+    note bottom of GermanIbanGenerator
+        **German IBAN Structure**
+        DE + CheckDigits(2) + BLZ(8) + Account(10)
+        Total: 22 characters
+
+        (Future implementation)
+    end note
+
+    note bottom of FrenchIbanGenerator
+        **French IBAN Structure**
+        FR + CheckDigits(2) + BankCode(5) + BranchCode(5) + Account(11) + RIB(2)
+        Total: 27 characters
+
+        (Future implementation)
+    end note
+}
+
+' ==================== APPLICATION LAYER ====================
+
+package "Application Layer" #LightGreen {
+
+    class BankAccountService <<Context>> {
+        -_ibanGenerator: IIbanGenerator
+        -_bankAccountRepository: IBankAccountRepository
+        --
+        +BankAccountService(ibanGenerator, repository)
+        +CreateBankAccountAsync(userId, description): BankAccount
+    }
+
+    note right of BankAccountService
+        **Context Class**
+        Uses IIbanGenerator via DI
+        Doesn't know concrete implementation
+    end note
+}
+
+' ==================== RELATIONSHIPS ====================
+
+IIbanGenerator <|.. ItalianIbanGenerator : implements
+IIbanGenerator <|.. GermanIbanGenerator : implements
+IIbanGenerator <|.. FrenchIbanGenerator : implements
+
+ItalianIbanGenerator ..> IbanCode : creates
+GermanIbanGenerator ..> IbanCode : creates
+FrenchIbanGenerator ..> IbanCode : creates
+
+BankAccountService --> IIbanGenerator : uses
+BankAccountService ..> IbanCode : receives
+
+' ==================== DI CONFIGURATION ====================
+
+note as DI_NOTE
+    **Dependency Injection Configuration**
+    (Program.cs)
+
+    // Register strategy implementation
+    builder.Services.AddScoped<IIbanGenerator, ItalianIbanGenerator>();
+
+    // To switch country, change only this line:
+    // builder.Services.AddScoped<IIbanGenerator, GermanIbanGenerator>();
+end note
+
+' ==================== ALGORITHM DETAIL ====================
+
+note as ALGO_NOTE
+    **Italian IBAN Generation Algorithm**
+
+    1. Generate random account number (1-999999999)
+    2. Pad to 12 digits: accountNumber.PadLeft(12, '0')
+    3. Calculate CIN from ABI + CAB
+    4. Form BBAN: CIN + ABI + CAB + Account
+    5. Calculate check digits (Mod97):
+       - Rearrange: BBAN + "IT00"
+       - Convert letters to numbers (A=10, B=11...)
+       - checkDigits = 98 - (numericString mod 97)
+    6. Final IBAN: "IT" + checkDigits + BBAN
+end note
+
+' ==================== BENEFITS ====================
+
+legend right
+    **Strategy Pattern Benefits**
+
+    1. **Open/Closed Principle**
+       Add new generators without
+       modifying existing code
+
+    2. **Testability**
+       Inject MockIbanGenerator
+       for deterministic tests
+
+    3. **Runtime Flexibility**
+       Switch strategy via DI config
+       or even at runtime
+
+    4. **Dependency Inversion**
+       Domain defines interface
+       Infrastructure implements
+endlegend
+
+@enduml

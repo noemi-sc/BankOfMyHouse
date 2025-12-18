@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.error.set(error.error?.message || 'Login failed. Please try again.');
+        this.error.set(error.error?.message || 'Accesso non riuscito. Riprova.');
       },
     });
   }

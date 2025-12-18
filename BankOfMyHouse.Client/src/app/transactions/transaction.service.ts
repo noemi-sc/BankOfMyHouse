@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CreateTransactionRequestDto } from './models/createTransactionRequestDto';
 import { CreateTransactionResponseDto } from './models/createTransactionResponseDto';
 import { map, catchError, throwError } from 'rxjs';
@@ -19,7 +19,7 @@ export class TransactionService {
     signal<GetTransactionsResponseDto | null>(null);
   private loadingSignal =
     signal<boolean>(false);
-  private errorSignal = signal<any>(null);
+  private errorSignal = signal<HttpErrorResponse | Error | null>(null);
   private transactionCreatedSignal = signal<boolean>(false);
 
   private httpClient = inject(HttpClient);

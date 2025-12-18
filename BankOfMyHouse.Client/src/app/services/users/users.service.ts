@@ -1,9 +1,10 @@
 import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { GetUserDetailsResponseDto } from '../../auth/models/getUserDetails/getUserDetailsResponseDto';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError, throwError, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { UserLoginRequestDto, UserLoginResponseDto, RegisterUserRequestDto, RegisterUserResponseDto } from '../../auth/models/auth-response';
+import { UserDto } from '../../auth/models/user';
 import { AUTH_CONSTANTS } from '../../shared/constants/auth.constants';
 
 @Injectable({
@@ -13,8 +14,8 @@ export class UserService {
   private apiUrl: string ='http://localhost:57460/users';
   private userDetailsSignal = signal<GetUserDetailsResponseDto | null>(null);
   private loadingSignal = signal<boolean>(false);
-  private errorSignal = signal<any>(null);
-  private currentUserSignal = signal<any>(null);
+  private errorSignal = signal<HttpErrorResponse | Error | null>(null);
+  private currentUserSignal = signal<UserDto | null>(null);
   private isAuthenticatedSignal = signal<boolean>(false);
 
   public readonly userDetails =
@@ -28,7 +29,7 @@ export class UserService {
   public readonly isAuthenticated =
     this.isAuthenticatedSignal.asReadonly();
 
-  private refreshTimer: any;
+  private refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   private httpClient = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);

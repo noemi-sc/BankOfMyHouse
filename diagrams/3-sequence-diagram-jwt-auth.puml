@@ -1,0 +1,161 @@
+@startuml Sequence Diagram - JWT Authentication Flow
+!theme plain
+
+title BankOfMyHouse - JWT Authentication Flow (Dual-Token Pattern)
+
+actor "User" as user
+participant "Angular Client" as client
+participant "AuthInterceptor" as interceptor
+participant "LoginEndpoint" as login_ep
+participant "UserService" as user_svc
+participant "JwtService" as jwt_svc
+database "PostgreSQL" as db
+
+== Login Flow ==
+
+user -> client : Enter credentials
+activate client
+
+client -> login_ep : POST /users/auth/login\n{username, password}
+activate login_ep
+
+login_ep -> user_svc : ValidateCredentialsAsync(username, password)
+activate user_svc
+
+user_svc -> db : SELECT * FROM Users\nWHERE Username = ?
+activate db
+db --> user_svc : User entity (with UserRoles)
+deactivate db
+
+user_svc -> user_svc : VerifyPassword(password)
+note right: Uses PasswordHasher<User>\nto verify BCrypt hash
+
+alt Invalid credentials
+    user_svc --> login_ep : null
+    login_ep --> client : 401 Unauthorized
+else Valid credentials
+    user_svc --> login_ep : User entity
+    deactivate user_svc
+
+    login_ep -> jwt_svc : GenerateAccessToken(user)
+    activate jwt_svc
+    jwt_svc -> jwt_svc : Create ClaimsIdentity\n(UserId, Roles, tokenType="access")
+    jwt_svc -> jwt_svc : Sign with HMAC-SHA256\nExpires: 60 minutes
+    jwt_svc --> login_ep : accessToken
+    deactivate jwt_svc
+
+    login_ep -> jwt_svc : GenerateRefreshToken(user)
+    activate jwt_svc
+    jwt_svc -> jwt_svc : Create ClaimsIdentity\n(UserId, tokenType="refresh")
+    jwt_svc -> jwt_svc : Sign with HMAC-SHA256\nExpires: 7 days
+    jwt_svc --> login_ep : refreshToken
+    deactivate jwt_svc
+
+    login_ep --> client : 200 OK\n{accessToken, refreshToken,\nexpiresAt, user}
+    deactivate login_ep
+
+    client -> client : Store tokens in localStorage
+    note right
+        localStorage.setItem(TOKEN_KEY, accessToken)
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+        localStorage.setItem(TOKEN_EXPIRATION_KEY, expiresAt)
+    end note
+
+    client -> client : scheduleTokenRefresh(expiresAt)
+    note right
+        setTimeout(() => attemptTokenRefresh(),
+            expiresAt - now - 5 minutes)
+    end note
+
+    client --> user : Login successful
+end
+deactivate client
+
+== Authenticated Request Flow ==
+
+user -> client : Request protected resource
+activate client
+
+client -> interceptor : HTTP Request
+activate interceptor
+
+interceptor -> interceptor : Get token from localStorage
+interceptor -> interceptor : Clone request with\nAuthorization: Bearer {token}
+
+interceptor -> login_ep : GET /users/details\n[Authorization: Bearer ...]
+activate login_ep
+
+login_ep -> login_ep : JWT Middleware validates token
+note right
+    - Verify signature
+    - Check expiration
+    - Extract claims
+end note
+
+login_ep --> interceptor : 200 OK\n{userDetails}
+deactivate login_ep
+
+interceptor --> client : Response
+deactivate interceptor
+
+client --> user : Display data
+deactivate client
+
+== Token Refresh Flow ==
+
+client -> client : Timer triggers\n(5 min before expiration)
+activate client
+
+client -> login_ep : POST /users/auth/refresh\n{refreshToken}
+activate login_ep
+
+login_ep -> jwt_svc : ValidateRefreshToken(token)
+activate jwt_svc
+
+jwt_svc -> jwt_svc : Validate signature & expiration
+jwt_svc -> jwt_svc : Extract UserId from claims
+
+jwt_svc -> user_svc : GetUserById(userId)
+activate user_svc
+user_svc -> db : SELECT * FROM Users
+db --> user_svc : User
+user_svc --> jwt_svc : User
+deactivate user_svc
+
+jwt_svc -> jwt_svc : GenerateAccessToken(user)
+jwt_svc -> jwt_svc : GenerateRefreshToken(user)
+
+jwt_svc --> login_ep : {newAccessToken, newRefreshToken}
+deactivate jwt_svc
+
+login_ep --> client : 200 OK\n{accessToken, refreshToken, expiresAt}
+deactivate login_ep
+
+client -> client : Update localStorage
+client -> client : scheduleTokenRefresh(newExpiresAt)
+deactivate client
+
+== Logout Flow ==
+
+user -> client : Click Logout
+activate client
+
+client -> login_ep : POST /users/auth/logout
+activate login_ep
+login_ep --> client : 200 OK
+deactivate login_ep
+
+client -> client : Clear localStorage
+note right
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(REFRESH_TOKEN_KEY)
+    localStorage.removeItem(TOKEN_EXPIRATION_KEY)
+end note
+
+client -> client : clearTimeout(refreshTimer)
+client -> client : Navigate to /login
+
+client --> user : Logged out
+deactivate client
+
+@enduml

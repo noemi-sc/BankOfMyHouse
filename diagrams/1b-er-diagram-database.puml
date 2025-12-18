@@ -1,0 +1,131 @@
+@startuml ER Diagram - Database Schema
+!theme plain
+skinparam linetype ortho
+
+title BankOfMyHouse - Entity Relationship Diagram
+
+' ==================== ENTITIES ====================
+
+entity "Users" as users {
+    *Id : int <<PK>>
+    --
+    *Username : varchar(100) <<unique>>
+    *Email : varchar(255) <<unique>>
+    *PasswordHash : varchar(500)
+    CreatedAt : timestamp
+}
+
+entity "Roles" as roles {
+    *Id : int <<PK>>
+    --
+    *Name : varchar(50) <<unique>>
+}
+
+entity "UserRoles" as user_roles {
+    *UserId : int <<PK, FK>>
+    *RoleId : int <<PK, FK>>
+}
+
+entity "BankAccounts" as bank_accounts {
+    *Id : int <<PK>>
+    --
+    *IBAN : varchar(34) <<unique>>
+    UserId : int <<FK>>
+    *Balance : decimal(18,2)
+    Description : varchar(255)
+    CreatedAt : timestamp
+}
+
+entity "Transactions" as transactions {
+    *Id : uuid <<PK>>
+    --
+    *Amount : decimal(18,2)
+    *SenderIban : varchar(34)
+    *ReceiverIban : varchar(34)
+    *CurrencyId : int <<FK>>
+    *PaymentCategoryId : int <<FK>>
+    Description : varchar(500)
+    *CreatedAt : timestamp
+}
+
+entity "Currencies" as currencies {
+    *Id : int <<PK>>
+    --
+    *Code : varchar(3) <<unique>>
+    *Symbol : varchar(5)
+    *Name : varchar(50)
+}
+
+entity "PaymentCategories" as payment_categories {
+    *Id : int <<PK>>
+    --
+    *Code : varchar(50) <<unique>>
+    *Name : varchar(100)
+    Description : varchar(255)
+}
+
+entity "Companies" as companies {
+    *Id : int <<PK>>
+    --
+    *Name : varchar(100)
+    *Symbol : varchar(10) <<unique>>
+}
+
+entity "CompanyStockPrices" as stock_prices {
+    *Id : int <<PK>>
+    --
+    *Price : decimal(18,4)
+    *CompanyId : int <<FK>>
+    *TimeOfPriceChange : timestamp
+}
+
+entity "Investments" as investments {
+    *Id : int <<PK>>
+    --
+    *SharesAmount : decimal(18,4)
+    *PurchasePrice : decimal(18,4)
+    *PriceAtPurchase : decimal(18,4)
+    *CompanyId : int <<FK>>
+    *BankAccountId : int <<FK>>
+    *CreatedAt : timestamp
+}
+
+' ==================== RELATIONSHIPS ====================
+
+users ||--o{ user_roles : "has"
+roles ||--o{ user_roles : "assigned to"
+
+users ||--o{ bank_accounts : "owns"
+
+bank_accounts ||--o{ investments : "contains"
+
+companies ||--o{ investments : "invested in"
+companies ||--o{ stock_prices : "tracks"
+
+currencies ||--o{ transactions : "denominated in"
+payment_categories ||--o{ transactions : "categorized by"
+
+' ==================== NOTES ====================
+
+note right of bank_accounts
+    **Owned Value Object**
+    IBAN is stored as column
+    (not separate table)
+    via EF Core Owned Type
+end note
+
+note right of transactions
+    **Value Converter**
+    SenderIban and ReceiverIban
+    converted to/from IbanCode
+    at runtime
+end note
+
+note bottom of stock_prices
+    **Time Series Data**
+    New record every second
+    for real-time price tracking
+    (Batch insert: 50,000 records)
+end note
+
+@enduml

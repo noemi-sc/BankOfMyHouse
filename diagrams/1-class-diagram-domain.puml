@@ -1,0 +1,157 @@
+@startuml Class Diagram - Domain Layer
+!theme plain
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+title BankOfMyHouse - Domain Layer Class Diagram
+
+package "Domain Layer" {
+
+    ' ==================== AGGREGATES ====================
+
+    class User <<Aggregate Root>> {
+        +Id: int
+        +Username: string
+        +Email: string
+        -PasswordHash: string
+        +UserRoles: ICollection<UserRole>
+        +BankAccounts: ICollection<BankAccount>
+        --
+        +VerifyPassword(password: string): bool
+        {static} +CreateNew(username, email, password): User
+    }
+
+    class BankAccount <<Aggregate Root>> {
+        +Id: int
+        +IBAN: IbanCode
+        +UserId: int?
+        +Balance: decimal
+        +Description: string?
+        +Investments: ICollection<Investment>
+        --
+        -BankAccount()
+        {static} +CreateNew(userId, ibanCode, description): BankAccount
+    }
+
+    class Transaction <<Aggregate Root>> {
+        +Id: Guid
+        +Amount: decimal
+        +Sender: IbanCode
+        +Receiver: IbanCode
+        +Currency: Currency
+        +PaymentCategory: PaymentCategory
+        +Description: string?
+        +CreatedAt: DateTime
+        --
+        {static} +Create(amount, currency, sender, receiver, category, description): Transaction
+        {static} +CreateExternal(amount, currency, sender, receiverIban, category, description): Transaction
+    }
+
+    class Investment {
+        +Id: int
+        +SharesAmount: decimal
+        +PurchasePrice: decimal
+        +PriceAtPurchase: decimal
+        +CompanyId: int
+        +BankAccountId: int
+        +CreatedAt: DateTime
+        --
+        {static} +CreateNew(sharesAmount, companyId, bankAccountId, priceAtPurchase): Investment
+    }
+
+    class Company {
+        +Id: int
+        +Name: string
+        +Symbol: string
+        +StockPrices: ICollection<CompanyStockPrice>
+    }
+
+    class CompanyStockPrice {
+        +Id: int
+        +Price: decimal
+        +CompanyId: int
+        +TimeOfPriceChange: DateTime
+        --
+        +CompanyStockPrice(price, companyId)
+    }
+
+    ' ==================== VALUE OBJECTS ====================
+
+    class IbanCode <<Value Object>> {
+        +Value: string
+        --
+        -IbanCode(value)
+        {static} +Create(iban: string): IbanCode
+    }
+
+    ' ==================== REFERENCE DATA ====================
+
+    class Role {
+        +Id: int
+        +Name: string
+    }
+
+    class UserRole {
+        +UserId: int
+        +RoleId: int
+    }
+
+    class Currency {
+        +Id: int
+        +Code: string
+        +Symbol: string
+        +Name: string
+    }
+
+    class PaymentCategory {
+        +Id: int
+        +Code: string
+        +Name: string
+        +Description: string?
+    }
+
+    ' ==================== INTERFACES ====================
+
+    interface IIbanGenerator <<interface>> {
+        +GenerateIban(): IbanCode
+    }
+
+    ' ==================== RELATIONSHIPS ====================
+
+    User "1" *-- "many" UserRole : has
+    UserRole "many" --* "1" Role : references
+    User "1" *-- "many" BankAccount : owns
+
+    BankAccount "1" *-- "1" IbanCode : contains
+    BankAccount "1" *-- "many" Investment : has
+
+    Transaction "1" o-- "1" IbanCode : sender
+    Transaction "1" o-- "1" IbanCode : receiver
+    Transaction "many" --> "1" Currency : uses
+    Transaction "many" --> "1" PaymentCategory : categorized by
+
+    Investment "many" --> "1" Company : invests in
+    Company "1" *-- "many" CompanyStockPrice : tracks
+}
+
+note right of IbanCode
+    **Value Object Pattern**
+    - Immutable (sealed record)
+    - Equality by value
+    - Factory method with validation
+end note
+
+note right of BankAccount
+    **Factory Method Pattern**
+    - Private constructor
+    - Static CreateNew() factory
+    - Ensures valid state
+end note
+
+note bottom of IIbanGenerator
+    **Strategy Pattern**
+    - Implemented by ItalianIbanGenerator
+    - Extensible for other countries
+end note
+
+@enduml
